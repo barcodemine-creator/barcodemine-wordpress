@@ -2,9 +2,8 @@ name: Deploy WordPress to Production
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    branches:
+      - master
 
 jobs:
   deploy:
@@ -14,86 +13,34 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
       
-    - name: Setup PHP
+    - name: Set up PHP
       uses: shivammathur/setup-php@v2
       with:
         php-version: '8.1'
-        extensions: mysqli, zip, gd
         
-    - name: Validate WordPress structure
-      run: |
-        echo "Validating WordPress file structure..."
-        if [ ! -f "index.php" ]; then
-          echo "Error: index.php not found"
-          exit 1
-        fi
-        if [ ! -d "wp-admin" ]; then
-          echo "Error: wp-admin directory not found"
-          exit 1
-        fi
-        if [ ! -d "wp-includes" ]; then
-          echo "Error: wp-includes directory not found"
-          exit 1
-        fi
-        echo "WordPress structure validation passed"
-        
-    - name: Check for malicious code
-      run: |
-        echo "Scanning for malicious patterns..."
-        # Check for common malware patterns
-        if grep -r "eval(" --include="*.php" . | grep -v "wp-includes\|wp-admin\|dompdf"; then
-          echo "Warning: Found eval() usage outside of core files"
-        fi
-        if grep -r "base64_decode(" --include="*.php" . | grep -v "wp-includes\|wp-admin\|dompdf"; then
-          echo "Warning: Found base64_decode() usage outside of core files"
-        fi
-        echo "Security scan completed"
-        
-    - name: Test barcode search functionality
-      run: |
-        echo "Testing barcode search function..."
-        if [ -f "wp-content/themes/mydecor-child/functions.php" ]; then
-          if grep -q "barcodemine_barcode_search" wp-content/themes/mydecor-child/functions.php; then
-            echo "✅ Barcode search function found"
-          else
-            echo "❌ Barcode search function not found"
-            exit 1
-          fi
-        else
-          echo "❌ Child theme functions.php not found"
-          exit 1
-        fi
-        
-    - name: Deploy to production (manual trigger only)
-      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      uses: easingthemes/ssh-deploy@main
-      env:
-        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-        REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
-        REMOTE_USER: ${{ secrets.REMOTE_USER }}
-        SOURCE: "."
-        TARGET: ${{ secrets.REMOTE_PATH }}
-        EXCLUDE: "/node_modules/, /.git/, /.github/, /wp-config-local.php, /*.md, /*.sql, /debug.log"
-        SCRIPT_BEFORE: |
-          echo "Creating backup before deployment..."
-          cp -r ${{ secrets.REMOTE_PATH }} ${{ secrets.REMOTE_PATH }}_backup_$(date +%Y%m%d_%H%M%S)
-          echo "Backup created"
-        SCRIPT_AFTER: |
-          echo "Setting correct file permissions..."
-          find ${{ secrets.REMOTE_PATH }} -type d -exec chmod 755 {} \;
-          find ${{ secrets.REMOTE_PATH }} -type f -exec chmod 644 {} \;
-          chmod 600 ${{ secrets.REMOTE_PATH }}/wp-config.php
-          echo "Deployment completed successfully"
+    - name: Deploy to server
+      uses: appleboy/ssh-action@v0.1.5
+      with:
+        host: ${{ secrets.REMOTE_HOST }}
+        username: ${{ secrets.REMOTE_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          # Navigate to your website directory
+          cd ${{ secrets.REMOTE_PATH }}
           
-  notify:
-    needs: deploy
-    runs-on: ubuntu-latest
-    if: always()
-    steps:
-    - name: Notify deployment status
-      run: |
-        if [ "${{ needs.deploy.result }}" == "success" ]; then
-          echo "✅ Deployment successful to barcodemine.com"
-        else
-          echo "❌ Deployment failed"
-        fi
+          # Create backup (optional but recommended)
+          tar -czf backup_$(date +%Y%m%d_%H%M%S).tar.gz --exclude='backup_*.tar.gz' .
+          
+          # Pull latest changes from GitHub
+          git pull origin master
+          
+          # Set correct permissions
+          find . -type d -exec chmod 755 {} \;
+          find . -type f -exec chmod 644 {} \;
+          chmod 600 wp-config.php
+          
+          # Clear any WordPress cache
+          # Uncomment if you have WP-CLI installed:
+          # wp cache flush --allow-root
+          
+          echo "✅ Deployment completed successfully!"

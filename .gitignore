@@ -1,81 +1,49 @@
-# WordPress Core Files (keep these in repo)
-# wp-admin/
-# wp-includes/
-# index.php
-
-# Configuration Files
+# WordPress specific files
 wp-config.php
 wp-config-local.php
 wp-config-production.php
-.env
-.env.local
-.env.production
 
-# Database Files
+# Database dumps
 *.sql
 latestdb.sql
-database-update-urls.sql
 
-# Upload and Cache Directories
-wp-content/uploads/
+# User uploads (optional - uncomment if you don't want to track uploads)
+# wp-content/uploads/
+
+# Cache files
 wp-content/cache/
-wp-content/backup-db/
 wp-content/advanced-cache.php
-wp-content/wp-cache-config.php
 wp-content/object-cache.php
 
-# Log Files
-*.log
+# Backup files
+wp-content/upgrade/
+wp-content/upgrade-temp-backup/
+wp-content/backups/
+
+# Debug logs
 debug.log
 error_log
 wp-content/debug.log
 
-# Temporary Files
-*.tmp
-*.temp
-*~
+# OS generated files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
 
-# Development Tools
+# IDE files
 .vscode/
 .idea/
-*.sublime-project
-*.sublime-workspace
+*.swp
+*.swo
 
-# Documentation (optional - you might want to keep these)
-*.md
-SECURITY_REPORT.md
-LOCAL_SETUP_GUIDE.md
-CLOUD_DEPLOYMENT_GUIDE.md
-XAMPP_MYSQL_FIX.md
-GIT_CICD_SETUP_GUIDE.md
-BARCODE_SEARCH_TROUBLESHOOTING.md
-
-# Backup Files
-*.bak
-*.backup
-*_backup_*
-
-# System Files
-.htpasswd
-.well-known/
-
-# Node.js (if using)
+# Node modules (if using any build tools)
 node_modules/
 npm-debug.log
-yarn-error.log
 
-# Composer (if using)
-/vendor/
-
-# Security Scanner Results
-*.scan
-security-report.*
-
-# Plugin/Theme Development
-wp-content/themes/*/node_modules/
-wp-content/plugins/*/node_modules/
-
-# Specific to your setup
-wp-salt.php
+# Temporary files
+*.tmp
+*.temp

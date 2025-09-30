@@ -1,0 +1,55 @@
+# Disable PHP execution in uploads directory
+<Files "*.php">
+    Order allow,deny
+    Deny from all
+</Files>
+
+<Files "*.phtml">
+    Order allow,deny
+    Deny from all
+</Files>
+
+<Files "*.php3">
+    Order allow,deny
+    Deny from all
+</Files>
+
+<Files "*.php4">
+    Order allow,deny
+    Deny from all
+</Files>
+
+<Files "*.php5">
+    Order allow,deny
+    Deny from all
+</Files>
+
+<Files "*.pl">
+    Order allow,deny
+    Deny from all
+</Files>
+
+<Files "*.py">
+    Order allow,deny
+    Deny from all
+</Files>
+
+<Files "*.jsp">
+    Order allow,deny
+    Deny from all
+</Files>
+
+<Files "*.asp">
+    Order allow,deny
+    Deny from all
+</Files>
+
+<Files "*.sh">
+    Order allow,deny
+    Deny from all
+</Files>
+
+<Files "*.cgi">
+    Order allow,deny
+    Deny from all
+</Files>
