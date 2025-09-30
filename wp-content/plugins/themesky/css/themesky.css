@@ -1,0 +1,1434 @@
+/*
+	1. SHORTCODE HOT DEAL
+	2. SHORTCODE BANNER
+	3. SHORTCODE LOGO SLIDER
+	4. SHORTCODE PRODUCT
+	5. SHORTCODE BANNER IMAGE
+	6. SHORTCODE BLOG
+	7. SHORTCODE TESTIMONIAL
+	8. SHORTCODE TEAM MEMBER
+	9. SHORTCODE PORTFOLIO
+	10. SHORTCODE TWITTER
+	11. SHORTCODE COUNTDOWN
+	12. SHORTCODE TYPE TAB PRODUCTS
+	13. SHORTCODE TAB PRODUCT
+	14. SHORTCODE LIST CATEGORIES
+	15. SHORTCODE PRODUCT CATEGORIES
+*/
+.animated{
+	-webkit-animation-duration: 1s;
+	animation-duration: 1s;
+	-webkit-animation-fill-mode: both;
+	animation-fill-mode: both
+}
+@-webkit-keyframes fadeIn{
+	0%{opacity: 0}
+	100%{opacity: 1}
+}
+@keyframes fadeIn{
+	0%{opacity: 0}
+	100%{opacity: 1}
+}
+.fadeIn{
+	-webkit-animation-name: fadeIn;
+	animation-name: fadeIn
+}
+@-webkit-keyframes fadeOut{
+	0%{opacity: 1}
+	100%{opacity: 0}
+}
+@keyframes fadeOut{
+	0%{opacity: 1}
+	100%{opacity: 0}
+}
+.fadeOut{
+	-webkit-animation-name: fadeOut;
+	animation-name: fadeOut
+}
+.ts-effect-image{
+	text-align: center;
+	backface-visibility: hidden;
+	-webkit-backface-visibility: hidden;
+}
+.ts-effect-image .image-link{
+	display: block;
+	position: relative;
+	max-width: 100%;
+	overflow: hidden;
+}
+/* effect border animation scale */
+.eff-border .overlay{
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	top: 0;
+	content: "";
+	opacity: 0.8;
+	background: transparent !important;
+}
+.eff-border .overlay:after{
+	z-index: 4;
+	width: auto;
+	height: auto;
+	content: "";
+	position: absolute;
+	left: -15px;
+	right: -15px;
+	top: -15px;
+	bottom: -15px;
+	border-width: 15px;
+	border-style: solid;
+	border-color: inherit;
+	transition: 400ms ease 0s;
+}
+.eff-border:hover .overlay:after{
+	left: 0;
+	right: 0;
+	bottom: 0;
+	top: 0;
+}
+/* effect widespread left right */
+.eff-widespread-corner-left-right .overlay:before{
+	position: absolute;
+	content: "";
+	top: 0;
+	left: 0;
+	width: 0;
+	height: 0;
+	margin: auto;
+	opacity: 0;
+	background-color: inherit;
+	transition: 500ms ease 0s;
+}
+.eff-widespread-corner-left-right .overlay:after{
+	content: "";
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	width: 0;
+	height: 0;
+	background-color: inherit;
+	opacity: 0;
+	transition: 500ms ease 0s;
+}
+.eff-widespread-corner-left-right:hover .overlay:after,
+.eff-widespread-corner-left-right:hover .overlay:before{
+	width: 100%;
+	height: 100%;
+	opacity: 0.2;
+}
+/* effect image scale */
+.eff-image-scale img{
+	transition: 800ms ease 0s;
+}
+.eff-image-scale:hover img{
+	transform: scale(1.1,1.1);
+}
+/* gray */
+.eff-image-gray img{
+	transition: 500ms ease 0s;
+}
+.eff-image-gray:hover img{
+    filter: grayscale(100%);
+}
+.eff-image-gray:hover img:nth-child(2){
+    filter: none;
+}
+.eff-image-gray .overlay{
+	display: none;
+}
+
+/* effect overlay bottom */
+.eff-image-overlay-bottom:hover .overlay{
+	top: 0;
+}
+.eff-image-overlay-bottom .overlay{
+	position: absolute;
+	content: "";
+    background: -webkit-linear-gradient(top, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.5) 100%);
+    background: -moz-linear-gradient(top, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.5) 100%);
+    background: -ms-linear-gradient(top, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.5) 100%);
+    background: -o-linear-gradient(top, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.5) 100%);
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.5) 100%);
+    height: 100%;
+    width: 100%;
+    left: 0;
+    top: 100%;
+    -webkit-transition: all 0.2s;
+    -moz-transition: all 0.2s;
+    -o-transition: all 0.2s;
+    transition: all 0.2s;
+	content: "";
+	z-index: 1;
+	opacity: 0.5;
+}
+
+/*--------------------------------------------------------------------------------------------------------------*/
+/*- 1. SHORTCODE HOT DEAL --------------------------------------------------------------------------------------*/
+.ts-product-deals-wrapper .shortcode-heading-wrapper{
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+.ts-product-deals-wrapper .ts-countdown{
+	display: flex;
+	width: auto;
+}
+body .ts-product-deals-wrapper header .ts-countdown{
+	margin-left: 40px;/* rtl */
+	line-height: 40px;
+	border-radius: 20px 20px 0 0;
+}
+.ts-product header .ts-countdown .counter-wrapper{
+	padding-left: 15px;
+	padding-right: 15px;
+}
+#page .show-counter-today .product .thumbnail-wrapper:before{
+	content: "\f017";
+	font-family: 'Font Awesome 5 Free';
+	font-weight: 400;
+	font-size: 18px;
+	line-height: 30px;
+	width: 30px;
+	border-radius: 0 0 0 3px;
+	position: absolute;
+	right: 0;
+	top: 0;
+	z-index: 5;
+	text-align: center;
+	display: inline-block;
+}
+body .ts-product-deals-wrapper header .counter-wrapper:before{
+	content: "\f017";
+	font-family: 'Font Awesome 5 Free';
+	font-weight: 400;
+	margin-right: 5px;/* rtl */
+}
+header .style-inline.ts-countdown .seconds{
+	min-width: 42px;
+}
+.style-inline > .label{
+	display: none;
+}
+.style-inline .counter-wrapper > *{
+	display: flex;
+}
+.ts-product-deals-wrapper .content-wrapper{
+	clear: both;
+}
+.ts-product-deals-wrapper .onsale{
+	display: none !important;
+}
+.counter-wrapper:after{
+	display: table;
+	clear: both;
+	content: "";
+}
+.ts-countdown:not(.style-inline) > div{
+	padding: 0;
+	margin: 0 5px;
+}
+body .ts-countdown:not(.style-inline) .ref-wrapper{
+	width: 100%;
+	padding: 0 2px;
+	display: block;
+	line-height: 24px;
+}
+.ts-shortcode.has-background-item .product .meta-wrapper{
+	padding: 10px 20px 20px 20px;
+}
+
+/*--------------------------------------------------------------------------------------------------------------*/
+/*- 2. SHORTCODE BANNER ----------------------------------------------------------------------------------------*/
+.ts-banner,
+.ts-banner *{
+	backface-visibility: hidden;
+	-webkit-backface-visibility: hidden;
+} 
+.ts-banner h4{
+	color: #ffffff;
+}
+.ts-banner h4{
+	margin-bottom: 0;
+}
+.ts-banner h4 span{
+	display: block;
+	white-space: nowrap;
+}
+.ts-banner .text-small{
+	position: relative;
+	display: block;
+	line-height: 20px;
+}
+.ts-banner.text-left .banner-wrapper{
+	text-align: left;
+}
+.ts-banner.text-right .banner-wrapper{
+	text-align: right;
+}
+.ts-banner.text-center .banner-wrapper{
+	text-align: center;
+}
+.ts-banner .banner-wrapper{
+	text-align: left;/* rtl */
+}
+.ts-banner{
+	overflow: hidden;
+	width: 100%;
+	position: relative;
+	text-align: center;
+}
+.ts-banner .banner-wrapper{
+	position: relative;
+}
+.ts-banner .banner-wrapper .banner-bg{
+	overflow: hidden;
+}
+.ts-banner .banner-wrapper > a{
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	top: 0;
+	z-index: 9;
+}
+.ts-banner.style-default .box-content,
+.ts-banner.style-button .box-content{
+	position: absolute;
+	z-index: 2;
+	display: table;
+	transition: 300ms ease 0s;
+}
+.ts-banner.style-simple .box-content{
+	text-align: center;
+	width: 100%;
+	position: relative;
+	padding: 10px;
+}
+.ts-banner.style-simple .box-content:before{
+	position: absolute;
+	left: 10px;
+	right: 10px;
+	bottom: 10px;
+	top: 10px;
+	content: "";
+	border-width: 1px;
+	border-style: dashed;
+	z-index: 0;
+	opacity: 0.5;
+}
+@-webkit-keyframes animation_tranlate_banner{
+	from{
+		opacity: 0;
+		transform: translate(-50%,100%);
+	}
+	to{
+		opacity: 1;
+		transform: translate(-50%,0);
+	}
+}
+@-moz-keyframes animation_tranlate_banner{
+	from{
+		opacity: 0;
+		transform: translate(-50%,100%);
+	}
+	to{
+		opacity: 1;
+		transform: translate(-50%,0);
+	}
+}
+@keyframes animation_tranlate_banner{
+	from{
+		opacity: 0;
+		transform: translate(-50%,100%);
+	}
+	to{
+		opacity: 1;
+		transform: translate(-50%,0);
+	}
+}
+
+.ts-banner .banner-bg{
+	transition: opacity 450ms;
+}
+.ts-banner .ts-banner-button{
+	margin-top: 12px;
+}
+.ts-banner:not(.style-button) .ts-banner-button a.button,
+.woocommerce .ts-banner:not(.style-button) .ts-banner-button a.button{
+	padding: 0 10px;
+	line-height: 22px;
+	min-width: auto;
+}
+.ts-banner:not(.style-button) .ts-banner-button a.button,
+.woocommerce .ts-banner:not(.style-button) .ts-banner-button a.button{
+	line-height: 38px;
+	width: 40px;
+	border-radius: 100%;
+	text-align: center;
+	margin-top: 10px;
+	padding: 0;
+}
+.ts-banner:not(.style-button) .ts-banner-button a.button:after{
+	display: inline-block;
+	content: "\f061";/* rtl */
+	font-family: 'Font Awesome 5 Free';
+	font-weight: 900;
+}
+.ts-banner.style-button .ts-banner-button a.button,
+.woocommerce .ts-banner.style-button .ts-banner-button a.button{
+	min-width: 180px;
+	line-height: 44px !important;
+	padding: 0 15px !important;
+	text-transform: none;
+	border-radius: 22px;
+	box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.2);
+}
+.ts-banner-button a{
+	display: inline-block;
+}
+.ts-banner .header-content{
+	padding: 20px;
+}
+.ts-banner.style-default .box-content > *{
+	display: table-cell;
+	vertical-align: middle;
+}
+.eff-image-gray:hover .img-content img{
+	filter: none;
+}
+.ts-banner.style-simple .banner-bottom a{
+	text-decoration: underline;
+}
+
+/* Banner content position */
+.left-top .box-content{
+	left: 3%;right: auto;
+	top: 4%;bottom: auto;
+}
+.left-bottom .box-content{
+	left: 3%;right: auto;
+	top: auto;bottom: 4%;
+}
+.left-center .box-content{
+	left: 3%;right: auto;
+	top: 50%;bottom: auto;
+	transform: translate(0,-50%);
+}
+.right-top .box-content{
+	right: 3%;left: auto;
+	top: 3%;bottom: auto;
+}
+.right-bottom .box-content{
+	right: 3%;left: auto;
+	top: auto;bottom: 3%;
+}
+.right-center .box-content{
+	right: 3%;left: auto;
+	top: 50%;bottom: auto;
+	transform: translate(0,-50%);
+}
+.center-top .box-content{
+	text-align: center;
+	left: 0;right: 0;
+	top: 3%;bottom: auto;
+	width: 100%;
+}
+.center-bottom .box-content{
+	text-align: center;
+	left: 0;right: 0;
+	top: auto;bottom: 3%;
+	width: 100%;
+}
+.center-center .box-content{
+	left: 50%;right: auto;
+	top: 50%;bottom: auto;
+	width: 100%;
+	transform: translate(-50%,-50%);
+	text-align: center;
+	width: 100%;
+}
+.ts-banner .banner-bg img{
+	position: relative;
+	margin: 0 auto;
+	width: 100%;
+}
+.menu-wrapper .ts-banner .banner-bg img{
+	width: auto;
+}
+.menu-wrapper .ts-banner .banner-wrapper{
+	display: table;
+	margin: 0 auto;
+}
+
+/* Effect background scale */
+.ts-banner.background-scale .banner-bg img,
+.ts-banner.background-scale-dark .banner-bg img,
+.ts-banner.background-scale-opacity .banner-bg img,
+.ts-banner.background-scale-opacity-line .banner-bg img,
+.ts-banner.background-scale-and-line .banner-bg img,
+.ts-banner.background-scale-dark-line .banner-bg img{
+	transform: scale(1,1);
+	transition: transform 400ms ease 0s;
+}
+.ts-banner.background-scale:hover .banner-bg img,
+.ts-banner.background-scale-dark:hover .banner-bg img,
+.ts-banner.background-scale-opacity:hover .banner-bg img,
+.ts-banner.background-scale-opacity-line:hover .banner-bg img,
+.ts-banner.background-scale-dark-line:hover .banner-bg img,
+.ts-banner.background-scale-and-line:hover .banner-bg img,
+.ts-banner.background-scale-rotate:hover .banner-bg img{
+	transform: scale(1.14,1.14);
+}
+.ts-banner.background-scale-rotate .banner-bg img{
+	transform: rotate(0deg) scale(1,1);
+	transition: transform 400ms ease 0s;
+}
+.ts-banner.background-scale-rotate:hover .banner-bg img{
+	transform: rotate(3deg) scale(1.14);
+}
+/* Effect background scale opacity */
+.ts-banner.background-opacity .banner-bg img,
+.ts-banner.background-scale-opacity .banner-bg img,
+.ts-banner.background-opacity-and-line .banner-bg img,
+.ts-banner.background-dark-and-line .banner-bg img,
+.ts-banner.background-scale-opacity-line .banner-bg img,
+.ts-banner.background-scale-dark-line .banner-bg img{
+	transition: transform 800ms , opacity 500ms ease 0s;
+}
+.ts-banner.background-opacity-and-line:hover .banner-bg img,
+.ts-banner.background-opacity:hover .banner-bg img,
+.ts-banner.background-scale-opacity:hover .banner-bg img,
+.ts-banner.background-scale-opacity-line:hover .banner-bg img{
+	opacity: 0.7;
+}
+.ts-banner.background-dark-and-line .banner-bg:after,
+.ts-banner.background-dark .banner-bg:after,
+.ts-banner.background-scale-dark .banner-bg:after,
+.ts-banner.background-scale-dark-line .banner-bg:after,
+.ts-banner.background-scale-rotate .banner-bg:after{
+	content: "";
+	position: absolute;
+	left: 0;right: 0;
+	bottom: 0;top: 0;
+	background: #000;
+	z-index: 1;
+	opacity: 0;
+	transition: 450ms ease 0s;
+}
+.ts-banner.background-dark-and-line:hover .banner-bg:after,
+.ts-banner.background-dark:hover .banner-bg:after,
+.ts-banner.background-scale-dark:hover .banner-bg:after,
+.ts-banner.background-scale-dark-line:hover .banner-bg:after,
+.ts-banner.background-scale-rotate:hover .banner-bg:after{
+	opacity: 0.3;
+}
+/* Effect Line */
+.ts-banner.background-scale-opacity-line .banner-wrapper:before,
+.ts-banner.background-opacity-and-line .banner-wrapper:before,
+.ts-banner.background-dark-and-line .banner-wrapper:before,
+.ts-banner.background-scale-dark-line .banner-wrapper:before,
+.ts-banner.background-scale-and-line .banner-wrapper:before,
+.ts-banner.eff-line .banner-wrapper:before{
+	position: absolute;
+	left: 10px;
+	right: 10px;
+	top: 10px;
+	bottom: 10px;
+	content: "";
+	z-index: 2;
+	border-width: 1px;
+	border-style: solid;
+	opacity: 0;
+	transform: scale(1,0);
+	transition: opacity 450ms,transform 450ms ease 0s;
+}
+.ts-banner.background-opacity-and-line .banner-wrapper:hover:before,
+.ts-banner.background-scale-opacity-line .banner-wrapper:hover:before,
+.ts-banner.background-dark-and-line .banner-wrapper:hover:before,
+.ts-banner.background-scale-dark-line .banner-wrapper:hover:before,
+.ts-banner.background-scale-and-line .banner-wrapper:hover:before,
+.ts-banner.eff-line .banner-wrapper:hover:before{
+	opacity: 1;
+	transform: scale(1,1);
+	transition: opacity 550ms,transform 520ms ease 0s;
+}
+
+/*--------------------------------------------------------------------------------------------------------------*/
+/*- 3. SHORTCODE LOGO SLIDER -----------------------------------------------------------------------------------*/
+.ts-logo-slider-wrapper .content-wrapper{
+	padding: 0;
+	text-align: center;
+}
+.ts-logo-slider-wrapper .content-wrapper ul{
+	padding: 0;
+	margin: 0;
+}
+.ts-logo-slider-wrapper .owl-carousel .owl-item{
+	text-align: center;
+}
+.ts-logo-slider-wrapper .owl-carousel *{
+	backface-visibility: hidden;
+	-webkit-backface-visibility: hidden;
+}
+.ts-logo-slider-wrapper a{
+	display: block;
+	text-align: center;
+}
+.ts-logo-slider-wrapper img{
+	transition: 350ms ease 0s;
+}
+.ts-logo-slider-wrapper .item:hover img{
+	opacity: 0.5;
+}
+.ts-logo-slider-wrapper .owl-carousel .owl-item img{
+	width: auto;
+	margin: 0 auto;
+}
+.ts-logo-slider-wrapper.no-nav .content-wrapper .items{
+	padding-left: 0;
+	padding-right: 0;
+}
+.ts-logo-slider-wrapper .item{
+	backface-visibility: hidden;
+	-webkit-backface-visibility: hidden;
+}
+.ts-shortcode.ts-logo-slider-wrapper .items .item{
+	margin: 0;
+	position: relative;
+	z-index: 2;
+	backface-visibility: hidden;
+	-webkit-backface-visibility: hidden;
+	padding: 10px;
+}
+.ts-logo-slider-wrapper:not(.ts-slider) .item{
+	float: left;/* rtl */
+}
+.ts-logo-slider-wrapper:not(.ts-slider).columns-6 .item{
+	width: 16.66666667%;
+}
+.ts-logo-slider-wrapper:not(.ts-slider).columns-5 .item{
+	width: 20%;
+}
+.ts-logo-slider-wrapper:not(.ts-slider).columns-4 .item{
+	width: 25%;
+}
+.ts-logo-slider-wrapper:not(.ts-slider).columns-3 .item{
+	width: 33.33333333%;
+}
+.ts-logo-slider-wrapper:not(.ts-slider).columns-2 .item{
+	width: 50%;
+}
+.ts-logo-slider-wrapper:not(.ts-slider).columns-1 .item{
+	width: 100%;
+}
+.ts-logo-slider-wrapper .items > .item{
+	width: 16.66666667%;
+	float: left;/* rtl */
+}
+
+/*--------------------------------------------------------------------------------------------------------------*/
+/*- 4. SHORTCODE PRODUCT ---------------------------------------------------------------------------------------*/
+.ts-shortcode{
+	position: relative;
+	clear: both;
+	overflow: hidden;
+}
+.shortcode-heading-wrapper{
+	margin: 0 0 30px 0;
+}
+.shortcode-heading-wrapper h2{
+	margin-bottom: 0;
+	display: block;
+}
+.title-center .shortcode-heading-wrapper{
+	text-align: center;
+}
+.ts-product-deals-wrapper.title-center .shortcode-heading-wrapper{
+	display: block;
+}
+.ts-product-deals-wrapper.title-center.show-counter-today .shortcode-heading-wrapper{
+	display: flex;
+	justify-content: center;
+}
+.ts-shortcode.title-center .shortcode-heading-wrapper{
+	float: none !important;
+}
+.shop-all-button{
+	text-align: center;
+	margin-top: 20px;
+}
+
+/*--------------------------------------------------------------------------------------------------------------*/
+/*- 5. SHORTCODE BANNER IMAGE ----------------------------------------------------------------------------------*/
+.ts-banner-image{
+	overflow: hidden;
+	position: relative;
+	text-align: center;
+}
+.ts-banner-image *{
+	backface-visibility: hidden;
+}
+.ts-banner-image img.text-image{
+	position: absolute;
+	z-index: 2;
+}
+.ts-banner-image > *{
+	display: block;
+	position: relative;
+	overflow: hidden;
+}
+.ts-banner-image > *:after{
+	display: table;
+	content: "";
+	clear: both;
+}
+.ts-banner-image img.bg-image{
+	position: relative;
+	z-index: 1;
+	width: 100%;
+	transition: 400ms ease 0s;
+}
+.ts-banner-image .overlay{
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	content: "";
+	z-index: 0;
+}
+/* Effect BG Image */
+.ts-banner-image.eff-scale:hover img.bg-image{
+	transform: scale(1.1,1.1);
+}
+.ts-banner-image.eff-opacity:hover img.bg-image{
+	opacity: 0.6;
+}
+.ts-banner-image.eff-border .overlay{
+	position: absolute;
+	left: -1px;
+	right: -1px;
+	bottom: -1px;
+	top: -1px;
+	content: "";
+	z-index: 3;
+	background: transparent !important;
+}
+.ts-banner-image.eff-border .overlay:after{
+	z-index: 4;
+	width: auto;
+	height: auto;
+	content: "";
+	position: absolute;
+	left: -20px;
+	right: -20px;
+	top: -20px;
+	bottom: -20px;
+	border-width: 20px;
+	border-style: solid;
+	border-color: inherit;
+	opacity: 0.5;
+	transition: 500ms ease 0s;
+}
+.ts-banner-image.eff-border:hover .overlay:after{
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+}
+/* Banner content position */
+.ts-banner-image img.text-image{
+	max-width: 80%;
+	transition: 500ms ease 0s;
+	margin: 0;
+}
+.ts-banner-image.left-top img.text-image{
+	left: 5%;right: auto;
+	top: 5%;bottom: auto;
+	margin: 20px 0 0 10px;
+}
+.ts-banner-image.left-bottom img.text-image{
+	left: 5%;right: auto;
+	top: auto;bottom: 8%;
+	margin: 0 0 20px 20px;
+}
+.ts-banner-image.left-center img.text-image{
+	left: 5%;right: auto;
+	margin: 0 0 0 10px;
+	top: 50%;bottom: auto;
+	transform: translate(0,-50%);
+}
+.ts-banner-image.right-top img.text-image{
+	right: 5%;left: auto;
+	top: 5%;bottom: auto;
+	margin: 20px 10px 0 0;
+}
+.ts-banner-image.right-bottom img.text-image{
+	right: 5%;left: auto;
+	top: auto;bottom: 8%;
+	margin: 0 10px 20px 0;
+}
+.ts-banner-image.right-center img.text-image{
+	right: 5%;left: auto;
+	top: 50%;bottom: auto;
+	margin: 0 20px 0 0;
+	transform: translate(0,-50%);
+}
+.ts-banner-image.center-top img.text-image{
+	left: 50%;right: auto;
+	top: 8%;bottom: auto;
+	margin: 10px 0 0 0;
+	transform: translate(-50%,0);
+}
+.ts-banner-image.center-bottom img.text-image{
+	left: 50%;right: auto;
+	top: auto;bottom: 8%;
+	margin: 0 0 10px 0;
+	transform: translate(-50%,0);
+}
+.ts-banner-image.center-center img.text-image{
+	left: 50%;right: auto;
+	top: 50%;bottom: auto;
+	transform: translate(-50%,-50%);
+	text-align: center;
+	max-width: 70%;
+}
+.elementor-col-100 .ts-banner-image.center-center img.text-image{
+	max-width: 40%;
+	max-height: auto;
+}
+
+/*--------------------------------------------------------------------------------------------------------------*/
+/*- 6. SHORTCODE BLOG ------------------------------------------------------------------------------------------*/
+.ts-shortcode .view-more{
+	margin-top: 0;
+	text-align: center;
+}
+.ts-blogs-wrapper:not(.ts-slider) article{
+	margin-bottom: 50px;
+}
+
+/* MANSORY */
+.ts-blogs .blogs .quote-wrapper blockquote{
+	background: transparent;
+}
+
+/*--------------------------------------------------------------------------------------------------------------*/
+/*- 7. SHORTCODE TESTIMONIAL -----------------------------------------------------------------------------------*/
+.ts-shortcode.ts-testimonial-wrapper{
+	padding-left: 10px;
+	padding-right: 10px;
+	position: relative;
+}
+.ts-shortcode.ts-testimonial-wrapper .items{
+	width: calc(100% + 40px);
+    margin-left: -20px;
+    margin-right: -20px;
+}
+.ts-shortcode.ts-testimonial-wrapper .items .item{
+	padding-left: 20px;
+	padding-right: 20px;
+	padding-top: 5px;
+	padding-bottom: 10px;
+}
+.ts-testimonial-wrapper .testimonial-content{
+	padding: 30px;
+	box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+}
+.ts-testimonial-wrapper .entry-meta-top{
+	margin-top: 10px;
+	display: flex;
+	line-height: 22px;
+}
+.ts-testimonial-wrapper .author-role > span{
+	padding-left: 5px;
+	padding-right: 5px;
+	display: inline-block;
+}
+.ts-testimonial-wrapper .rating,
+blockquote .rating{
+	margin: 0;
+	display: block;
+	overflow: hidden;
+	position: relative;
+	line-height: 22px;
+	font-size: 10px;
+	font-style: normal;
+	letter-spacing: 0;
+	top: -1px;
+}
+.ts-testimonial-wrapper .rating span,
+blockquote .rating span{
+	padding-top: 1.5em;
+	overflow: hidden;
+	display: block;
+	margin: 0 auto;
+	position: relative;
+	float: left;/* rtl */
+}
+.ts-testimonial-wrapper .rating:before,
+blockquote .rating:before{
+	float: left;/* rtl */
+	top: 0;
+	left: 0;/* rtl */
+	position: absolute;
+}
+.ts-testimonial-wrapper .rating span:before,
+blockquote .rating span:before{
+	top: 0;
+	position: absolute;
+	left: 0;/* rtl */
+}
+.ts-testimonial-wrapper.dots-top{
+	padding-top: 60px;
+}
+.dots-top .owl-dots{
+	position: absolute;
+	right: 20px;/* rtl */
+	top: -60px;
+	margin: 0;
+}
+
+/*--------------------------------------------------------------------------------------------------------------*/
+/*- 8. SHORTCODE TEAM MEMBER -----------------------------------------------------------------------------------*/
+.ts-shortcode.ts-team-members .item{
+	margin-bottom: 50px;
+	text-align: center;
+}
+.ts-team-members a:hover{
+	text-decoration: none;
+}
+.ts-team-members .image-thumbnail{
+	margin-bottom: 18px;
+	position: relative;
+	overflow: hidden;
+}
+.ts-team-members .image-thumbnail a:after{
+    transition: transform .5s ease;
+    will-change: transform;
+    transform: scale(0);
+    border-radius: 50%;
+	content: "";
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	top: 0;
+	background: rgba(0,0,0,0.3);
+}
+.ts-team-members .image-thumbnail:hover a:after{
+    transform: scale(2);
+    transition-duration: .8s;
+}
+.ts-team-members .image-thumbnail img{
+	transition: transform .4s cubic-bezier(0.71, 0.05, 0.29, 0.9);
+	transform: scale(1) translate(0, 0);
+}
+.ts-team-members .image-thumbnail:hover img{
+	transform: scale(1.2) translate(2%, 3%);
+}
+.ts-team-members .team-info{
+	line-height: 20px;
+}
+.ts-team-members .team-info .member-role{
+	margin-bottom: 6px;
+}
+.ts-team-members .member-social{
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	margin-top: 12px;
+	font-size: 14px;
+	margin-left: -10px;
+	margin-right: -10px;
+}
+.ts-team-members .member-social a{
+	text-align: center;
+	margin-left: 10px;
+	margin-right: 10px;
+	letter-spacing: 0;
+	line-height: 20px !important;
+	display: inline-block;
+	overflow: hidden;
+	backface-visibility: hidden;
+	-webkit-backface-visibility: hidden;
+}
+.ts-team-members .member-social a.facebook:hover{
+	color: #3b5998;
+}
+.ts-team-members .member-social a.twitter:hover{
+	color: #2caae1;
+}
+.ts-team-members .member-social a.linked:hover{
+	color: #0073b1;
+}
+.ts-team-members .member-social a.rss:hover{
+	color: #ee802f;
+}
+.ts-team-members .member-social a.dribbble:hover{
+	color: #ea4c89;
+}
+.ts-team-members .member-social a.pinterest:hover{
+	color: #cb2027;
+}
+.ts-team-members .member-social a.instagram:hover{
+	color: #d32558;
+    color: -moz-linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+    color: -webkit-linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);
+    color: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);
+}
+
+/*--------------------------------------------------------------------------------------------------------------*/
+/*- 9. SHORTCODE PORTFOLIO -------------------------------------------------------------------------------------*/
+.portfolio-inner *{
+	backface-visibility: hidden;
+	-webkit-backface-visibility: hidden;
+}
+.ts-portfolio-wrapper .filter-bar{
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	overflow: hidden;
+	text-align: center;
+	margin: -5px -10px 30px -10px;
+}
+.ts-portfolio-wrapper .filter-bar li{
+	margin: 5px 10px;
+    padding: 0;
+    position: relative;
+    z-index: 1;
+	display: inline-block;
+	transition: 350ms ease 0s;
+	position: relative;
+	list-style: none;
+	cursor: pointer;
+}
+.ts-portfolio-wrapper .filter-bar li:hover,
+.ts-portfolio-wrapper .filter-bar li.current{
+	text-decoration: underline;
+}
+.ts-portfolio-wrapper .filter-bar li.current{
+	cursor: default;
+}
+.ts-portfolio-wrapper .item-wrapper{
+	position: relative;
+	overflow: hidden;
+}
+.ts-portfolio-wrapper.related-portfolios{
+	border-width: 1px 0 0 0;
+	border-style: solid;
+	padding: 60px 0;
+}
+.portfolio-meta{
+	margin-top: 20px;
+}
+.portfolio-inner figure{
+	position: relative;
+	overflow: hidden;
+	max-width: 100%;
+}
+.portfolio-inner h4{
+	margin-bottom: 0;
+	clear: both;
+}
+.portfolio-inner .item h3 a{
+	display: block;
+	overflow: hidden;
+	margin-bottom: 0;
+}
+.portfolio-inner .item figure img{
+	position: relative;
+	width: 100%;
+}
+.portfolio-inner .item{
+	float: left;/* rtl */
+	display: block;
+	outline: 0;
+	margin-bottom: 50px;
+}
+.ts-slider .portfolio-inner .item{
+	margin-bottom: 0;
+}
+.portfolio-inner .item:after{
+	display: table;
+	clear: both;
+	content: "";
+}
+.portfolio-inner .portfolio-meta{
+	position: relative;
+	padding-right: 30px;/* rtl */
+}
+.portfolio-inner .portfolio-meta a.like{
+	width: 30px;
+	height: 30px;
+	position: absolute;
+	right: 0;/* rtl */
+	top: 0;
+	border-radius: 100%;
+	background: #ffffff;
+	color: #161616;
+	text-align: center;
+	line-height: 30px;
+}
+.portfolio-inner .portfolio-meta a.like:before{
+	content: "\e634";
+	font-family: themify;
+	font-weight: 400;
+	font-size: 13px;
+	position: absolute;
+	line-height: 30px;
+	width: 30px;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	top: 0;
+}
+.portfolio-inner .portfolio-meta a.like.already-like:before{
+	content: "\f004";
+	font-weight: 900;
+	font-family: 'Font Awesome 5 Free';
+}
+.portfolio-inner .portfolio-meta a.loading:before{
+	content: "" !important;
+	border-bottom: 2px solid #161616;
+    border-top: 2px solid transparent;
+    border-right: 2px solid #161616;
+    border-left: 2px solid transparent;
+    border-radius: 100%;
+	width: 20px;
+	height: 20px;
+	left: 5px;
+	right: 5px;
+	bottom: 5px;
+	top: 5px;
+	-webkit-animation: fa-spin 2s infinite linear;
+	animation: fa-spin 2s infinite linear;
+}
+.portfolio-inner .portfolio-meta a.loading{
+	cursor: wait;
+}
+.portfolio-inner .portfolio-meta a:hover{
+	text-decoration: none;
+}
+@-webkit-keyframes scale_icon_like{
+	from{
+		opacity: 0;
+		transform: scale(1.7,1.7);
+	}
+	to{
+		opacity: 1;
+		transform: scale(1,1);
+	}
+}
+
+@-moz-keyframes scale_icon_like{
+	from{
+		opacity: 0;
+		transform: scale(1.7,1.7);
+	}
+	to{
+		opacity: 1;
+		transform: scale(1,1);
+	}
+}
+@keyframes scale_icon_like{
+	from{
+		opacity: 0;
+		transform: scale(1.7,1.7);
+	}
+	to{
+		opacity: 1;
+		transform: scale(1,1);
+	}
+}
+.ts-portfolio-wrapper.columns-2 .item{
+	width: 50%;
+}
+.ts-portfolio-wrapper.columns-3 .item{
+	width: 33.3333333%;
+}
+.ts-portfolio-wrapper.columns-4 .item{
+	width: 25%;
+}
+
+/*--------------------------------------------------------------------------------------------------------------*/
+/*- 10. SHORTCODE TWITTER --------------------------------------------------------------------------------------*/
+.ts-twitter-slider .icon{
+	position: absolute;
+	left: 0;/* rtl */
+	top: 50%;
+	margin-top: -40px;
+}
+.ts-twitter-slider .twitter-content{
+	padding-left: 100px; /* rtl */
+	position: relative;
+}
+.ts-twitter-slider .owl-item{
+	opacity: 0
+}
+.ts-twitter-slider .owl-item.active{
+	opacity: 1;
+}
+.twitter-content .content{
+	font-style: italic;
+	margin-bottom: 10px;
+}
+.ts-twitter-slider .icon{
+	font-size: 80px;
+	line-height: 80px;
+	color: #2CAAE1;
+}
+.ts-twitter-slider .date-time{
+	margin-bottom: 10px;
+}
+.ts-twitter-slider h4{
+	margin-bottom: 5px;
+}
+
+/*--------------------------------------------------------------------------------------------------------------*/
+/*- 11. SHORTCODE COUNTDOWN ------------------------------------------------------------------------------------*/
+.ts-countdown{
+	overflow: hidden;
+	text-align: center;
+	width: 100%;
+	margin-bottom: 10px;
+}
+.ts-countdown.style-inline{
+	line-height: 30px;
+}
+.ts-countdown:not(.style-inline) .counter-wrapper{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin: 0 -10px;
+}
+.ts-countdown:not(.style-inline) .counter-wrapper > div{
+	min-width: 60px;
+	width: auto;
+	margin: 10px;
+}
+.ts-countdown:not(.style-inline).ref-wrapper{
+	text-transform: uppercase;
+}
+body .blank-page-template .ts-countdown .counter-wrapper > div{
+	min-width: 100px;
+}
+body .blank-page-template .ts-countdown .counter-wrapper .number{
+	font-size: 52px;
+	line-height: 52px;
+}
+.ts-countdown:not(.style-inline) .number-wrapper{
+	margin-bottom: 10px;
+}
+.ts-countdown.text-light .counter-wrapper .number,
+.ts-countdown.text-light .counter-wrapper .ref-wrapper,
+.ts-countdown.text-light .counter-wrapper{
+	color: #ffffff;
+}
+.meta-wrapper .ts-countdown.style-inline{
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	position: absolute;
+	bottom: 100%;
+	left: 0;
+	right: 0;
+	margin: 0;
+	z-index: 5;
+}
+.meta-wrapper .availability-bar{
+	margin-bottom: 10px;
+}
+.meta-wrapper .ts-countdown .counter-wrapper{
+	border-radius: 15px 15px 0 0;
+}
+.meta-wrapper .ts-countdown .counter-wrapper:before{
+	content: "\f017";
+	font-family: 'Font Awesome 5 Free';
+	font-weight: 400;
+	margin-right: 5px;/* rtl */
+}
+
+/*--------------------------------------------------------------------------------------------------------------*/
+/*- 12. SHORTCODE TYPE TAB PRODUCTS ----------------------------------------------------------------------------*/
+.ts-product .column-tabs{
+	display: flex;
+	width: 100%;
+	margin-bottom: 38px;
+	align-items: center;
+	justify-content: space-between;
+}
+.ts-product.title-center .column-tabs{
+	display: block;
+}
+.ts-product.title-center .column-tabs > *{
+	display: block;
+	text-align: center;
+}
+.ts-product.title-center .list-categories{
+	margin-top: 24px;
+}
+.ts-product.title-center .column-tabs ul.tabs{
+	justify-content: center;
+}
+.heading-tab h2{
+	margin-bottom: 0;
+}
+.column-tabs ul.tabs{
+	text-align: end;
+	margin: -5px -40px -5px 0;/* rtl */
+	padding: 0;
+    white-space: nowrap;
+	display: flex;
+	flex-wrap: wrap;
+}
+.column-tabs ul.tabs li{
+	transition: color 350ms ease 0s;
+	display: inline-block;
+	position: relative;
+	line-height: 22px;
+	cursor: pointer;
+	padding: 5px 0;
+	margin-right: 40px;/* rtl */
+}
+.column-tabs ul.tabs li:before{
+	right: -30px;/* rtl */
+	content: "";
+	border-width: 1px 0 0 0;
+	border-style: solid;
+	height: 1px;
+	width: 20px;
+	position: absolute;
+	bottom: 11px;
+}
+.column-tabs ul.tabs li:last-child:before{
+	display: none;
+}
+.column-tabs ul.tabs li.current{
+	cursor: default;
+}
+.column-content > .list-categories ul{
+	margin: 0;
+}
+.column-content > .list-categories{
+	width: 218px;
+	border-width: 1px;
+	border-style: solid;
+	padding: 20px;
+	margin-left: -1px;/* rtl */
+}
+
+/*--------------------------------------------------------------------------------------------------------------*/
+/*- 13. SHORTCODE SUBSCRIPTION ---------------------------------------------------------------------------------*/
+.ts-mailchimp-subscription-shortcode.text-center{
+	text-align: center;
+	max-width: 700px;
+	margin: 0 auto;
+}
+.ts-mailchimp-subscription-shortcode .widget-container{
+	margin: 0;
+}
+.ts-mailchimp-subscription-shortcode .widget-title-wrapper{
+	margin-bottom: 0;
+}
+.ts-mailchimp-subscription-shortcode .widget-title{
+	margin-bottom: 10px;
+}
+.text-light .mailchimp-subscription .widget-title,
+.text-light .mailchimp-subscription .newsletter,
+.text-light.vertical-button-icon .subscribe-email .button,
+#page .ts-mailchimp-subscription-shortcode.text-center.text-light .widget-title,
+#colophon .mailchimp-fullwidth .text-light .mailchimp-subscription .newsletter{
+	color: #ffffff;
+}
+#colophon .mailchimp-fullwidth .text-light .mailchimp-subscription .newsletter{
+	opacity: 0.6;
+}
+.text-light .mailchimp-subscription input[type="email"],
+.text-light .mailchimp-subscription input[type="tel"],
+.text-light .mailchimp-subscription input[type="email"]:focus,
+.text-light .mailchimp-subscription input[type="tel"]:focus{
+	border-color: #ffffff !important;
+}
+
+/* Vertical */
+.style-vertical .mailchimp-subscription .processing button.button i{
+	margin-left: 0 !important;
+	margin-right: 0 !important;
+}
+.vertical-button-icon .mailchimp-subscription input[type="email"],
+.vertical-button-icon .mailchimp-subscription input[type="tel"]{
+	padding: 4px 40px 4px 20px;/* rtl */
+	margin: 0;
+	border-radius: 20px;
+}
+.vertical-button-icon .subscribe-email .button{
+	position: absolute !important;
+	bottom: 0;
+	top: auto;
+	right: 5px;/* rtl */
+	line-height: 0 !important;
+	z-index: 2;
+	font-size: 0 !important;
+	padding: 0 !important;
+	background: transparent !important;
+	width: 40px;
+	height: 40px;
+	min-width: auto !important;
+	margin: 0;
+	border-width: 0 !important;
+}
+.vertical-button-icon .subscribe-email .button i{
+	font-weight: 600;
+	letter-spacing: 0;
+	display: inline-block;
+	line-height: 40px !important;
+	font-size: 18px !important;
+}
+
+/*--------------------------------------------------------------------------------------------------------------*/
+/*- 13. SHORTCODE TAB PRODUCT ----------------------------------------------------------------------------------*/
+.ts-product-in-category-tab-wrapper .column-products{
+	width: 100%;
+}
+.shop-more{
+	text-align: center;
+	margin-top: 30px;
+}
+
+/*--------------------------------------------------------------------------------------------------------------*/
+/*- 14. SHORTCODE LIST CATEGORIES ------------------------------------------------------------------------------*/
+.ts-list-of-product-categories-wrapper{
+	display: flex;
+	align-items: center;
+}
+.ts-list-of-product-categories-wrapper .heading-title{
+	line-height: 20px;
+	margin-bottom: 16px;
+}
+.ts-list-of-product-categories-wrapper ul{
+	margin: 0;
+}
+.ts-list-of-product-categories-wrapper .list-categories{
+	overflow: hidden;
+}
+.ts-list-of-product-categories-wrapper .list-categories li{
+	list-style: none;
+}
+
+/*--------------------------------------------------------------------------------------------------------------*/
+/*- 15. SHORTCODE PRODUCT CATEGORIES ---------------------------------------------------------------------------*/
+.ts-product-category-wrapper .products .product.product-category{
+	position: relative;
+	z-index: 4;
+}
+.ts-product-category-wrapper:not(.item-layout-default) .owl-carousel{
+	width: 100%;
+}
+.ts-product-category-wrapper .products{
+	margin-bottom: 0 !important;
+}

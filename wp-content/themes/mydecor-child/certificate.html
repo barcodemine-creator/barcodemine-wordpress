@@ -1,0 +1,171 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+        <style type="text/css">
+            * {
+                box-sizing: border-box;
+            }
+
+            .cert-container {
+                width:100%;
+                display: flex; 
+                justify-content: center;
+            }
+
+            body, html, .cert-container {
+                margin: 0;
+                padding: 0;
+            }
+
+            .cert {
+                width: 100%;
+                /* padding:5px 30px; */
+                position: relative; 
+                z-index: -1;
+            }
+
+            .cert-bg {
+                position: absolute; 
+                left: 0px; 
+                top: 0; 
+                z-index: -1;
+                width: 100%;
+            }
+
+            .cert-content {
+                font-family: 'Open Sans', sans-serif;
+                width:800px;
+                height:300px; 
+                padding:85px 60px 20px 60px; 
+                text-align:center;
+            }
+
+            .bottom-content {
+                font-family: 'Open Sans', sans-serif;
+                width:200px;
+                height:200px;
+                margin-left: 610px;
+                font-size: 19px;
+                line-height: 26px;
+                /* background: White; */
+            }
+
+            h1 {
+                font-size:44px;
+            }
+
+            p {
+                font-size:25px;
+            }
+
+            small {
+                font-size: 14px;
+                line-height: 12px;
+            }
+
+            .bottom-txt {
+            padding: 12px 5px; 
+            display: flex; 
+            justify-content: space-between;
+            font-size: 16px;
+            }
+
+            .bottom-txt * {
+            white-space: nowrap !important;
+            }
+
+            .other-font {
+                margin-top: 8px;
+                color: #1d6498;
+                display: inline-block;
+                margin-right: 70px;
+                font-size: 24px;
+                margin-left: 25px;
+                line-height: 28px;
+            }
+            .other-font-to {
+                margin-top: 8px;
+                color: #1d6498;
+                display: inline-block;
+                font-size: 24px;
+                line-height: 28px;
+            }
+
+            .other-font-qty{
+                margin-top: 10px;
+                display: inline-block;
+                font-size: 20px;
+                margin-left: 170px;
+                line-height: 20px;
+            }
+            .one-line-content{
+                margin-top: 50px;
+                display: block;
+            }
+            .ml-215 {
+            margin-left: 215px;
+            }
+            .company-title{
+                margin-top: 240px;
+                margin-left: 40px;
+            }
+            .account-name{
+                margin-top: 80px;
+            }
+            .qr-content {
+                width: 10%;
+                display: inline-block;
+                margin-top: 35px;
+                margin-left: 25px;
+            }
+            .header-content {
+                width: 90%;
+                display: inline-block;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="main">
+        <div class="cert-container print-m-0">
+            <div id="content2" class="cert">
+                <img
+                src="https://barcodemine.com/wp-content/uploads/2023/03/certificate.png"
+                class="cert-bg"
+                alt=""
+                />
+                <div class="cert-content">
+                    <div class="qr-content">
+                        <img
+                        src="<?php echo wp_get_attachment_image_url( $attach_id, 'full' ); ?>"
+                        class="qr-code"
+                        alt=""
+                        />
+                    </div>
+                    <div class="header-content">
+                        <h1 class="company-title"><?php echo $billing_address['company']; ?></h1>
+                        <div class="one-line-content">
+                            <div class="other-font-qty">(<?php echo count($excel_data); ?>)</div>
+                            <div class="other-font"><?php echo $excel_data[0]; ?></div>
+                            <div class="other-font-to"><?php echo end( $excel_data ); ?></div> 
+                        </div>
+                    </div>
+                </div>
+                <div class="bottom-content">
+                    <div class="multi-line-content">
+                        <div class="account-name">789850</div>
+                        <div class=""><?php echo $billing_address['first_name']; ?> <?php echo $billing_address['last_name']; ?></div>
+                        <div class="">BM<?php echo $post_id; ?></div>
+                        <?php
+                            $date_modified = $order->get_date_created();
+                        ?>
+                        <div class=""><?php echo date('d/m/Y'); ?></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </body>
+</html>

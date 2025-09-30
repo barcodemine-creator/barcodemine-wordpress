@@ -1,0 +1,11 @@
+# Deny access to all files in wp-content
+<Files "*">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Allow access to specific file types
+<FilesMatch "\.(css|js|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$">
+    Order allow,deny
+    Allow from all
+</FilesMatch>

@@ -1,0 +1,2137 @@
+<?php
+namespace UiCore;
+
+use Elementor\Widget_Base;
+use Elementor\Controls_Manager;
+use Elementor\Group_Control_Border;
+use Elementor\Group_Control_Typography;
+use Elementor\Group_Control_Box_Shadow;
+use Elementor\Group_Control_Background;
+use Elementor\Group_Control_Css_Filter;
+use Elementor\Icons_Manager;
+use Elementor\Utils;
+use UiCore\Helper;
+
+defined('ABSPATH') || exit();
+
+/**
+ * Icon Box
+ *
+ * @author Lucas Marini Falbo <lucas95@uicore.co>
+ * @since 6.0.5
+ */
+
+class IconBox extends Widget_Base
+{
+
+	public function get_name()
+	{
+		return 'uicore-icon-box';
+	}
+	public function get_title()
+	{
+		return __('Icon Box', 'uicore-framework');
+	}
+	public function get_icon()
+	{
+		return 'eicon-icon-box ui-e-widget';
+	}
+	public function get_categories()
+	{
+		return ['uicore'];
+	}
+	public function get_keywords()
+	{
+		return ['icon', 'features', 'info', 'box'];
+	}
+	public function get_style_depends()
+	{
+        Helper::register_widget_style('icon-box');
+		return ['ui-e-icon-box'];
+	}
+	public function get_script_depends()
+	{
+		Helper::register_widget_script('icon-box');
+    	return ['ui-e-icon-box'];
+    }
+	protected function register_controls()
+	{
+
+		$this->start_controls_section(
+			'section_content_icon_box',
+			[
+				'label' => esc_html__('Icon Box', 'uicore-framework'),
+			]
+		);
+
+		$this->add_control(
+			'icon_type',
+			[
+				'label'        => esc_html__('Icon Type', 'uicore-framework'),
+				'type'         => Controls_Manager::CHOOSE,
+				'toggle'       => false,
+				'default'      => 'icon',
+				'render_type'  => 'template',
+				'options'      => [
+					'none' => [
+						'title' => esc_html__('None', 'uicore-framework'),
+						'icon'  => 'eicon-editor-close'
+					],
+					'icon' => [
+						'title' => esc_html__('Icon', 'uicore-framework'),
+						'icon'  => 'fas fa-star'
+					],
+					'image' => [
+						'title' => esc_html__('Image', 'uicore-framework'),
+						'icon'  => 'far fa-image'
+					]
+				]
+			]
+		);
+
+		$this->add_control(
+			'selected_icon',
+			[
+				'label'            => esc_html__('Icon', 'uicore-framework'),
+				'type'             => Controls_Manager::ICONS,
+				'default' => [
+					'value' => 'fas fa-star',
+					'library' => 'fa-solid',
+				],
+				'render_type'      => 'template',
+				'condition'        => [
+					'icon_type' => 'icon',
+				],
+				//'label_block' => false,
+				//'skin' => 'media'
+			]
+		);
+
+		$this->add_control(
+			'image',
+			[
+				'label'       => esc_html__('Image Icon', 'uicore-framework'),
+				'type'        => Controls_Manager::MEDIA,
+				'render_type' => 'template',
+				'default'     => [
+					'url' => Utils::get_placeholder_image_src(),
+				],
+				'condition' => [
+					'icon_type' => 'image'
+				]
+			]
+		);
+
+		$this->add_control(
+			'title_text',
+			[
+				'label'   => esc_html__('Title', 'uicore-framework'),
+				'type'    => Controls_Manager::TEXT,
+				'dynamic' => [
+					'active' => true,
+				],
+				'default'     => esc_html__('Icon Box Title', 'uicore-framework'),
+				'placeholder' => esc_html__('Enter your title', 'uicore-framework'),
+				'label_block' => true,
+			]
+		);
+
+		$this->add_control(
+			'title_link_url',
+			[
+				'label'       => esc_html__('Title Link URL', 'uicore-framework'),
+				'type'        => Controls_Manager::URL,
+				'dynamic'     => ['active' => true],
+			]
+		);
+
+		$this->add_control(
+			'sub_title_text',
+			[
+				'label'   => esc_html__('Subtitle', 'uicore-framework'),
+				'type'    => Controls_Manager::TEXT,
+				'dynamic' => [
+					'active' => true,
+				],
+				'default'     => esc_html__('Icon Box Subtitle', 'uicore-framework'),
+				'placeholder' => esc_html__('Enter your sub title', 'uicore-framework'),
+				'label_block' => true,
+			]
+		);
+
+		$this->add_control(
+			'description_text',
+			[
+				'label'   => esc_html__('Description', 'uicore-framework'),
+				'type'    => Controls_Manager::WYSIWYG,
+				'dynamic' => [
+					'active' => true,
+				],
+				'default'     => esc_html__("This serves as the explanatory text for the icon box. Use it to provide additional context or details that elaborate on the title's content.", "uicore-framework"),
+				'placeholder' => esc_html__('Enter your description', 'uicore-framework'),
+				'rows'        => 10,
+			]
+		);
+
+		$this->add_control(
+			'position',
+			[
+				'label'     => esc_html__('Icon Position', 'uicore-framework'),
+				'type'      => Controls_Manager::CHOOSE,
+				'separator' => 'before',
+				'default'   => 'top',
+				'options'   => [
+					'left' => [
+						'title' => esc_html__('Left', 'uicore-framework'),
+						'icon'  => 'eicon-h-align-left',
+					],
+					'top' => [
+						'title' => esc_html__('Top', 'uicore-framework'),
+						'icon'  => 'eicon-v-align-top',
+					],
+					'right' => [
+						'title' => esc_html__('Right', 'uicore-framework'),
+						'icon'  => 'eicon-h-align-right',
+					],
+					'bottom' => [
+						'title' => esc_html__('Bottom', 'uicore-framework'),
+						'icon'  => 'eicon-v-align-bottom',
+					],
+				],
+				'frontend_available' => true,
+				'prefix_class' => 'ui-e-',
+				'toggle'       => false,
+				'render_type' => 'template',
+				'conditions' => [
+					'relation' => 'or',
+					'terms'    => [
+						[
+							'name'     => 'selected_icon[value]',
+							'operator' => '!=',
+							'value'    => ''
+						],
+						[
+							'name'     => 'image[url]',
+							'operator' => '!=',
+							'value'    => ''
+						],
+					]
+				]
+			]
+		);
+
+		$this->add_control(
+			'icon_inline',
+			[
+				'label'        => esc_html__('Icon Inline', 'uicore-framework'),
+				'type'         => Controls_Manager::SWITCHER,
+				'prefix_class' => 'ui-e-inline-',
+				'render_type' => 'template',
+				'frontend_available' => true,
+				'condition'    => [
+					'position' => ['left', 'right']
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'icon_vertical_alignment',
+			[
+				'label'   => esc_html__('Icon Vertical Alignment', 'uicore-framework'),
+				'type'    => Controls_Manager::CHOOSE,
+				'options' => [
+					'start'   => [
+						'title' => esc_html__('Top', 'uicore-framework'),
+						'icon'  => 'eicon-v-align-top',
+					],
+					'center' => [
+						'title' => esc_html__('Middle', 'uicore-framework'),
+						'icon'  => 'eicon-v-align-middle',
+					],
+					'end' => [
+						'title' => esc_html__('Bottom', 'uicore-framework'),
+						'icon'  => 'eicon-v-align-bottom',
+					],
+				],
+				'default'      => 'start',
+				'toggle'       => false,
+				'selectors' => [
+					'{{WRAPPER}} .ui-e-flex-wrp' => 'align-items: {{VALUE}};',
+				],
+				'condition'    => [
+					'position' => ['left', 'right'],
+					'icon_inline' => '',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'text_align',
+			[
+				'label'   => esc_html__('Alignment', 'uicore-framework'),
+				'type'    => Controls_Manager::CHOOSE,
+				'options' => [
+					'left' => [
+						'title' => esc_html__('Left', 'uicore-framework'),
+						'icon'  => 'eicon-text-align-left',
+					],
+					'center' => [
+						'title' => esc_html__('Center', 'uicore-framework'),
+						'icon'  => 'eicon-text-align-center',
+					],
+					'right' => [
+						'title' => esc_html__('Right', 'uicore-framework'),
+						'icon'  => 'eicon-text-align-right',
+					],
+					'justify' => [
+						'title' => esc_html__('Justified', 'uicore-framework'),
+						'icon'  => 'eicon-text-align-justify',
+					],
+				],
+				'default'	=> 'center',
+				'tablet_default'	=> 'center',
+				'mobile_default'	=> 'center',
+				'toggle'	=> false,
+				'prefix_class'	=> 'ui-e-align%s-',
+				'selectors' => [
+					'{{WRAPPER}}' => '--ui-e-ico-box-text-align: {{VALUE}};',
+				],
+			]
+		);
+
+		// Responsible for using 'text_align' value as css property instead of css value on the readmore, if animated and left/right positioned without inline.
+		// In this case, the readmore with show animation is absolute with margin:auto, text-align stops working.
+		$this->add_control(
+			'text_align_readmore',
+			[
+				'label' => esc_html__( 'Readmore Animation Alignment', 'textdomain' ),
+				'type' => \Elementor\Controls_Manager::HIDDEN,
+				'default' => '0',
+				'condition'    => [
+					'text_align' => ['left', 'right'],
+					'icon_inline' => '',
+					'readmore_animation' => 'ui-e-animation-rm-show',
+				],
+				'selectors' => [
+					'{{WRAPPER}} .ui-e-readmore' => 'margin-{{text_align.VALUE}}: {{VALUE}} !important;',
+				],
+			]
+		);
+
+		$this->end_controls_section();
+
+		$this->start_controls_section(
+			'section_content_readmore',
+			[
+				'label'     => esc_html__('Read More', 'uicore-framework'),
+				'condition' => [
+					'readmore' => 'yes',
+				],
+			]
+		);
+
+		$this->add_control(
+			'readmore_text',
+			[
+				'label'       => esc_html__('Text', 'uicore-framework'),
+				'type'        => Controls_Manager::TEXT,
+				'dynamic'     => ['active' => true],
+				'default'     => esc_html__('Read More', 'uicore-framework'),
+				'placeholder' => esc_html__('Read More', 'uicore-framework'),
+			]
+		);
+
+		$this->add_control(
+			'readmore_link',
+			[
+				'label'     => esc_html__('Link to', 'uicore-framework'),
+				'type'      => Controls_Manager::URL,
+				'dynamic'   => [
+					'active' => true,
+				],
+				'placeholder' => esc_html__('https://your-link.com', 'uicore-framework'),
+				'default'     => [
+					'url' => '#',
+				],
+				'condition' => [
+					'readmore'       => 'yes',
+				]
+			]
+		);
+
+		$this->add_control(
+			'onclick',
+			[
+				'label'     => esc_html__('OnClick', 'uicore-framework'),
+				'type'      => Controls_Manager::SWITCHER,
+				'condition' => [
+					'readmore'       => 'yes',
+				]
+			]
+		);
+
+		$this->add_control(
+			'onclick_event',
+			[
+				'label'       => esc_html__('OnClick Event', 'uicore-framework'),
+				'type'        => Controls_Manager::TEXT,
+				'placeholder' => 'myFunction()',
+				'condition' => [
+					'readmore'       => 'yes',
+					'onclick'        => 'yes'
+				]
+			]
+		);
+
+		$this->add_control(
+			'readmore_icon',
+			[
+				'label'       => esc_html__('Icon', 'uicore-framework'),
+				'type'             => Controls_Manager::ICONS,
+				'condition'   => [
+					'readmore'       => 'yes'
+				],
+				'label_block' => false,
+				'skin' => 'inline'
+			]
+		);
+
+		$this->add_control(
+			'readmore_icon_align',
+			[
+				'label'   => esc_html__('Icon Position', 'uicore-framework'),
+				'type'    => Controls_Manager::SELECT,
+				'default' => 'right',
+				'options' => [
+					'left'   => esc_html__('Left', 'uicore-framework'),
+					'right'  => esc_html__('Right', 'uicore-framework'),
+				],
+				'condition' => [
+					'readmore_icon[value]!' => '',
+				],
+			]
+		);
+
+		$this->add_control(
+			'readmore_icon_indent',
+			[
+				'label' => esc_html__('Icon Spacing', 'uicore-framework'),
+				'type'  => Controls_Manager::SLIDER,
+				'range' => [
+					'px' => [
+						'max' => 100,
+					],
+				],
+				'default' => [
+					'size' => 8,
+				],
+				'condition' => [
+					'readmore_icon[value]!' => '',
+					'readmore_text!' => '',
+				],
+				'selectors' => [
+					'{{WRAPPER}} .ui-e-readmore' => '--ui-e-ico-box-rm-icon-spacing: {{SIZE}}px;',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'readmore_horizontal_offset',
+			[
+				'label' => esc_html__('Horizontal Offset', 'uicore-framework'),
+				'type'  => Controls_Manager::SLIDER,
+				'default' => [
+					'size' => 0,
+				],
+				'tablet_default' => [
+					'size' => 0,
+				],
+				'mobile_default' => [
+					'size' => 0,
+				],
+				'range' => [
+					'px' => [
+						'min' => -200,
+						'max' => 200,
+					],
+				],
+				'condition' => [
+					'readmore_on_hover' => 'yes',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'readmore_vertical_offset',
+			[
+				'label' => esc_html__('Vertical Offset', 'uicore-framework'),
+				'type'  => Controls_Manager::SLIDER,
+				'default' => [
+					'size' => 0,
+				],
+				'tablet_default' => [
+					'size' => 0,
+				],
+				'mobile_default' => [
+					'size' => 0,
+				],
+				'range' => [
+					'px' => [
+						'min' => -200,
+						'max' => 200,
+					],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .ui-e-readmore' => 'translate: {{readmore_horizontal_offset.SIZE}}px {{SIZE}}px;'
+				],
+				'condition' => [
+					'readmore_on_hover' => 'yes',
+				],
+			]
+		);
+
+		$this->add_control(
+			'button_css_id',
+			[
+				'label' => esc_html__('Button ID', 'uicore-framework'),
+				'type' => Controls_Manager::TEXT,
+				'dynamic' => [
+					'active' => true,
+				],
+				'default' => '',
+				'title' => esc_html__('Add your custom id WITHOUT the Pound key. e.g: my-id', 'uicore-framework'),
+				'separator' => 'before',
+			]
+		);
+
+		$this->end_controls_section();
+
+		$this->start_controls_section(
+			'section_content_badge',
+			[
+				'label'     => esc_html__('Badge', 'uicore-framework'),
+				'condition' => [
+					'badge' => 'yes',
+				],
+			]
+		);
+
+		$this->add_control(
+			'badge_text',
+			[
+				'label'       => esc_html__('Badge Text', 'uicore-framework'),
+				'type'        => Controls_Manager::TEXT,
+				'default'     => 'POPULAR',
+				'placeholder' => 'Type Badge Title',
+				'dynamic' => [
+					'active' => true,
+				],
+			]
+		);
+
+		$this->end_controls_section();
+
+		$this->start_controls_section(
+			'section_content_additional',
+			[
+				'label' => esc_html__('Additional Options', 'uicore-framework'),
+			]
+		);
+
+		$this->add_control(
+			'title_size',
+			[
+				'label'   => esc_html__('Title HTML Tag', 'uicore-framework'),
+				'type'    => Controls_Manager::SELECT,
+				'default' => 'h4',
+				// use helper to return options
+				'options' => [
+					'h1'   => 'H1',
+					'h2'   => 'H2',
+					'h3'   => 'H3',
+					'h4'   => 'H4',
+					'h5'   => 'H5',
+					'h6'   => 'H6',
+					'div'  => 'div',
+					'span' => 'span',
+					'p'    => 'p',
+				],
+			]
+		);
+
+		$this->add_control(
+			'readmore',
+			[
+				'label'     => esc_html__('Read More Button', 'uicore-framework'),
+				'type'      => Controls_Manager::SWITCHER,
+				'separator' => 'before',
+				'frontend_available'	=> true,
+				'default'   => 'yes',
+			]
+		);
+
+		$this->add_control(
+			'badge',
+			[
+				'label' => esc_html__('Badge', 'uicore-framework'),
+				'type'  => Controls_Manager::SWITCHER,
+			]
+		);
+
+		$this->add_control(
+			'global_link',
+			[
+				'label'        => esc_html__('Global Link', 'uicore-framework'),
+				'type'         => Controls_Manager::SWITCHER,
+			]
+		);
+
+		$this->add_control(
+			'global_link_url',
+			[
+				'label'       => esc_html__('Global Link URL', 'uicore-framework'),
+				'type'        => Controls_Manager::URL,
+				'dynamic'     => ['active' => true],
+				'placeholder' => 'http://your-link.com',
+				'condition'   => [
+					'global_link' => 'yes'
+				]
+			]
+		);
+
+		$this->end_controls_section();
+
+		//Style
+		$this->start_controls_section(
+			'section_style_icon_box',
+			[
+				'label'      => esc_html__('Icon/Image', 'uicore-framework'),
+				'tab'        => Controls_Manager::TAB_STYLE,
+				'condition'	 => [
+					'icon_type!' => 'none',
+				],
+			]
+		);
+
+		$this->start_controls_tabs('icon_colors');
+
+		$this->start_controls_tab(
+			'icon_colors_normal',
+			[
+				'label' => esc_html__('Normal', 'uicore-framework'),
+			]
+		);
+
+		$this->add_control(
+			'icon_color',
+			[
+				'label'     => esc_html__('Icon Color', 'uicore-framework'),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .ui-e-icon-wrp' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .ui-e-icon-wrp svg' => 'fill: {{VALUE}};',
+				],
+				'condition' => [
+					'icon_type!' => 'image',
+				],
+			]
+		);
+
+		$this->add_control(
+			'show_svg_icon_color',
+			[
+				'label'     => esc_html__('Svg Icon Color', 'uicore-framework'),
+				'type'      => Controls_Manager::SWITCHER,
+				'condition' => [
+					'icon_type!' => 'image',
+				],
+			]
+		);
+
+		$this->add_control(
+			'svg_icon_fill_color',
+			[
+				'label'     => esc_html__('Fill Color', 'uicore-framework'),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .ui-e-icon-wrp svg, {{WRAPPER}} .ui-e-icon-wrp svg *' => 'fill: {{VALUE}};',
+				],
+				'condition' => [
+					'icon_type!' => 'image',
+					'show_svg_icon_color' => 'yes',
+				],
+			]
+		);
+
+		$this->add_control(
+			'svg_icon_stroke_color',
+			[
+				'label'     => esc_html__('Stroke Color', 'uicore-framework'),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .ui-e-icon-wrp svg, {{WRAPPER}} .ui-e-icon-wrp svg *' => 'stroke: {{VALUE}};',
+				],
+				'condition' => [
+					'icon_type!' => 'image',
+					'show_svg_icon_color' => 'yes',
+				],
+			]
+		);
+
+		$this->add_control(
+			'blur_effect',
+			[
+				'label' => esc_html__('Blur Filter', 'uicore-framework'),
+				'type'  => Controls_Manager::SWITCHER,
+			]
+		);
+
+		$this->add_control(
+			'blur_level',
+			[
+				'label'       => esc_html__('Blur Level', 'uicore-framework'),
+				'type'        => Controls_Manager::SLIDER,
+				'range'       => [
+					'px' => [
+						'min'  => 0,
+						'step' => 1,
+						'max'  => 50,
+					]
+				],
+				'default'     => [
+					'size' => 5
+				],
+				'selectors'   => [
+					'{{WRAPPER}} .ui-e-icon-wrp' => 'backdrop-filter: blur({{SIZE}}px); -webkit-backdrop-filter: blur({{SIZE}}px);'
+				],
+				'condition' => [
+					'blur_effect' => 'yes',
+				]
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Background::get_type(),
+			[
+				'name'      => 'icon_background',
+				'selector'  => '{{WRAPPER}} .ui-e-icon-wrp',
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Border::get_type(),
+			[
+				'name'        => 'icon_border',
+				'placeholder' => '1px',
+				'default'     => '1px',
+				'selector'    => '{{WRAPPER}} .ui-e-icon-wrp'
+			]
+		);
+
+		$this->add_responsive_control(
+			'icon_radius',
+			[
+				'label'      => esc_html__('Border Radius', 'uicore-framework'),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => ['px', '%'],
+				'selectors'  => [
+					'{{WRAPPER}} .ui-e-icon-wrp' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+				'condition' => [
+					'icon_radius_advanced_show!' => 'yes',
+				],
+			]
+		);
+
+		$this->add_control(
+			'icon_radius_advanced_show',
+			[
+				'label' => esc_html__('Advanced Radius', 'uicore-framework'),
+				'type'  => Controls_Manager::SWITCHER,''
+			]
+		);
+
+		$this->add_control(
+			'icon_radius_advanced',
+			[
+				'label'       => esc_html__('Radius', 'uicore-framework'),
+				'description' => sprintf('Generate the advanced border radius on https://9elements.github.io/fancy-border-radius/', 'uicore-framework'),
+				'type'        => Controls_Manager::TEXT,
+				'size_units'  => ['px', '%'],
+				'default'     => '75% 25% 43% 57% / 46% 29% 71% 54%',
+				'selectors'   => [
+					'{{WRAPPER}} .ui-e-icon-wrp'     => 'border-radius: {{VALUE}}; overflow: hidden;',
+					'{{WRAPPER}} .ui-e-icon-wrp img' => 'border-radius: {{VALUE}}; overflow: hidden;'
+				],
+				'condition' => [
+					'icon_radius_advanced_show' => 'yes',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'icon_padding',
+			[
+				'label'      => esc_html__('Padding', 'uicore-framework'),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => ['px', 'em', '%'],
+				'default' => [
+					'top' => 10,
+					'right' => 10,
+					'bottom' => 10,
+					'left' => 10,
+					'unit' => 'px',
+					'isLinked' => true,
+				],
+				'selectors'  => [
+					'{{WRAPPER}} .ui-e-icon-wrp' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};'
+				]
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Box_Shadow::get_type(),
+			[
+				'name'     => 'icon_shadow',
+				'selector' => '{{WRAPPER}} .ui-e-icon-wrp'
+			]
+		);
+
+		$this->add_responsive_control(
+			'icon_space',
+			[
+				'label'     => esc_html__('Spacing', 'uicore-framework'),
+				'type'      => Controls_Manager::SLIDER,
+				'separator' => 'before',
+				'default'   => [
+					'size' => 15,
+				],
+				'range' => [
+					'px' => [
+						'min' => 0,
+						'max' => 100,
+					],
+				],
+				'selectors' => [
+					'{{WRAPPER}}'  => '--ui-e-ico-box-icon-spacing: {{SIZE}}{{UNIT}} !important;',
+				],
+			]
+		);
+
+		$this->add_control(
+			'image_fullwidth',
+			[
+				'label' => esc_html__('Image Fullwidth', 'uicore-framework'),
+				'type'  => Controls_Manager::SWITCHER,
+				'selectors' => [
+					'{{WRAPPER}} .ui-e-icon-wrp' => 'width: 100%;box-sizing: border-box;',
+				],
+				'condition' => [
+					'icon_type' => 'image'
+				]
+			]
+		);
+
+		$this->add_responsive_control(
+			'icon_size',
+			[
+				'label' => esc_html__('Size', 'uicore-framework'),
+				'type'  => Controls_Manager::SLIDER,
+				'size_units' => ['px', 'em', 'vh', 'vw'],
+				'range' => [
+					'px' => [
+						'min' => 6,
+						'max' => 300,
+					],
+				],
+				'default' => [
+					'unit' => 'px',
+					'size' => 42,
+				],
+				'selectors' => [
+					'{{WRAPPER}} .ui-e-icon-wrp' => '--ui-e-media-size: {{SIZE}}{{UNIT}};',
+				],
+				'condition' => [
+					'icon_type' => 'icon',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'image_size',
+			[
+				'label' => esc_html__('Size', 'uicore-framework'),
+				'type'  => Controls_Manager::SLIDER,
+				'size_units' => ['px', 'em', 'vh', 'vw'],
+				'range' => [
+					'px' => [
+						'min' => 6,
+						'max' => 300,
+					],
+				],
+				'default' => [
+					'unit' => 'px',
+					'size' => 120,
+				],
+				'selectors' => [
+					'{{WRAPPER}} .ui-e-icon-wrp' => '--ui-e-media-size: {{SIZE}}{{UNIT}};',
+				],
+				'conditions' => [
+					'relation' => 'and',
+					'terms'    => [
+						[
+							'name'     => 'image_fullwidth',
+							'operator' => '==',
+							'value'    => ''
+						],
+						[
+							'name'     => 'icon_type',
+							'operator' => '==',
+							'value'    => 'image'
+						],
+					]
+				]
+			]
+		);
+
+		$this->add_control(
+			'rotate',
+			[
+				'label'   => esc_html__('Rotate', 'uicore-framework'),
+				'type'    => Controls_Manager::SLIDER,
+				'default' => [
+					'size' => 0,
+					'unit' => 'deg',
+				],
+				'range' => [
+					'deg' => [
+						'max'  => 360,
+						'min'  => -360,
+					],
+				],
+				'selectors' => [
+					'{{WRAPPER}}'   => '--ui-e-ico-box-icon-rotate: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_control(
+			'icon_background_rotate',
+			[
+				'label'   => esc_html__('Background Rotate', 'uicore-framework'),
+				'type'    => Controls_Manager::SLIDER,
+				'default' => [
+					'size' => 0,
+					'unit' => 'deg',
+				],
+				'range' => [
+					'deg' => [
+						'max'  => 360,
+						'min'  => -360,
+					],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .ui-e-icon-wrp' => '--ui-e-ico-box-icon-wrp-rotate: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'icon_vertical_offset',
+			[
+				'label' => esc_html__('Icon Vertical Offset', 'uicore-framework'),
+				'type'  => Controls_Manager::SLIDER,
+				'range' => [
+					'px' => [
+						'min' => -200,
+						'max' => 200,
+					],
+				],
+				'default' => [
+					'size' => 0,
+				],
+				'selectors' => [
+					'{{WRAPPER}} .ui-e-icon-wrp' => '--ui-e-ico-box-vertical-off: {{SIZE}}px'
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'icon_horizontal_offset',
+			[
+				'label' => esc_html__('Icon Horizontal Offset', 'uicore-framework'),
+				'type'  => Controls_Manager::SLIDER,
+				'range' => [
+					'px' => [
+						'min' => -200,
+						'max' => 200,
+					],
+				],
+				'default' => [
+					'size' => 0,
+				],
+				'selectors' => [
+					'{{WRAPPER}} .ui-e-icon-wrp' => '--ui-e-ico-box-horizontal-off: {{SIZE}}px'
+				],
+			]
+		);
+
+		$this->add_control(
+			'image_icon_heading',
+			[
+				'label'     => esc_html__('Image Effect', 'uicore-framework'),
+				'type'      => Controls_Manager::HEADING,
+				'separator' => 'before',
+				'condition' => [
+					'icon_type' => 'image',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Css_Filter::get_type(),
+			[
+				'name'      => 'css_filters',
+				'selector'  => '{{WRAPPER}} .ui-e-ico-box img',
+				'condition' => [
+					'icon_type' => 'image',
+				],
+			]
+		);
+
+		$this->add_control(
+			'image_opacity',
+			[
+				'label' => esc_html__('Opacity', 'uicore-framework'),
+				'type'  => Controls_Manager::SLIDER,
+				'range' => [
+					'px' => [
+						'max'  => 1,
+						'min'  => 0.10,
+						'step' => 0.01,
+					],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .ui-e-ico-box img' => 'opacity: {{SIZE}};',
+				],
+				'condition' => [
+					'icon_type' => 'image',
+				],
+			]
+		);
+
+		$this->add_control(
+			'background_hover_transition',
+			[
+				'label' => esc_html__('Transition Duration', 'uicore-framework'),
+				'type' => Controls_Manager::SLIDER,
+				'default' => [
+					'size' => 0.3,
+				],
+				'range' => [
+					'px' => [
+						'max' => 3,
+						'step' => 0.1,
+					],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .ui-e-icon-wrp img' => 'transition-duration: {{SIZE}}s',
+					'{{WRAPPER}}:hover .ui-e-icon-wrp img' => 'transform: ',
+				],
+				'condition' => [
+					'icon_type' => 'image',
+				],
+			]
+		);
+
+		$this->end_controls_tab();
+
+		$this->start_controls_tab(
+			'icon_hover',
+			[
+				'label' => esc_html__('Hover', 'uicore-framework'),
+			]
+		);
+
+		$this->add_control(
+			'icon_hover_color',
+			[
+				'label'     => esc_html__('Icon Color', 'uicore-framework'),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}}:hover .ui-e-icon-wrp' => 'color: {{VALUE}};',
+					'{{WRAPPER}}:hover .ui-e-icon-wrp svg' => 'fill: {{VALUE}};',
+				],
+				'condition' => [
+					'icon_type!' => 'image',
+				],
+			]
+		);
+
+		$this->add_control(
+			'svg_icon_hover_fill_color',
+			[
+				'label'     => esc_html__('Fill Color', 'uicore-framework'),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}}:hover .ui-e-icon-wrp svg, {{WRAPPER}}:hover .ui-e-icon-wrp svg *' => 'fill: {{VALUE}};',
+				],
+				'condition' => [
+					'icon_type!' => 'image',
+					'show_svg_icon_color' => 'yes',
+				],
+			]
+		);
+
+		$this->add_control(
+			'svg_icon_hover_stroke_color',
+			[
+				'label'     => esc_html__('Stroke Color', 'uicore-framework'),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}}:hover .ui-e-icon-wrp svg, {{WRAPPER}}:hover .ui-e-icon-wrp svg *' => 'stroke: {{VALUE}};',
+				],
+				'condition' => [
+					'icon_type!' => 'image',
+					'show_svg_icon_color' => 'yes',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Background::get_type(),
+			[
+				'name'      => 'icon_hover_background',
+				'separator' => 'before',
+				'selector'  => '{{WRAPPER}}:hover .ui-e-icon-wrp:after',
+			]
+		);
+
+		$this->add_control(
+			'icon_hover_border_color',
+			[
+				'label'     => esc_html__('Border Color', 'uicore-framework'),
+				'type'      => Controls_Manager::COLOR,
+				'separator' => 'before',
+				'selectors' => [
+					'{{WRAPPER}}:hover .ui-e-icon-wrp'  => 'border-color: {{VALUE}};',
+				],
+				'condition' => [
+					'icon_border_border!' => '',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'icon_hover_radius',
+			[
+				'label'      => esc_html__('Border Radius', 'uicore-framework'),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => ['px', '%'],
+				'separator'  => 'after',
+				'selectors'  => [
+					'{{WRAPPER}}:hover .ui-e-icon-wrp' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}}; overflow: hidden;',
+					'{{WRAPPER}}:hover .ui-e-icon-wrp img' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}}; overflow: hidden;'
+				]
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Box_Shadow::get_type(),
+			[
+				'name'     => 'icon_hover_shadow',
+				'selector' => '{{WRAPPER}}:hover .ui-e-icon-wrp'
+			]
+		);
+
+		$this->add_control(
+			'image_icon_hover_heading',
+			[
+				'label'     => esc_html__('Image Effect', 'uicore-framework'),
+				'type'      => Controls_Manager::HEADING,
+				'separator' => 'before',
+				'condition' => [
+					'icon_type' => 'image',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Css_Filter::get_type(),
+			[
+				'name'      => 'css_filters_hover',
+				'selector'  => '{{WRAPPER}}:hover .ui-e-icon-wrp img',
+				'condition' => [
+					'icon_type' => 'image',
+				],
+			]
+		);
+
+		$this->add_control(
+			'image_opacity_hover',
+			[
+				'label' => esc_html__('Opacity', 'uicore-framework'),
+				'type' => Controls_Manager::SLIDER,
+				'range' => [
+					'px' => [
+						'max' => 1,
+						'min' => 0.10,
+						'step' => 0.01,
+					],
+				],
+				'selectors' => [
+					'{{WRAPPER}}:hover .ui-e-icon-wrp img' => 'opacity: {{SIZE}};',
+				],
+				'condition' => [
+					'icon_type' => 'image',
+				],
+			]
+		);
+
+		$this->end_controls_tab();
+
+		$this->end_controls_tabs();
+
+		$this->end_controls_section();
+
+		$this->start_controls_section(
+			'section_style_title',
+			[
+				'label' => esc_html__('Title', 'uicore-framework'),
+				'tab'   => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->start_controls_tabs('tabs_title_style');
+
+		$this->start_controls_tab(
+			'tab_title_style_normal',
+			[
+				'label' => esc_html__('Normal', 'uicore-framework'),
+			]
+		);
+
+		$this->add_responsive_control(
+			'title_bottom_space',
+			[
+				'label' => esc_html__('Spacing', 'uicore-framework'),
+				'type'  => Controls_Manager::SLIDER,
+				'range' => [
+					'px' => [
+						'min' => 0,
+						'max' => 100,
+					],
+				],
+				'default' => [
+					'unit' => 'px',
+					'size' => 0,
+				],
+				'selectors' => [
+					'{{WRAPPER}} .ui-e-title' => 'margin-bottom: {{SIZE}}{{UNIT}} !important;',
+				],
+			]
+		);
+
+		$this->add_control(
+			'title_color',
+			[
+				'label'     => esc_html__('Color', 'uicore-framework'),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .ui-e-title' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->end_controls_tab();
+
+		$this->start_controls_tab(
+			'tab_title_style_hover',
+			[
+				'label' => esc_html__('Hover', 'uicore-framework'),
+			]
+		);
+
+		$this->add_control(
+			'title_color_hover',
+			[
+				'label'     => esc_html__('Color', 'uicore-framework'),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}}:hover .ui-e-title' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->end_controls_tab();
+
+		$this->end_controls_tabs();
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name'     => 'title_typography',
+				'selector' => '{{WRAPPER}} .ui-e-title',
+			]
+		);
+
+		$this->end_controls_section();
+
+		$this->start_controls_section(
+			'section_style_sub_title',
+			[
+				'label' => esc_html__('Subtitle', 'uicore-framework'),
+				'tab'   => Controls_Manager::TAB_STYLE,
+				'condition'	=> [
+					'sub_title_text!'	=> '',
+				],
+			]
+		);
+
+		$this->start_controls_tabs('tabs_sub_title_style');
+
+		$this->start_controls_tab(
+			'tab_sub_title_style_normal',
+			[
+				'label' => esc_html__('Normal', 'uicore-framework'),
+			]
+		);
+
+		$this->add_responsive_control(
+			'sub_title_bottom_space',
+			[
+				'label' => esc_html__('Spacing', 'uicore-framework'),
+				'type'  => Controls_Manager::SLIDER,
+				'range' => [
+					'px' => [
+						'min' => 0,
+						'max' => 100,
+					],
+				],
+				'default' => [
+					'unit' => 'px',
+					'size' => 20,
+				],
+				'selectors' => [
+					'{{WRAPPER}} .ui-e-subtitle' => 'margin-bottom: {{SIZE}}{{UNIT}} !important;',
+				],
+			]
+		);
+
+		$this->add_control(
+			'sub_title_color',
+			[
+				'label'     => esc_html__('Color', 'uicore-framework'),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .ui-e-subtitle' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->end_controls_tab();
+
+		$this->start_controls_tab(
+			'tab_sub_title_style_hover',
+			[
+				'label' => esc_html__('Hover', 'uicore-framework'),
+			]
+		);
+
+		$this->add_control(
+			'sub_title_color_hover',
+			[
+				'label'     => esc_html__('Color', 'uicore-framework'),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}}:hover .ui-e-subtitle' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->end_controls_tab();
+
+		$this->end_controls_tabs();
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name'     => 'sub_title_typography',
+				'selector' => '{{WRAPPER}} .ui-e-subtitle',
+			]
+		);
+
+		$this->end_controls_section();
+
+		$this->start_controls_section(
+			'section_style_description',
+			[
+				'label' => esc_html__('Description', 'uicore-framework'),
+				'tab'   => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->start_controls_tabs('tabs_description_style');
+
+		$this->start_controls_tab(
+			'tab_description_style_normal',
+			[
+				'label' => esc_html__('Normal', 'uicore-framework'),
+			]
+		);
+
+		$this->add_responsive_control(
+			'description_bottom_space',
+			[
+				'label'     => esc_html__('Spacing', 'uicore-framework'),
+				'type'      => Controls_Manager::SLIDER,
+				'default' => [
+					'unit' => 'px',
+					'size' => 0,
+				],
+				'selectors' => [
+					'{{WRAPPER}} .ui-e-description' => 'margin-bottom: {{SIZE}}{{UNIT}} !important;',
+				],
+			]
+		);
+
+		$this->add_control(
+			'description_color',
+			[
+				'label'     => esc_html__('Color', 'uicore-framework'),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .ui-e-description' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->end_controls_tab();
+
+		$this->start_controls_tab(
+			'tab_description_style_hover',
+			[
+				'label' => esc_html__('Hover', 'uicore-framework'),
+			]
+		);
+
+		$this->add_control(
+			'description_color_hover',
+			[
+				'label'     => esc_html__('Color', 'uicore-framework'),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}}:hover .ui-e-description' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->end_controls_tab();
+
+		$this->end_controls_tabs();
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name'     => 'description_typography',
+				'selector' => '{{WRAPPER}} .ui-e-description',
+			]
+		);
+
+		$this->end_controls_section();
+
+		$this->start_controls_section(
+			'section_style_readmore',
+			[
+				'label'     => esc_html__('Read More', 'uicore-framework'),
+				'tab'       => Controls_Manager::TAB_STYLE,
+				'condition' => [
+					'readmore'       => 'yes',
+				],
+			]
+		);
+
+		$this->start_controls_tabs('tabs_readmore_style');
+
+		$this->start_controls_tab(
+			'tab_readmore_normal',
+			[
+				'label' => esc_html__('Normal', 'uicore-framework'),
+			]
+		);
+
+		$this->add_control(
+			'readmore_text_color',
+			[
+				'label'     => esc_html__('Color', 'uicore-framework'),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .ui-e-readmore' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .ui-e-readmore svg' => 'fill: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Background::get_type(),
+			[
+				'name'      => 'readmore_background',
+				'selector'  => '{{WRAPPER}} .ui-e-readmore',
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Border::get_type(),
+			[
+				'name'        => 'readmore_border',
+				'placeholder' => '1px',
+				'separator'   => 'before',
+				'default'     => '1px',
+				'selector'    => '{{WRAPPER}} .ui-e-readmore'
+			]
+		);
+
+		$this->add_responsive_control(
+			'readmore_radius',
+			[
+				'label'      => esc_html__('Border Radius', 'uicore-framework'),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => ['px', '%'],
+				'separator'  => 'after',
+				'selectors'  => [
+					'{{WRAPPER}} .ui-e-readmore' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Box_Shadow::get_type(),
+			[
+				'name'     => 'readmore_shadow',
+				'selector' => '{{WRAPPER}} .ui-e-readmore',
+			]
+		);
+
+		$this->add_responsive_control(
+			'readmore_padding',
+			[
+				'label'      => esc_html__('Padding', 'uicore-framework'),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => ['px', 'em', '%'],
+				'selectors'  => [
+					'{{WRAPPER}} .ui-e-readmore' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name'     => 'readmore_typography',
+				'selector' => '{{WRAPPER}} .ui-e-readmore',
+			]
+		);
+
+		$this->end_controls_tab();
+
+		$this->start_controls_tab(
+			'tab_readmore_hover',
+			[
+				'label' => esc_html__('Hover', 'uicore-framework'),
+			]
+		);
+
+		$this->add_control(
+			'readmore_hover_text_color',
+			[
+				'label'     => esc_html__('Color', 'uicore-framework'),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .ui-e-readmore:hover' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .ui-e-readmore:hover svg' => 'fill: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Background::get_type(),
+			[
+				'name'      => 'readmore_hover_background',
+				'selector'  => '{{WRAPPER}} .ui-e-readmore:hover',
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'readmore_hover_border_color',
+			[
+				'label'     => esc_html__('Border Color', 'uicore-framework'),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .ui-e-readmore:hover' => 'border-color: {{VALUE}};',
+				],
+				'condition' => [
+					'readmore_border_border!' => ''
+				]
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Box_Shadow::get_type(),
+			[
+				'name'     => 'readmore_hover_shadow',
+				'selector' => '{{WRAPPER}} .ui-e-readmore:hover',
+			]
+		);
+
+		$this->add_control(
+			'readmore_hover_animation',
+			[
+				'label' => esc_html__('Hover Animation', 'uicore-framework'),
+				'type' => Controls_Manager::HOVER_ANIMATION,
+			]
+		);
+
+		$this->end_controls_tab();
+
+		$this->end_controls_tabs();
+
+		$this->end_controls_section();
+
+		$this->start_controls_section(
+			'section_style_badge',
+			[
+				'label'     => esc_html__('Badge', 'uicore-framework'),
+				'tab'       => Controls_Manager::TAB_STYLE,
+				'condition' => [
+					'badge' => 'yes',
+				],
+			]
+		);
+
+		$this->add_control(
+			'badge_position',
+			[
+				'label'   => esc_html__('Position', 'uicore-framework'),
+				'type'    => Controls_Manager::SELECT,
+				'default' => 'start right',
+				'options' => [
+					'start left'    => esc_html__('Top Left', 'uicore-framework'),
+					'start center'  => esc_html__('Top Center', 'uicore-framework'),
+					'start right'   => esc_html__('Top Right', 'uicore-framework'),
+					'center '       => esc_html__('Center', 'uicore-framework'),
+					'center left'   => esc_html__('Center Left', 'uicore-framework'),
+					'center right'  => esc_html__('Center Right', 'uicore-framework'),
+					'end left'   	=> esc_html__('Bottom Left', 'uicore-framework'),
+					'end center' 	=> esc_html__('Bottom Center', 'uicore-framework'),
+					'end right'  	=> esc_html__('Bottom Right', 'uicore-framework'),
+				],
+				'selectors'	=> [
+					'{{WRAPPER}} .ui-e-badge-wrp' => '--ui-e-badge-position: {{VALUE}}',
+				]
+			]
+		);
+
+		$this->add_control(
+			'badge_text_color',
+			[
+				'label'     => esc_html__('Text Color', 'uicore-framework'),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => [
+					'{{WRAPPER}} .ui-e-badge' => 'color: {{VALUE}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Background::get_type(),
+			[
+				'name'      => 'badge_background',
+				'selector'  => '{{WRAPPER}} .ui-e-badge',
+				'separator' => 'before',
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Border::get_type(),
+			[
+				'name'        => 'badge_border',
+				'placeholder' => '1px',
+				'separator'   => 'before',
+				'default'     => '1px',
+				'selector'    => '{{WRAPPER}} .ui-e-badge'
+			]
+		);
+
+		$this->add_responsive_control(
+			'badge_radius',
+			[
+				'label'      => esc_html__('Border Radius', 'uicore-framework'),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => ['px', '%'],
+				'default' => [
+					'top' => 10,
+					'right' => 10,
+					'bottom' => 10,
+					'left' => 10,
+					'unit' => 'px',
+					'isLinked' => true,
+				],
+				'separator'  => 'after',
+				'selectors'  => [
+					'{{WRAPPER}} .ui-e-badge' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Box_Shadow::get_type(),
+			[
+				'name'     => 'badge_shadow',
+				'selector' => '{{WRAPPER}} .ui-e-badge',
+			]
+		);
+
+		$this->add_responsive_control(
+			'badge_padding',
+			[
+				'label'      => esc_html__('Padding', 'uicore-framework'),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => ['px', 'em', '%'],
+				'default'   => [
+                    'top' => '8',
+                    'right' => '12',
+                    'bottom' => '8',
+                    'left' => '12',
+                    'unit' => 'px',
+                    'isLinked' => false,
+                ],
+				'selectors'  => [
+					'{{WRAPPER}} .ui-e-badge' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			[
+				'name'     => 'badge_typography',
+				'selector' => '{{WRAPPER}} .ui-e-badge',
+			]
+		);
+
+		$this->add_responsive_control(
+			'badge_horizontal_offset',
+			[
+				'label' => esc_html__('Horizontal Offset', 'uicore-framework'),
+				'type'  => Controls_Manager::SLIDER,
+				'default' => [
+					'size' => 0,
+				],
+				'tablet_default' => [
+					'size' => 0,
+				],
+				'mobile_default' => [
+					'size' => 0,
+				],
+				'range' => [
+					'px' => [
+						'min'  => -300,
+						'step' => 2,
+						'max'  => 300,
+					],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .ui-e-badge-wrp' => '--ui-e-badge-horizontal-off: {{SIZE}}px;'
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'badge_vertical_offset',
+			[
+				'label' => esc_html__('Vertical Offset', 'uicore-framework'),
+				'type'  => Controls_Manager::SLIDER,
+				'default' => [
+					'size' => 0,
+				],
+				'tablet_default' => [
+					'size' => 0,
+				],
+				'mobile_default' => [
+					'size' => 0,
+				],
+				'range' => [
+					'px' => [
+						'min'  => -300,
+						'step' => 2,
+						'max'  => 300,
+					],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .ui-e-badge-wrp' => '--ui-e-badge-vertical-off: {{SIZE}}px;',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'badge_rotate',
+			[
+				'label'   => esc_html__('Rotate', 'uicore-framework'),
+				'type'    => Controls_Manager::SLIDER,
+				'devices' => ['desktop', 'tablet', 'mobile'],
+				'default' => [
+					'size' => 0,
+				],
+				'tablet_default' => [
+					'size' => 0,
+				],
+				'mobile_default' => [
+					'size' => 0,
+				],
+				'range' => [
+					'px' => [
+						'min'  => -360,
+						'max'  => 360,
+						'step' => 5,
+					],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .ui-e-badge' => 'rotate: {{SIZE}}deg;'
+				],
+			]
+		);
+
+		$this->end_controls_section();
+
+		$this->start_controls_section(
+			'section_animation',
+			[
+				'label' => esc_html__('Animations', 'uicore-framework'),
+				'tab'   => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_control(
+			'description_animation',
+			[
+				'label' => esc_html__( 'Description Hover Animation', 'uicore-framework' ),
+				'type' => \Elementor\Controls_Manager::SELECT,
+				'default' => '',
+				'options' => [
+					'' => esc_html__( 'None', 'uicore-framework' ),
+					'ui-e-animation-description-show' => esc_html__( 'Show', 'uicore-framework' ),
+				],
+				'prefix_class'	=> '',
+				'frontend_available' => true,
+				'conditions' => [
+					'relation' => 'or',
+					'terms' => [
+						[
+							'name' => 'position',
+							'operator' => '==',
+							'value' => 'top',
+						],
+						[
+							'relation' => 'and',
+							'terms' => [
+								[
+									'name' => 'position',
+									'operator' => 'in',
+									'value' => ['left', 'right'],
+								],
+								[
+									'name' => 'icon_inline',
+									'operator' => '==',
+									'value' => 'yes',
+								],
+							],
+						],
+					],
+				],
+
+			]
+		);
+
+		// Creates a prefix if has readmore button AND description animation. This allows us to apply some bottom space to the absolute flex-wrapper, keeping it above readmore
+		$this->add_control(
+			'description_prefix',
+			[
+				'label' => esc_html__( 'Prefix Class for Description with Readmore', 'uicore-framework' ),
+				'type' => \Elementor\Controls_Manager::HIDDEN,
+				'default' => 'readmore',
+				'condition' => [
+					'readmore'	=> 'yes',
+					'description_animation'	=> 'ui-e-animation-description-show',
+				],
+				'prefix_class'	=> 'ui-e-has-',
+			]
+		);
+
+		$this->add_control(
+			'readmore_animation',
+			[
+				'label' => esc_html__( 'Button Hover Animation', 'uicore-framework' ),
+				'type' => \Elementor\Controls_Manager::SELECT,
+				'default' => '',
+				'options' => [
+					'' => esc_html__( 'None', 'uicore-framework' ),
+					'ui-e-animation-rm-show' => esc_html__( 'Show', 'uicore-framework' ),
+					'ui-e-animation-rm-ico' => esc_html__( 'Icon', 'uicore-framework' ),
+				],
+				'prefix_class'	=> '',
+				'frontend_available' => true,
+				'condition'	=> [
+					'readmore' => 'yes',
+					'position!' => 'bottom',
+				]
+			]
+		);
+
+		$this->add_control(
+			'icon_animation',
+			[
+				'label'        => esc_html__('Icon Hover Animation', 'uicore-framework'),
+				'type'         => Controls_Manager::SELECT,
+				'prefix_class' => '',
+				'default'      => '',
+				'options'      => [
+					'' 							=> esc_html__('None', 'uicore-framework'),
+					'ui-e-animation-ico-float'  => esc_html__('Icon Float', 'uicore-framework'),
+					'ui-e-animation-ico-grow'   => esc_html__('Background Circle', 'uicore-framework'),
+					'ui-e-animation-ico-slide'  => esc_html__('Background Slide', 'uicore-framework'),
+				],
+				'condition'	=> [
+					'icon_type!' => 'none',
+				]
+			]
+		);
+
+		$this->add_control(
+			'widget_animation',
+			[
+				'label' => esc_html__( 'Item Hover Animation', 'uicore-framework' ),
+				'type' => \Elementor\Controls_Manager::SELECT,
+				'default' => '',
+				'options' => [
+					'' => esc_html__( 'None', 'uicore-framework' ),
+					'ui-e-animation-widget-zoom' => esc_html__( 'Zoom', 'uicore-framework' ),
+					'ui-e-animation-widget-translate' => esc_html__( 'Translate', 'uicore-framework' ),
+				],
+				'prefix_class'	=> '',
+			]
+		);
+
+		$this->add_control(
+			'widget_animation_zoom',
+			[
+				'label' => esc_html__( 'Zoom scale', 'textdomain' ),
+				'type' => \Elementor\Controls_Manager::SLIDER,
+				'size_units' => ['px'],
+				'range' => [
+					'px' => [
+						'min' => .8,
+						'max' => 1.3,
+						'step' => 0.01,
+					],
+				],
+				'default' => [
+					'unit' => 'px',
+					'size' => 1.12,
+				],
+				'condition' =>[
+					'widget_animation' => 'ui-e-animation-widget-zoom',
+				],
+				'selectors' => [
+					'{{WRAPPER}}' => '--ui-e-ico-box-widget-zoom: {{SIZE}}',
+				],
+			]
+		);
+
+		$this->add_control(
+			'widget_animation_translate',
+			[
+				'label' => esc_html__( 'Translate value', 'textdomain' ),
+				'type' => \Elementor\Controls_Manager::SLIDER,
+				'size_units' => ['px'],
+				'range' => [
+					'px' => [
+						'min' => -50,
+						'max' => 50,
+						'step' => 1,
+					],
+				],
+				'default' => [
+					'unit' => 'px',
+					'size' => -36,
+				],
+				'condition' =>[
+					'widget_animation' => 'ui-e-animation-widget-translate',
+				],
+				'selectors' => [
+					'{{WRAPPER}}' => '--ui-e-ico-box-widget-translate: {{SIZE}}{{UNIT}}',
+				],
+			]
+		);
+
+		$this->end_controls_section();
+
+		$this->start_controls_section(
+			'section_style_additional',
+			[
+				'label' => esc_html__('Additional', 'uicore-framework'),
+				'tab'   => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_responsive_control(
+			'content_padding',
+			[
+				'label'      => esc_html__('Content Inner Padding', 'uicore-framework'),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => ['px', 'em', '%'],
+				'frontend_available' => true,
+				'selectors'  => [
+					'{{WRAPPER}} .ui-e-ico-box' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};'
+				]
+			]
+		);
+
+		$this->end_controls_section();
+	}
+
+	protected function render()
+	{
+		$settings  = $this->get_settings_for_display();
+
+		// Get the proper media
+		$media_type = $settings['icon_type'];
+		switch($media_type) {
+
+			case 'icon'	 :
+				$media 	  = $settings['selected_icon'];
+				break;
+
+			case 'image' :
+				$media 		= $settings['image'];
+				$media_size	= $settings['image_fullwidth'] ? 'large' : 'medium'; // Gets the proper media size.
+				break;
+		}
+
+		// Build the title
+		if (! empty($settings['title_link_url']['url'])){
+
+			$hasTitleUrl	= true;
+			$this->add_link_attributes( 'title_link', $settings['title_link_url'] );
+			$titleUrl 		= "<a {$this->get_render_attribute_string( 'title_link')}>";
+
+		} else { $hasTitleUrl = false;}
+
+		$title 		= "<{$settings['title_size']} class='ui-e-title'>";
+		$title 		.= $hasTitleUrl ? $titleUrl : ''; // url
+		$title 		.= $settings['title_text'];
+		$title 		.= $hasTitleUrl ? '</a>' : ''; // url closure
+		$title 		.= "</{$settings['title_size']}>";
+
+		// Build the global Url
+		if($settings['global_link'] && $settings['global_link_url']['url']){
+
+			$global_target = $settings['global_link_url']['is_external'] ? '_blank' : '_self';
+			$this->add_render_attribute('global_link', 'onclick', "window.open('{$settings['global_link_url']['url']}', '$global_target')");
+		}
+
+		// Build the subtitle
+		$subtitle = $settings['sub_title_text'] != '' ? "<div class='ui-e-subtitle'> {$settings['sub_title_text']} </div>" : '';
+
+		// Build the readmore
+		$readmore = $settings['readmore'];
+		if($readmore){
+
+			$rmContent	 = $settings['readmore_text'];
+			$rmAlign	 = $settings['readmore_icon_align'];
+			$rmIcon		 = $settings['readmore_icon']['value'] == '' ? false : true;
+
+			if(!empty($settings['readmore_link']['url'])){
+
+				$this->add_link_attributes( 'rm_link', $settings['readmore_link']);
+			}
+
+			$rmAtts	= !empty($settings['button_css_id']) ? "id='{$settings['button_css_id']}'" : '';
+			$rmAtts .= $this->get_render_attribute_string('rm_link') ;
+			$rmAtts	.= $settings['onclick'] ? "onclick='{$settings['onclick_event']}'" : '';
+			$rmAtts .= $settings['readmore_hover_animation'] ? "class='ui-e-readmore elementor-animation-{$settings['readmore_hover_animation']}'" : 'class="ui-e-readmore"';
+
+		}
+
+		// Build the badge
+		$badge = $settings['badge'] ? "<span class='ui-e-badge-wrp'><span class='ui-e-badge ui-e-{$settings['badge_position']}'> {$settings['badge_text']} </span></span>" : '';
+
+		// Check the icon position and sets the inline (true puts title/subtitlte inside flex wrapper, false puts inside content)
+		switch($settings['position']){
+
+			// Always true if top; always false if bottom and left/right checks the user choice
+			case 'left'		:
+				$inline	= $settings['icon_inline'];
+				break;
+
+			case 'right'	:
+				$inline = $settings['icon_inline'];
+				break;
+
+			case 'top'		:
+				$inline = true;
+				break;
+
+			case 'bottom'	:
+				$inline = false;
+				break;
+		}
+
+		?>
+
+			<div class="ui-e-ico-box" <?=$this->get_render_attribute_string('global_link');?>>
+
+				<?=$badge;?>
+
+				<div class='ui-e-flex-wrp'>
+
+					<?php if($media_type != 'none') : ?>
+						<div class="ui-e-icon-wrp">
+
+							<?php if ($media_type == 'icon') {
+								Icons_Manager::render_icon( $media, [ 'aria-hidden' => 'true' ] );
+							} else {
+								echo wp_get_attachment_image( $media['id'], $media_size );
+							}
+							?>
+
+						</div>
+					<?php endif; ?>
+
+					<?php echo $inline ? "<div class='ui-e-title-wrp'> $title $subtitle </div>" : '' ;?>
+
+				</div>
+
+				<div class="ui-e-box-content">
+					<?php echo $inline ? '' : "<div class='ui-e-title-wrp'> $title $subtitle </div>"  ;?>
+
+					<div class="ui-e-description">
+						<?=$settings['description_text'];?>
+					</div>
+
+					<?php if($readmore) {
+						echo "<a $rmAtts> $rmContent";
+						echo $rmIcon ? "<span class='ui-e-$rmAlign'>" : '';
+						Icons_Manager::render_icon( $settings['readmore_icon'], [ 'aria-hidden' => 'true' ] );
+						echo $rmIcon ? '</span>' : '';
+						echo '</a>';
+					} ?>
+
+				</div>
+			</div>
+		<?php
+	}
+
+}
+\Elementor\Plugin::instance()->widgets_manager->register(new IconBox());
