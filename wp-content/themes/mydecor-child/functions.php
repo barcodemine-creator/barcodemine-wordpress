@@ -77,6 +77,179 @@ function barcodemine_check_analytics_table() {
 add_action('after_switch_theme', 'barcodemine_create_analytics_table');
 add_action('init', 'barcodemine_check_analytics_table');
 
+// Add Admin Dashboard Menu
+function barcodemine_add_admin_menu() {
+    add_menu_page(
+        'Barcode Management', // Page title
+        'Barcode Manager', // Menu title
+        'manage_options', // Capability
+        'barcode-manager', // Menu slug
+        'barcodemine_admin_dashboard', // Function
+        'dashicons-barcode', // Icon
+        30 // Position
+    );
+    
+    add_submenu_page(
+        'barcode-manager',
+        'Orders & Certificates',
+        'Orders & Certificates',
+        'manage_options',
+        'barcode-orders',
+        'barcodemine_orders_page'
+    );
+    
+    add_submenu_page(
+        'barcode-manager',
+        'Analytics Dashboard',
+        'Analytics',
+        'manage_options',
+        'barcode-analytics-full',
+        'barcodemine_analytics_dashboard'
+    );
+    
+    add_submenu_page(
+        'barcode-manager',
+        'Customer Management',
+        'Customers',
+        'manage_options',
+        'barcode-customers',
+        'barcodemine_customers_page'
+    );
+}
+add_action('admin_menu', 'barcodemine_add_admin_menu');
+
+// Main Dashboard Page
+function barcodemine_admin_dashboard() {
+    global $wpdb;
+    
+    // Get statistics
+    $total_orders = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->posts} WHERE post_type = 'shop_order' AND post_status IN ('wc-processing', 'wc-completed', 'wc-on-hold')");
+    $total_barcodes = $wpdb->get_var("SELECT SUM(meta_value) FROM {$wpdb->postmeta} WHERE meta_key = '_barcode_count'");
+    $total_customers = $wpdb->get_var("SELECT COUNT(DISTINCT meta_value) FROM {$wpdb->postmeta} WHERE meta_key = '_billing_email'");
+    
+    // Get recent orders
+    $recent_orders = $wpdb->get_results("
+        SELECT p.ID, p.post_date, pm1.meta_value as customer_email, pm2.meta_value as total
+        FROM {$wpdb->posts} p
+        LEFT JOIN {$wpdb->postmeta} pm1 ON p.ID = pm1.post_id AND pm1.meta_key = '_billing_email'
+        LEFT JOIN {$wpdb->postmeta} pm2 ON p.ID = pm2.post_id AND pm2.meta_key = '_order_total'
+        WHERE p.post_type = 'shop_order' 
+        AND p.post_status IN ('wc-processing', 'wc-completed', 'wc-on-hold')
+        ORDER BY p.post_date DESC 
+        LIMIT 10
+    ");
+    
+    ?>
+    <div class="wrap">
+        <h1><span class="dashicons dashicons-barcode"></span> Barcode Management Dashboard</h1>
+        
+        <div class="dashboard-widgets-wrap">
+            <div class="metabox-holder">
+                
+                <!-- Statistics Cards -->
+                <div class="postbox-container" style="width: 100%;">
+                    <div style="display: flex; gap: 20px; margin-bottom: 20px;">
+                        
+                        <div class="postbox" style="flex: 1;">
+                            <div class="postbox-header">
+                                <h2>Total Orders</h2>
+                            </div>
+                            <div class="inside">
+                                <div style="text-align: center; padding: 20px;">
+                                    <div style="font-size: 36px; font-weight: bold; color: #2271b1;"><?php echo number_format($total_orders); ?></div>
+                                    <div style="color: #666;">Active Orders</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="postbox" style="flex: 1;">
+                            <div class="postbox-header">
+                                <h2>Total Barcodes</h2>
+                            </div>
+                            <div class="inside">
+                                <div style="text-align: center; padding: 20px;">
+                                    <div style="font-size: 36px; font-weight: bold; color: #00a32a;"><?php echo number_format($total_barcodes ?: 0); ?></div>
+                                    <div style="color: #666;">Issued Barcodes</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="postbox" style="flex: 1;">
+                            <div class="postbox-header">
+                                <h2>Total Customers</h2>
+                            </div>
+                            <div class="inside">
+                                <div style="text-align: center; padding: 20px;">
+                                    <div style="font-size: 36px; font-weight: bold; color: #d63638;"><?php echo number_format($total_customers); ?></div>
+                                    <div style="color: #666;">Unique Customers</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+                
+                <!-- Recent Orders -->
+                <div class="postbox-container" style="width: 100%;">
+                    <div class="postbox">
+                        <div class="postbox-header">
+                            <h2>Recent Orders</h2>
+                        </div>
+                        <div class="inside">
+                            <table class="wp-list-table widefat fixed striped">
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Date</th>
+                                        <th>Customer</th>
+                                        <th>Total</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($recent_orders as $order): ?>
+                                    <tr>
+                                        <td><strong>#<?php echo $order->ID; ?></strong></td>
+                                        <td><?php echo date('M j, Y', strtotime($order->post_date)); ?></td>
+                                        <td><?php echo esc_html($order->customer_email); ?></td>
+                                        <td>₹<?php echo number_format($order->total, 2); ?></td>
+                                        <td><span class="status-badge">Active</span></td>
+                                        <td>
+                                            <a href="<?php echo admin_url('post.php?post=' . $order->ID . '&action=edit'); ?>" class="button button-small">View</a>
+                                            <a href="<?php echo admin_url('admin.php?page=barcode-orders&order_id=' . $order->ID); ?>" class="button button-small">Manage</a>
+                                        </td>
+                                    </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                            
+                            <div style="text-align: center; margin-top: 15px;">
+                                <a href="<?php echo admin_url('admin.php?page=barcode-orders'); ?>" class="button button-primary">View All Orders</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        
+        <style>
+        .status-badge {
+            background: #00a32a;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+        }
+        .dashboard-widgets-wrap .postbox {
+            margin-bottom: 20px;
+        }
+        </style>
+    </div>
+    <?php
+}
+
 // Fix WooCommerce Cart and Checkout Issues
 function barcodemine_fix_woocommerce_cart_checkout() {
     // Ensure WooCommerce scripts are loaded properly
@@ -203,6 +376,273 @@ function barcodemine_fix_green_color_clash() {
     <?php
 }
 add_action( 'wp_head', 'barcodemine_fix_green_color_clash', 999 );
+
+// Orders & Certificates Page
+function barcodemine_orders_page() {
+    global $wpdb;
+    
+    // Handle actions
+    if (isset($_GET['action']) && $_GET['action'] == 'generate_certificate' && isset($_GET['order_id'])) {
+        $order_id = intval($_GET['order_id']);
+        echo '<div class="notice notice-success"><p>Certificate generation initiated for Order #' . $order_id . '</p></div>';
+    }
+    
+    // Get all orders with barcode data
+    $orders = $wpdb->get_results("
+        SELECT p.ID, p.post_date, p.post_status,
+               pm1.meta_value as customer_email,
+               pm2.meta_value as first_name,
+               pm3.meta_value as last_name,
+               pm4.meta_value as total,
+               pm5.meta_value as excel_data,
+               pm6.meta_value as certificate_generated
+        FROM {$wpdb->posts} p
+        LEFT JOIN {$wpdb->postmeta} pm1 ON p.ID = pm1.post_id AND pm1.meta_key = '_billing_email'
+        LEFT JOIN {$wpdb->postmeta} pm2 ON p.ID = pm2.post_id AND pm2.meta_key = '_billing_first_name'
+        LEFT JOIN {$wpdb->postmeta} pm3 ON p.ID = pm3.post_id AND pm3.meta_key = '_billing_last_name'
+        LEFT JOIN {$wpdb->postmeta} pm4 ON p.ID = pm4.post_id AND pm4.meta_key = '_order_total'
+        LEFT JOIN {$wpdb->postmeta} pm5 ON p.ID = pm5.post_id AND pm5.meta_key = '_excel_file_data'
+        LEFT JOIN {$wpdb->postmeta} pm6 ON p.ID = pm6.post_id AND pm6.meta_key = '_certificate_generated'
+        WHERE p.post_type = 'shop_order' 
+        AND p.post_status IN ('wc-processing', 'wc-completed', 'wc-on-hold', 'wc-pending')
+        ORDER BY p.post_date DESC
+    ");
+    
+    ?>
+    <div class="wrap">
+        <h1><span class="dashicons dashicons-clipboard"></span> Orders & Certificates Management</h1>
+        
+        <table class="wp-list-table widefat fixed striped">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Date</th>
+                    <th>Customer</th>
+                    <th>Barcode Range</th>
+                    <th>Total Barcodes</th>
+                    <th>Certificate</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($orders as $order): 
+                    $excel_data = maybe_unserialize($order->excel_data);
+                    $barcode_count = is_array($excel_data) ? count($excel_data) : 0;
+                    $barcode_range = '';
+                    if (is_array($excel_data) && !empty($excel_data)) {
+                        $barcode_range = $excel_data[0] . ' - ' . end($excel_data);
+                    }
+                    $certificate_status = $order->certificate_generated ? 'Generated' : 'Pending';
+                    $status_class = $order->certificate_generated ? 'generated' : 'pending';
+                ?>
+                <tr>
+                    <td><strong><a href="<?php echo admin_url('post.php?post=' . $order->ID . '&action=edit'); ?>">#<?php echo $order->ID; ?></a></strong></td>
+                    <td><?php echo date('M j, Y', strtotime($order->post_date)); ?></td>
+                    <td>
+                        <strong><?php echo esc_html($order->first_name . ' ' . $order->last_name); ?></strong><br>
+                        <small><?php echo esc_html($order->customer_email); ?></small>
+                    </td>
+                    <td>
+                        <?php if ($barcode_range): ?>
+                            <code><?php echo esc_html($barcode_range); ?></code>
+                        <?php else: ?>
+                            <span style="color: #d63638;">No barcodes assigned</span>
+                        <?php endif; ?>
+                    </td>
+                    <td><span style="font-weight: bold; color: #2271b1;"><?php echo number_format($barcode_count); ?></span></td>
+                    <td>
+                        <span class="<?php echo $status_class; ?>" style="<?php echo $status_class == 'generated' ? 'color: #00a32a;' : 'color: #d63638;'; ?> font-weight: bold;">
+                            <?php echo $certificate_status; ?>
+                        </span>
+                    </td>
+                    <td>
+                        <span style="padding: 4px 8px; border-radius: 3px; font-size: 11px; background: #f0f6fc; color: #2271b1;">
+                            <?php echo wc_get_order_status_name($order->post_status); ?>
+                        </span>
+                    </td>
+                    <td>
+                        <a href="<?php echo admin_url('post.php?post=' . $order->ID . '&action=edit'); ?>" class="button button-small">Edit</a>
+                        <?php if (!$order->certificate_generated): ?>
+                            <a href="<?php echo admin_url('admin.php?page=barcode-orders&action=generate_certificate&order_id=' . $order->ID); ?>" class="button button-small button-primary">Generate Certificate</a>
+                        <?php endif; ?>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+    <?php
+}
+
+// Analytics Dashboard Page
+function barcodemine_analytics_dashboard() {
+    global $wpdb;
+    
+    $table_name = $wpdb->prefix . 'barcode_search_analytics';
+    
+    // Check if table exists
+    if ($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
+        echo '<div class="wrap"><h1>Analytics Dashboard</h1><p>Analytics table not found. Please visit your website to create it automatically.</p></div>';
+        return;
+    }
+    
+    // Get analytics data
+    $total_searches = $wpdb->get_var("SELECT COUNT(*) FROM $table_name");
+    $successful_searches = $wpdb->get_var("SELECT COUNT(*) FROM $table_name WHERE found = 1");
+    $success_rate = $total_searches > 0 ? round(($successful_searches / $total_searches) * 100, 2) : 0;
+    
+    // Get recent searches
+    $recent_searches = $wpdb->get_results("SELECT * FROM $table_name ORDER BY search_time DESC LIMIT 20");
+    
+    // Get top searched barcodes
+    $top_barcodes = $wpdb->get_results("
+        SELECT barcode, COUNT(*) as search_count, 
+               SUM(found) as found_count
+        FROM $table_name 
+        GROUP BY barcode 
+        ORDER BY search_count DESC 
+        LIMIT 10
+    ");
+    
+    ?>
+    <div class="wrap">
+        <h1><span class="dashicons dashicons-chart-bar"></span> Barcode Search Analytics</h1>
+        
+        <div style="display: flex; gap: 20px; margin-bottom: 20px;">
+            <div style="flex: 1; background: white; padding: 20px; border: 1px solid #ccd0d4; border-radius: 4px;">
+                <h3>Total Searches</h3>
+                <div style="font-size: 36px; font-weight: bold; color: #2271b1;"><?php echo number_format($total_searches); ?></div>
+            </div>
+            <div style="flex: 1; background: white; padding: 20px; border: 1px solid #ccd0d4; border-radius: 4px;">
+                <h3>Successful Searches</h3>
+                <div style="font-size: 36px; font-weight: bold; color: #00a32a;"><?php echo number_format($successful_searches); ?></div>
+            </div>
+            <div style="flex: 1; background: white; padding: 20px; border: 1px solid #ccd0d4; border-radius: 4px;">
+                <h3>Success Rate</h3>
+                <div style="font-size: 36px; font-weight: bold; color: #d63638;"><?php echo $success_rate; ?>%</div>
+            </div>
+        </div>
+        
+        <div style="display: flex; gap: 20px;">
+            <div style="flex: 2;">
+                <h2>Recent Searches</h2>
+                <table class="wp-list-table widefat fixed striped">
+                    <thead>
+                        <tr>
+                            <th>Barcode</th>
+                            <th>Type</th>
+                            <th>Result</th>
+                            <th>Time</th>
+                            <th>IP Address</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($recent_searches as $search): ?>
+                        <tr>
+                            <td><code><?php echo esc_html($search->barcode); ?></code></td>
+                            <td><?php echo ucfirst($search->search_type); ?></td>
+                            <td>
+                                <span style="color: <?php echo $search->found ? '#00a32a' : '#d63638'; ?>;">
+                                    <?php echo $search->found ? 'Found' : 'Not Found'; ?>
+                                </span>
+                            </td>
+                            <td><?php echo date('M j, g:i A', strtotime($search->search_time)); ?></td>
+                            <td><?php echo esc_html($search->ip_address); ?></td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div style="flex: 1;">
+                <h2>Top Searched Barcodes</h2>
+                <table class="wp-list-table widefat fixed striped">
+                    <thead>
+                        <tr>
+                            <th>Barcode</th>
+                            <th>Searches</th>
+                            <th>Found</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($top_barcodes as $barcode): ?>
+                        <tr>
+                            <td><code><?php echo esc_html($barcode->barcode); ?></code></td>
+                            <td><?php echo $barcode->search_count; ?></td>
+                            <td><?php echo $barcode->found_count; ?></td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <?php
+}
+
+// Customer Management Page
+function barcodemine_customers_page() {
+    global $wpdb;
+    
+    // Get customer data with order counts and barcode totals
+    $customers = $wpdb->get_results("
+        SELECT 
+            pm1.meta_value as email,
+            pm2.meta_value as first_name,
+            pm3.meta_value as last_name,
+            pm4.meta_value as phone,
+            COUNT(p.ID) as total_orders,
+            SUM(pm5.meta_value) as total_spent,
+            MAX(p.post_date) as last_order_date
+        FROM {$wpdb->posts} p
+        LEFT JOIN {$wpdb->postmeta} pm1 ON p.ID = pm1.post_id AND pm1.meta_key = '_billing_email'
+        LEFT JOIN {$wpdb->postmeta} pm2 ON p.ID = pm2.post_id AND pm2.meta_key = '_billing_first_name'
+        LEFT JOIN {$wpdb->postmeta} pm3 ON p.ID = pm3.post_id AND pm3.meta_key = '_billing_last_name'
+        LEFT JOIN {$wpdb->postmeta} pm4 ON p.ID = pm4.post_id AND pm4.meta_key = '_billing_phone'
+        LEFT JOIN {$wpdb->postmeta} pm5 ON p.ID = pm5.post_id AND pm5.meta_key = '_order_total'
+        WHERE p.post_type = 'shop_order' 
+        AND p.post_status IN ('wc-processing', 'wc-completed', 'wc-on-hold')
+        AND pm1.meta_value IS NOT NULL
+        GROUP BY pm1.meta_value
+        ORDER BY total_spent DESC
+    ");
+    
+    ?>
+    <div class="wrap">
+        <h1><span class="dashicons dashicons-groups"></span> Customer Management</h1>
+        
+        <table class="wp-list-table widefat fixed striped">
+            <thead>
+                <tr>
+                    <th>Customer</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Total Orders</th>
+                    <th>Total Spent</th>
+                    <th>Last Order</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($customers as $customer): ?>
+                <tr>
+                    <td><strong><?php echo esc_html($customer->first_name . ' ' . $customer->last_name); ?></strong></td>
+                    <td><?php echo esc_html($customer->email); ?></td>
+                    <td><?php echo esc_html($customer->phone ?: '-'); ?></td>
+                    <td><?php echo $customer->total_orders; ?></td>
+                    <td>₹<?php echo number_format($customer->total_spent, 2); ?></td>
+                    <td><?php echo date('M j, Y', strtotime($customer->last_order_date)); ?></td>
+                    <td>
+                        <a href="<?php echo admin_url('edit.php?post_type=shop_order&_billing_email=' . urlencode($customer->email)); ?>" class="button button-small">View Orders</a>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+    <?php
+}
 
 // WooCommerce styling is now handled in style.css for better performance
 
