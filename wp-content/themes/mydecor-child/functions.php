@@ -38,6 +38,45 @@ function mydecor_child_register_scripts(){
 }
 add_action( 'wp_enqueue_scripts', 'mydecor_child_register_scripts', 99 );
 
+// Create analytics table on theme activation
+function barcodemine_create_analytics_table() {
+    global $wpdb;
+    
+    $table_name = $wpdb->prefix . 'barcode_search_analytics';
+    
+    $charset_collate = $wpdb->get_charset_collate();
+    
+    $sql = "CREATE TABLE $table_name (
+        id mediumint(9) NOT NULL AUTO_INCREMENT,
+        barcode varchar(50) NOT NULL,
+        search_type varchar(20) NOT NULL DEFAULT 'single',
+        found tinyint(1) NOT NULL DEFAULT 0,
+        ip_address varchar(45) NOT NULL,
+        user_agent text,
+        referrer varchar(500),
+        search_time datetime DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id),
+        KEY barcode_idx (barcode),
+        KEY search_time_idx (search_time),
+        KEY found_idx (found)
+    ) $charset_collate;";
+    
+    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+    dbDelta($sql);
+    
+    // Add option to track table creation
+    add_option('barcodemine_analytics_table_created', '1');
+}
+
+// Hook to create table on theme switch or first load
+function barcodemine_check_analytics_table() {
+    if (!get_option('barcodemine_analytics_table_created')) {
+        barcodemine_create_analytics_table();
+    }
+}
+add_action('after_switch_theme', 'barcodemine_create_analytics_table');
+add_action('init', 'barcodemine_check_analytics_table');
+
 // Fix WooCommerce Cart and Checkout Issues
 function barcodemine_fix_woocommerce_cart_checkout() {
     // Ensure WooCommerce scripts are loaded properly
