@@ -66,100 +66,29 @@ add_action( 'wp_enqueue_scripts', 'barcodemine_fix_cart_fragments', 101 );
 function barcodemine_fix_green_color_clash() {
     ?>
     <style type="text/css">
-    /* Override any inline styles or dynamic styles that use the problematic green color */
-    .woocommerce .button[style*="#00c49a"],
-    .woocommerce button.button[style*="#00c49a"],
-    .woocommerce input.button[style*="#00c49a"],
-    .woocommerce a.button[style*="#00c49a"],
-    .quantity .plus[style*="#00c49a"],
-    .quantity .minus[style*="#00c49a"],
+    /* Only override inline styles with the problematic color */
     *[style*="background-color: #00c49a"],
-    *[style*="background:#00c49a"],
-    *[style*="border-color: #00c49a"],
-    .elementor-button[style*="#00c49a"],
-    .wp-block-button__link[style*="#00c49a"] {
-        background-color: #c41e3a !important;
-        border-color: #c41e3a !important;
-        color: #ffffff !important;
+    *[style*="background:#00c49a"] {
+        background-color: inherit !important;
     }
     
-    /* Fix Redux Framework or theme customizer generated styles */
-    .redux-container .button,
-    .customize-control .button,
-    .theme-options .button {
-        background-color: #c41e3a !important;
-        border-color: #c41e3a !important;
-    }
-    
-    /* Override any CSS variables that might be setting this color */
+    /* Only override the problematic UiCore color variable */
     :root {
-        --wc-green: #c41e3a !important;
-        --primary-color: #c41e3a !important;
-        --accent-color: #c41e3a !important;
-        --button-color: #c41e3a !important;
-        
-        /* Override Elementor Global Colors */
-        --e-global-color-primary: #c41e3a !important;
-        --e-global-color-secondary: #c41e3a !important;
-        --e-global-color-accent: #c41e3a !important;
-        --e-global-color-text: #333333 !important;
-        
-        /* Override UiCore specific color variables */
-        --e-global-color-uicore_primary: #c41e3a !important;
-        --e-global-color-uicore_secondary: #c41e3a !important;
-        --e-global-color-uicore_accent: #c41e3a !important;
-        --uicore-primary-color: #c41e3a !important;
-        --uicore-accent-color: #c41e3a !important;
-        
-        /* Override specific Elementor button colors */
-        --elementor-button-primary-color: #c41e3a !important;
-        --elementor-button-secondary-color: #c41e3a !important;
-        --elementor-button-accent-color: #c41e3a !important;
+        --e-global-color-uicore_primary: inherit !important;
     }
     
-    /* Specifically target Elementor buttons and widgets */
-    .elementor-button-wrapper .elementor-button,
-    .elementor-widget-button .elementor-button,
-    .elementor-button-primary,
-    .elementor-button-secondary,
-    .elementor-button-success,
-    .elementor-button-info,
-    .elementor-button-warning,
-    .elementor-button-danger,
-    .elementor-widget-woocommerce-cart .elementor-button,
-    .elementor-widget-woocommerce-checkout .elementor-button,
-    .elementor-widget .woocommerce .button,
-    .elementor-widget .woocommerce button.button,
-    .elementor-widget .woocommerce input.button,
-    .elementor-widget .woocommerce #respond input#submit,
-    .elementor-widget .woocommerce a.button,
-    .elementor-kit-17061 button,
-    .elementor-kit-17061 input[type="button"],
-    .elementor-kit-17061 input[type="submit"],
+    /* Only target color properties, not sizing or layout */
     .barcode-search-btn,
     button.barcode-search-btn {
-        background-color: #c41e3a !important;
-        border-color: #c41e3a !important;
+        background-color: #007cba !important;
+        border-color: #007cba !important;
         color: #ffffff !important;
     }
     
-    .elementor-button-wrapper .elementor-button:hover,
-    .elementor-widget-button .elementor-button:hover,
-    .elementor-button-primary:hover,
-    .elementor-button-secondary:hover,
-    .elementor-button-success:hover,
-    .elementor-button-info:hover,
-    .elementor-button-warning:hover,
-    .elementor-button-danger:hover,
-    .elementor-widget-woocommerce-cart .elementor-button:hover,
-    .elementor-widget-woocommerce-checkout .elementor-button:hover,
-    .elementor-widget .woocommerce .button:hover,
-    .elementor-widget .woocommerce button.button:hover,
-    .elementor-widget .woocommerce input.button:hover,
-    .elementor-widget .woocommerce #respond input#submit:hover,
-    .elementor-widget .woocommerce a.button:hover {
-        background-color: #a01729 !important;
-        border-color: #a01729 !important;
+    .barcode-search-btn:hover,
+    button.barcode-search-btn:hover {
+        background-color: #005a87 !important;
+        border-color: #005a87 !important;
         color: #ffffff !important;
     }
     </style>
