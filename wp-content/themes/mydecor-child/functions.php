@@ -115,6 +115,15 @@ function barcodemine_add_admin_menu() {
         'barcode-customers',
         'barcodemine_customers_page'
     );
+    
+    add_submenu_page(
+        'barcode-manager',
+        'Barcode Registry',
+        'Barcode Registry',
+        'manage_options',
+        'barcode-registry',
+        'barcodemine_barcode_registry_page'
+    );
 }
 add_action('admin_menu', 'barcodemine_add_admin_menu');
 
@@ -445,7 +454,14 @@ function barcodemine_orders_page() {
                     </td>
                     <td>
                         <?php if ($barcode_range): ?>
-                            <code><?php echo esc_html($barcode_range); ?></code>
+                            <div>
+                                <strong>Range:</strong> <code><?php echo esc_html($barcode_range); ?></code><br>
+                                <small style="color: #666;">
+                                    <a href="<?php echo admin_url('admin.php?page=barcode-registry&order_id=' . $order->ID); ?>" style="text-decoration: none;">
+                                        📋 View All <?php echo $barcode_count; ?> Barcodes
+                                    </a>
+                                </small>
+                            </div>
                         <?php else: ?>
                             <span style="color: #d63638;">No barcodes assigned</span>
                         <?php endif; ?>
@@ -642,6 +658,251 @@ function barcodemine_customers_page() {
         </table>
     </div>
     <?php
+}
+
+// Barcode Registry Page - Shows individual barcode assignments
+function barcodemine_barcode_registry_page() {
+    global $wpdb;
+    
+    // Handle search and filters
+    $search_barcode = isset($_GET['search_barcode']) ? sanitize_text_field($_GET['search_barcode']) : '';
+    $filter_order = isset($_GET['order_id']) ? intval($_GET['order_id']) : 0;
+    $search_customer = isset($_GET['search_customer']) ? sanitize_text_field($_GET['search_customer']) : '';
+    
+    // Build the query
+    $where_conditions = array("p.post_type = 'shop_order'", "p.post_status IN ('wc-processing', 'wc-completed', 'wc-on-hold', 'wc-pending')", "pm5.meta_value IS NOT NULL");
+    
+    if ($filter_order) {
+        $where_conditions[] = "p.ID = $filter_order";
+    }
+    
+    if ($search_customer) {
+        $where_conditions[] = "(pm1.meta_value LIKE '%$search_customer%' OR pm2.meta_value LIKE '%$search_customer%' OR pm3.meta_value LIKE '%$search_customer%')";
+    }
+    
+    $where_clause = implode(' AND ', $where_conditions);
+    
+    // Get orders with barcode data
+    $orders = $wpdb->get_results("
+        SELECT p.ID, p.post_date, p.post_status,
+               pm1.meta_value as customer_email,
+               pm2.meta_value as first_name,
+               pm3.meta_value as last_name,
+               pm4.meta_value as total,
+               pm5.meta_value as excel_data
+        FROM {$wpdb->posts} p
+        LEFT JOIN {$wpdb->postmeta} pm1 ON p.ID = pm1.post_id AND pm1.meta_key = '_billing_email'
+        LEFT JOIN {$wpdb->postmeta} pm2 ON p.ID = pm2.post_id AND pm2.meta_key = '_billing_first_name'
+        LEFT JOIN {$wpdb->postmeta} pm3 ON p.ID = pm3.post_id AND pm3.meta_key = '_billing_last_name'
+        LEFT JOIN {$wpdb->postmeta} pm4 ON p.ID = pm4.post_id AND pm4.meta_key = '_order_total'
+        LEFT JOIN {$wpdb->postmeta} pm5 ON p.ID = pm5.post_id AND pm5.meta_key = '_excel_file_data'
+        WHERE $where_clause
+        ORDER BY p.post_date DESC
+    ");
+    
+    // Process barcode data for display
+    $all_barcodes = array();
+    foreach ($orders as $order) {
+        $excel_data = maybe_unserialize($order->excel_data);
+        if (is_array($excel_data)) {
+            foreach ($excel_data as $barcode) {
+                if (empty($search_barcode) || strpos($barcode, $search_barcode) !== false) {
+                    $all_barcodes[] = array(
+                        'barcode' => $barcode,
+                        'order_id' => $order->ID,
+                        'customer_name' => $order->first_name . ' ' . $order->last_name,
+                        'customer_email' => $order->customer_email,
+                        'order_date' => $order->post_date,
+                        'order_total' => $order->total
+                    );
+                }
+            }
+        }
+    }
+    
+    // Pagination
+    $per_page = 50;
+    $total_barcodes = count($all_barcodes);
+    $total_pages = ceil($total_barcodes / $per_page);
+    $current_page = isset($_GET['paged']) ? max(1, intval($_GET['paged'])) : 1;
+    $offset = ($current_page - 1) * $per_page;
+    $paged_barcodes = array_slice($all_barcodes, $offset, $per_page);
+    
+    ?>
+    <div class="wrap">
+        <h1><span class="dashicons dashicons-list-view"></span> Barcode Registry</h1>
+        <p>Complete registry of all issued barcodes with customer assignments</p>
+        
+        <!-- Search and Filter Form -->
+        <div class="tablenav top">
+            <form method="get" style="display: flex; gap: 10px; align-items: center; margin-bottom: 20px;">
+                <input type="hidden" name="page" value="barcode-registry">
+                
+                <input type="text" name="search_barcode" value="<?php echo esc_attr($search_barcode); ?>" 
+                       placeholder="Search barcode number..." style="width: 200px;">
+                
+                <input type="text" name="search_customer" value="<?php echo esc_attr($search_customer); ?>" 
+                       placeholder="Search customer name/email..." style="width: 200px;">
+                
+                <input type="number" name="order_id" value="<?php echo $filter_order; ?>" 
+                       placeholder="Order ID" style="width: 100px;">
+                
+                <input type="submit" class="button" value="Search">
+                
+                <?php if ($search_barcode || $search_customer || $filter_order): ?>
+                    <a href="<?php echo admin_url('admin.php?page=barcode-registry'); ?>" class="button">Clear Filters</a>
+                <?php endif; ?>
+            </form>
+        </div>
+        
+        <!-- Statistics -->
+        <div style="background: white; padding: 15px; border: 1px solid #ccd0d4; border-radius: 4px; margin-bottom: 20px;">
+            <strong>Registry Statistics:</strong> 
+            Showing <?php echo number_format(count($paged_barcodes)); ?> of <?php echo number_format($total_barcodes); ?> barcodes
+            <?php if ($search_barcode || $search_customer || $filter_order): ?>
+                (filtered results)
+            <?php endif; ?>
+        </div>
+        
+        <!-- Barcode Registry Table -->
+        <table class="wp-list-table widefat fixed striped">
+            <thead>
+                <tr>
+                    <th style="width: 150px;">Barcode Number</th>
+                    <th style="width: 100px;">Order ID</th>
+                    <th>Customer</th>
+                    <th>Email</th>
+                    <th style="width: 120px;">Order Date</th>
+                    <th style="width: 100px;">Order Total</th>
+                    <th style="width: 120px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if (empty($paged_barcodes)): ?>
+                <tr>
+                    <td colspan="7" style="text-align: center; padding: 40px; color: #666;">
+                        <?php if ($search_barcode || $search_customer || $filter_order): ?>
+                            No barcodes found matching your search criteria.
+                        <?php else: ?>
+                            No barcodes have been issued yet.
+                        <?php endif; ?>
+                    </td>
+                </tr>
+                <?php else: ?>
+                    <?php foreach ($paged_barcodes as $item): ?>
+                    <tr>
+                        <td>
+                            <strong><code style="font-size: 14px; background: #f0f0f1; padding: 4px 6px; border-radius: 3px;">
+                                <?php echo esc_html($item['barcode']); ?>
+                            </code></strong>
+                        </td>
+                        <td>
+                            <a href="<?php echo admin_url('post.php?post=' . $item['order_id'] . '&action=edit'); ?>" style="font-weight: bold;">
+                                #<?php echo $item['order_id']; ?>
+                            </a>
+                        </td>
+                        <td><strong><?php echo esc_html($item['customer_name']); ?></strong></td>
+                        <td><?php echo esc_html($item['customer_email']); ?></td>
+                        <td><?php echo date('M j, Y', strtotime($item['order_date'])); ?></td>
+                        <td>₹<?php echo number_format($item['order_total'], 2); ?></td>
+                        <td>
+                            <a href="<?php echo admin_url('post.php?post=' . $item['order_id'] . '&action=edit'); ?>" class="button button-small">View Order</a>
+                            <a href="<?php echo home_url('/?barcode_number=' . urlencode($item['barcode'])); ?>" class="button button-small" target="_blank">Test Search</a>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </tbody>
+        </table>
+        
+        <!-- Pagination -->
+        <?php if ($total_pages > 1): ?>
+        <div class="tablenav bottom">
+            <div class="tablenav-pages">
+                <span class="displaying-num"><?php echo number_format($total_barcodes); ?> items</span>
+                <span class="pagination-links">
+                    <?php
+                    $base_url = admin_url('admin.php?page=barcode-registry');
+                    if ($search_barcode) $base_url .= '&search_barcode=' . urlencode($search_barcode);
+                    if ($search_customer) $base_url .= '&search_customer=' . urlencode($search_customer);
+                    if ($filter_order) $base_url .= '&order_id=' . $filter_order;
+                    
+                    if ($current_page > 1): ?>
+                        <a class="button" href="<?php echo $base_url . '&paged=' . ($current_page - 1); ?>">‹ Previous</a>
+                    <?php endif; ?>
+                    
+                    <span class="paging-input">
+                        Page <?php echo $current_page; ?> of <?php echo $total_pages; ?>
+                    </span>
+                    
+                    <?php if ($current_page < $total_pages): ?>
+                        <a class="button" href="<?php echo $base_url . '&paged=' . ($current_page + 1); ?>">Next ›</a>
+                    <?php endif; ?>
+                </span>
+            </div>
+        </div>
+        <?php endif; ?>
+        
+        <!-- Export Options -->
+        <div style="margin-top: 20px; padding: 15px; background: #f9f9f9; border-radius: 4px;">
+            <h3>Export Options</h3>
+            <p>
+                <a href="<?php echo admin_url('admin.php?page=barcode-registry&export=csv' . ($search_barcode ? '&search_barcode=' . urlencode($search_barcode) : '') . ($search_customer ? '&search_customer=' . urlencode($search_customer) : '') . ($filter_order ? '&order_id=' . $filter_order : '')); ?>" class="button button-primary">
+                    📊 Export to CSV
+                </a>
+                <small style="margin-left: 10px; color: #666;">
+                    Export <?php echo $search_barcode || $search_customer || $filter_order ? 'filtered' : 'all'; ?> barcode assignments
+                </small>
+            </p>
+        </div>
+    </div>
+    
+    <style>
+    .barcode-registry-table code {
+        background: #f0f0f1;
+        padding: 4px 6px;
+        border-radius: 3px;
+        font-family: 'Courier New', monospace;
+        font-size: 13px;
+    }
+    .pagination-links .button {
+        margin: 0 2px;
+    }
+    </style>
+    <?php
+    
+    // Handle CSV Export
+    if (isset($_GET['export']) && $_GET['export'] === 'csv') {
+        barcodemine_export_barcode_registry_csv($all_barcodes);
+        exit;
+    }
+}
+
+// CSV Export Function
+function barcodemine_export_barcode_registry_csv($barcodes) {
+    $filename = 'barcode-registry-' . date('Y-m-d') . '.csv';
+    
+    header('Content-Type: text/csv');
+    header('Content-Disposition: attachment; filename="' . $filename . '"');
+    
+    $output = fopen('php://output', 'w');
+    
+    // CSV Headers
+    fputcsv($output, array('Barcode Number', 'Order ID', 'Customer Name', 'Customer Email', 'Order Date', 'Order Total'));
+    
+    // CSV Data
+    foreach ($barcodes as $item) {
+        fputcsv($output, array(
+            $item['barcode'],
+            $item['order_id'],
+            $item['customer_name'],
+            $item['customer_email'],
+            date('Y-m-d H:i:s', strtotime($item['order_date'])),
+            $item['order_total']
+        ));
+    }
+    
+    fclose($output);
 }
 
 // WooCommerce styling is now handled in style.css for better performance
