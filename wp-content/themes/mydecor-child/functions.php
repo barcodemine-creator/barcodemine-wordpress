@@ -2090,24 +2090,27 @@ function barcodemine_search_shortcode() {
                            maxlength="20"
                            pattern="[a-zA-Z0-9]*"
                            autocomplete="off">
-                    <input placeholder="Enter company name (for verification)" 
+                    <div class="search-divider">
+                        <span>OR</span>
+                    </div>
+                    <input placeholder="Enter company name (alternative search)" 
                            class="elementor-search-form__input company-input" 
                            type="text" 
                            name="company_name" 
-                           title="Company name for verification" 
+                           title="Company name search" 
                            value=""
-                           style="margin-top: 10px;"
                            autocomplete="off">
                     <button type="submit" class="barcode-search-btn">
-                        <span class="btn-text">Verify Barcode</span>
-                        <i class="fas fa-shield-alt search-icon"></i>
+                        <span class="btn-text">Search & Verify</span>
+                        <i class="fas fa-search search-icon"></i>
                         <i class="fas fa-spinner fa-spin search-loader" style="display: none;"></i>
                     </button>
                 </div>
                 <div class="search-help">
-                    <small><strong>Step 1:</strong> Enter your barcode number<br>
-                    <strong>Step 2:</strong> Enter your company name as printed on certificate<br>
-                    <strong>Result:</strong> 100% authentic ownership verification</small>
+                    <small><strong>🔍 Flexible Search:</strong><br>
+                    • Enter <strong>barcode number</strong> to find registration details<br>
+                    • Enter <strong>company name</strong> to see all their barcodes<br>
+                    • Enter <strong>both</strong> for complete ownership verification</small>
                 </div>
         </form>
 
@@ -2121,8 +2124,31 @@ function barcodemine_search_shortcode() {
         }
         .search-input-group {
             display: flex;
-            gap: 10px;
+            flex-direction: column;
+            gap: 15px;
             margin-bottom: 10px;
+            align-items: stretch;
+        }
+        .search-divider {
+            text-align: center;
+            position: relative;
+            margin: 5px 0;
+        }
+        .search-divider:before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #ddd;
+        }
+        .search-divider span {
+            background: white;
+            padding: 0 15px;
+            color: #666;
+            font-weight: bold;
+            font-size: 12px;
         }
         .barcode-input {
             flex: 1;
@@ -2686,8 +2712,8 @@ function barcodemine_search_single_barcode($geiper_name) {
             ));
             
             if ( $query->have_posts() ) {
-                while ( $query->have_posts() ) {
-                    $query->the_post();
+        while ( $query->have_posts() ) {
+            $query->the_post();
                     $current_order_id = get_the_ID();
                     $excel_data = get_post_meta( $current_order_id, '_excel_file_data', true );
                     
@@ -2695,9 +2721,9 @@ function barcodemine_search_single_barcode($geiper_name) {
                         $order_id = $current_order_id;
                         break 2;
                     }
-                }
-                wp_reset_postdata();
-            }
+        }
+        wp_reset_postdata();
+    }
         }
     }
     
@@ -2738,59 +2764,111 @@ function barcodemine_barcode_search(){
     $geiper_name = ! empty( $_POST['geiper_name'] ) ? sanitize_text_field( $_POST['geiper_name'] ) : '';
     $company_name = ! empty( $_POST['company_name'] ) ? sanitize_text_field( $_POST['company_name'] ) : '';
     
-    // Clean the input but preserve alphanumeric characters (for GIPIER prefix)
-    $geiper_name = preg_replace('/[^a-zA-Z0-9]/', '', $geiper_name);
-    $geiper_name = strtoupper($geiper_name); // Convert to uppercase for consistent matching
+    // Clean the barcode input but preserve alphanumeric characters (for GIPIER prefix)
+    if ( ! empty( $geiper_name ) ) {
+        $geiper_name = preg_replace('/[^a-zA-Z0-9]/', '', $geiper_name);
+        $geiper_name = strtoupper($geiper_name); // Convert to uppercase for consistent matching
+    }
     
-    if ( empty( $geiper_name ) ) {
-        echo '<div class="barcode-error"><h2>Verification Failed</h2><p>Please enter a valid barcode number.</p></div>';
+    // Check if at least one search criteria is provided
+    if ( empty( $geiper_name ) && empty( $company_name ) ) {
+        echo '<div class="verification-result verification-failed">
+                <div class="verification-header">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <h2>Search Required</h2>
+                                    </div>
+                <div class="verification-content">
+                    <p>Please enter either a <strong>barcode number</strong> OR <strong>company name</strong> to search.</p>
+                </div>
+              </div>';
         die();
     }
     
     // Add debugging
-    error_log('Barcode Search: Looking for barcode - ' . $geiper_name);
-
-    // Enhanced query with more order statuses and better meta query
-    $args = array(
-        'post_type' => 'shop_order',
-        'posts_per_page' => -1,
-        'post_status' => array( 'wc-processing', 'wc-completed', 'wc-on-hold', 'wc-pending' ),
-        'meta_query' => array(
-            'relation' => 'OR',
-            array(
-                'key' => '_excel_file_data',
-                'value' => $geiper_name,
-                'compare' => 'LIKE',
-            ),
-            array(
-                'key' => '_excel_file_data',
-                'value' => serialize($geiper_name),
-                'compare' => 'LIKE',
-            )
-        )
-    );
+    error_log('=== BARCODE SEARCH DEBUG ===');
+    error_log('Barcode: ' . $geiper_name);
+    error_log('Company: ' . $company_name);
     
-    // The Query
-    $query = new WP_Query( $args );
+    // Debug the database first
+    barcodemine_debug_database();
+    
     $order_id = null;
     $found_orders = array();
+    $search_type = '';
     
-    if ( $query->have_posts() ) {
-        // Check all orders to find exact barcode match
-        while ( $query->have_posts() ) {
-            $query->the_post();
-            $current_order_id = get_the_ID();
-            $excel_data = get_post_meta( $current_order_id, '_excel_file_data', true );
-            
-            // Check if barcode exists in the range
-            if ( is_array( $excel_data ) && in_array( $geiper_name, $excel_data ) ) {
-                $order_id = $current_order_id;
-                $found_orders[] = $current_order_id;
-                error_log('Barcode Search: Found exact match in order ID - ' . $current_order_id);
-                break; // Use first exact match
+    // Search by barcode if provided
+    if ( ! empty( $geiper_name ) ) {
+        error_log('Searching by barcode: ' . $geiper_name);
+        $search_type = 'barcode';
+        
+        // Enhanced query with more order statuses and better meta query
+        $args = array(
+            'post_type' => 'shop_order',
+            'posts_per_page' => -1,
+            'post_status' => array( 'wc-processing', 'wc-completed', 'wc-on-hold', 'wc-pending' ),
+            'meta_query' => array(
+                'relation' => 'OR',
+                array(
+                    'key' => '_excel_file_data',
+                    'value' => $geiper_name,
+                    'compare' => 'LIKE',
+                ),
+                array(
+                    'key' => '_excel_file_data',
+                    'value' => serialize($geiper_name),
+                    'compare' => 'LIKE',
+                )
+            )
+        );
+        
+        $query = new WP_Query( $args );
+        error_log('Found ' . $query->found_posts . ' orders to check for barcode');
+        
+        if ( $query->have_posts() ) {
+            while ( $query->have_posts() ) {
+                $query->the_post();
+                $current_order_id = get_the_ID();
+                $excel_data = get_post_meta( $current_order_id, '_excel_file_data', true );
+                
+                error_log('Checking order ' . $current_order_id . ' - Excel data type: ' . gettype($excel_data));
+                
+                if ( is_array( $excel_data ) && in_array( $geiper_name, $excel_data ) ) {
+                    $order_id = $current_order_id;
+                    $found_orders[] = $current_order_id;
+                    error_log('FOUND EXACT BARCODE MATCH in order: ' . $current_order_id);
+                    break;
+                }
             }
+            wp_reset_postdata();
         }
-        wp_reset_postdata();
+    }
+    
+    // Search by company name if barcode not found and company name provided
+    if ( empty( $order_id ) && ! empty( $company_name ) ) {
+        error_log('Searching by company name: ' . $company_name);
+        $search_type = 'company';
+        
+        global $wpdb;
+        
+        // Search for orders by company name
+        $company_orders = $wpdb->get_results($wpdb->prepare("
+            SELECT p.ID, pm1.meta_value as company_name, pm2.meta_value as excel_data
+            FROM {$wpdb->posts} p
+            LEFT JOIN {$wpdb->postmeta} pm1 ON p.ID = pm1.post_id AND pm1.meta_key = '_billing_company'
+            LEFT JOIN {$wpdb->postmeta} pm2 ON p.ID = pm2.post_id AND pm2.meta_key = '_excel_file_data'
+            WHERE p.post_type = 'shop_order' 
+            AND p.post_status IN ('wc-processing', 'wc-completed', 'wc-on-hold', 'wc-pending')
+            AND pm1.meta_value LIKE %s
+            AND pm2.meta_value IS NOT NULL
+        ", '%' . $company_name . '%'));
+        
+        error_log('Found ' . count($company_orders) . ' orders for company search');
+        
+        if ( ! empty( $company_orders ) ) {
+            // Use the first matching company order
+            $order_id = $company_orders[0]->ID;
+            error_log('FOUND COMPANY MATCH in order: ' . $order_id);
+        }
     }
     
     // If no exact match, try broader search
@@ -2878,7 +2956,7 @@ function barcodemine_barcode_search(){
                 <i class="fas fa-check-circle"></i> 
                 <strong>Company Verified!</strong> Perfect match with registered owner.
             </div>';
-        } else {
+            } else {
             $company_match = false;
             $company_verification_message = '<div class="company-match-warning">
                 <i class="fas fa-exclamation-triangle"></i> 
@@ -2893,8 +2971,17 @@ function barcodemine_barcode_search(){
     ?>
     <div class="verification-result <?php echo $company_match ? 'verification-success' : 'verification-warning'; ?>">
         <div class="verification-header">
-            <i class="fas <?php echo $company_match ? 'fa-shield-check' : 'fa-shield-alt'; ?>"></i>
-            <h2><?php echo $company_match ? '100% AUTHENTIC BARCODE' : 'BARCODE FOUND - VERIFY OWNERSHIP'; ?></h2>
+            <i class="fas <?php echo $company_match ? 'fa-shield-check' : 'fa-search'; ?>"></i>
+            <?php if ( $search_type === 'company' ): ?>
+                <h2>COMPANY REGISTRATION FOUND</h2>
+                <p>Showing all barcodes registered to this company</p>
+            <?php elseif ( $company_match ): ?>
+                <h2>100% AUTHENTIC BARCODE</h2>
+                <p>Barcode and company verification successful</p>
+            <?php else: ?>
+                <h2>BARCODE REGISTRATION FOUND</h2>
+                <p>Barcode exists - showing registration details</p>
+            <?php endif; ?>
         </div>
         
         <?php if ( ! empty( $company_verification_message ) ): ?>
@@ -2907,10 +2994,17 @@ function barcodemine_barcode_search(){
             <div class="barcode-info">
                 <h3><i class="fas fa-barcode"></i> Barcode Information</h3>
                 <div class="info-grid">
+                    <?php if ( $search_type === 'barcode' ): ?>
                     <div class="info-item">
-                        <label>Barcode Number:</label>
+                        <label>Searched Barcode:</label>
                         <span class="barcode-number"><?php echo esc_html($geiper_name); ?></span>
                     </div>
+                    <?php elseif ( $search_type === 'company' ): ?>
+                    <div class="info-item">
+                        <label>Searched Company:</label>
+                        <span class="company-searched"><?php echo esc_html($company_name); ?></span>
+                    </div>
+                    <?php endif; ?>
                     <div class="info-item">
                         <label>Barcode Series:</label>
                         <span class="barcode-range"><?php echo $excel_data[0]; ?> - <?php echo end( $excel_data ); ?></span>
@@ -2936,7 +3030,7 @@ function barcodemine_barcode_search(){
                         <?php echo esc_html($billing_address['first_name'] . ' ' . $billing_address['last_name']); ?>
                     </div>
                     <div class="owner-address">
-                        <?php 
+                <?php
                         $address_parts = array_filter([
                             $billing_address['address_1'],
                             $billing_address['address_2'],
