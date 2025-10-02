@@ -12,10 +12,106 @@ Tags: two-columns, left-sidebar, custom-background, custom-colors, custom-header
 Text Domain: mydecor-child
 */
 
+/* Only keep essential barcode search styles */
 .search-gepir-data button .search-loader{
     display: none;
 }
 
 .elementor-shortcode .search-result{
     padding-top: 50px;
+}
+
+/* Fix the clashing green color #00c49a in cart and buttons */
+.woocommerce .button,
+.woocommerce button.button,
+.woocommerce input.button,
+.woocommerce #respond input#submit,
+.woocommerce a.button,
+.woocommerce button.button.alt,
+.woocommerce input.button.alt,
+.woocommerce #respond input#submit.alt,
+.woocommerce a.button.alt,
+.woocommerce .cart .button,
+.woocommerce .cart input.button,
+.woocommerce-cart .wc-proceed-to-checkout a.checkout-button,
+.woocommerce-checkout .woocommerce-form-login .button,
+.woocommerce-checkout .woocommerce-form-coupon .button,
+.woocommerce #payment #place_order,
+.woocommerce-page #payment #place_order,
+.single_add_to_cart_button,
+.woocommerce div.product form.cart .button,
+.quantity .plus,
+.quantity .minus,
+input[type="button"],
+button[type="submit"],
+.elementor-button,
+.wp-block-button__link {
+    background-color: #c41e3a !important; /* Red color instead of green */
+    border-color: #c41e3a !important;
+    color: #ffffff !important;
+}
+
+.woocommerce .button:hover,
+.woocommerce button.button:hover,
+.woocommerce input.button:hover,
+.woocommerce #respond input#submit:hover,
+.woocommerce a.button:hover,
+.woocommerce button.button.alt:hover,
+.woocommerce input.button.alt:hover,
+.woocommerce #respond input#submit.alt:hover,
+.woocommerce a.button.alt:hover,
+.woocommerce .cart .button:hover,
+.woocommerce .cart input.button:hover,
+.woocommerce-cart .wc-proceed-to-checkout a.checkout-button:hover,
+.woocommerce-checkout .woocommerce-form-login .button:hover,
+.woocommerce-checkout .woocommerce-form-coupon .button:hover,
+.woocommerce #payment #place_order:hover,
+.woocommerce-page #payment #place_order:hover,
+.single_add_to_cart_button:hover,
+.woocommerce div.product form.cart .button:hover,
+.quantity .plus:hover,
+.quantity .minus:hover,
+input[type="button"]:hover,
+button[type="submit"]:hover,
+.elementor-button:hover,
+.wp-block-button__link:hover {
+    background-color: #a01729 !important; /* Darker red on hover */
+    border-color: #a01729 !important;
+    color: #ffffff !important;
+}
+
+/* Fix any green backgrounds that might be causing issues */
+.woocommerce-cart table.cart td.actions .coupon .input-text,
+.woocommerce-cart table.cart td.actions .coupon .button,
+.woocommerce .quantity .qty,
+.woocommerce .quantity input.qty,
+.woocommerce-cart .cart-collaterals .cart_totals .wc-proceed-to-checkout,
+.woocommerce-checkout .checkout_coupon .form-row .button {
+    background-color: #ffffff !important;
+    border-color: #ddd !important;
+}
+
+/* Override any theme or plugin styles that use the problematic green */
+*[style*="#00c49a"],
+*[style*="00c49a"] {
+    background-color: #c41e3a !important;
+    border-color: #c41e3a !important;
+}
+
+/* Fix quantity buttons specifically */
+.woocommerce .quantity .plus,
+.woocommerce .quantity .minus {
+    background-color: #f8f8f8 !important;
+    border: 1px solid #ddd !important;
+    color: #333 !important;
+    width: 30px !important;
+    height: 30px !important;
+    line-height: 28px !important;
+    text-align: center !important;
+}
+
+.woocommerce .quantity .plus:hover,
+.woocommerce .quantity .minus:hover {
+    background-color: #e8e8e8 !important;
+    border-color: #ccc !important;
 }
