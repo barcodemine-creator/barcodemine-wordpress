@@ -127,9 +127,9 @@ function barcodemine_fix_green_color_clash() {
         background-color: #333333 !important;
         border-color: #333333 !important;
         color: #ffffff !important;
-        padding: 8px 16px !important; /* Fix excessive padding */
-        font-size: 14px !important; /* Normalize font size */
-        line-height: 1.4 !important; /* Fix line height */
+        padding: 4px 8px !important; /* Much smaller padding */
+        font-size: 12px !important; /* Smaller font size */
+        line-height: 1.2 !important; /* Tighter line height */
     }
     
     .woocommerce .button:hover,
@@ -147,9 +147,9 @@ function barcodemine_fix_green_color_clash() {
         background-color: #222222 !important;
         border-color: #222222 !important;
         color: #ffffff !important;
-        padding: 8px 16px !important; /* Keep consistent padding on hover */
-        font-size: 14px !important; /* Keep consistent font size on hover */
-        line-height: 1.4 !important; /* Keep consistent line height on hover */
+        padding: 4px 8px !important; /* Keep consistent smaller padding on hover */
+        font-size: 12px !important; /* Keep consistent smaller font size on hover */
+        line-height: 1.2 !important; /* Keep consistent tighter line height on hover */
     }
     
     /* Override any inline styles with the problematic color */
@@ -163,20 +163,20 @@ function barcodemine_fix_green_color_clash() {
     .woocommerce .quantity .minus,
     .quantity .plus,
     .quantity .minus {
-        padding: 4px 8px !important;
-        font-size: 14px !important;
-        line-height: 1.2 !important;
+        padding: 2px 4px !important;
+        font-size: 11px !important;
+        line-height: 1.1 !important;
         width: auto !important;
         height: auto !important;
-        min-width: 30px !important;
-        min-height: 30px !important;
+        min-width: 24px !important;
+        min-height: 24px !important;
     }
     
     /* Fix cart table buttons */
     .woocommerce-cart table.cart .button,
     .woocommerce-cart .cart-collaterals .button {
-        padding: 6px 12px !important;
-        font-size: 13px !important;
+        padding: 3px 6px !important;
+        font-size: 11px !important;
     }
     
     /* Specific barcode search button */
@@ -185,9 +185,9 @@ function barcodemine_fix_green_color_clash() {
         background-color: #007cba !important;
         border-color: #007cba !important;
         color: #ffffff !important;
-        padding: 8px 16px !important;
-        font-size: 14px !important;
-        line-height: 1.4 !important;
+        padding: 4px 8px !important;
+        font-size: 12px !important;
+        line-height: 1.2 !important;
     }
     
     .barcode-search-btn:hover,
@@ -195,9 +195,9 @@ function barcodemine_fix_green_color_clash() {
         background-color: #005a87 !important;
         border-color: #005a87 !important;
         color: #ffffff !important;
-        padding: 8px 16px !important;
-        font-size: 14px !important;
-        line-height: 1.4 !important;
+        padding: 4px 8px !important;
+        font-size: 12px !important;
+        line-height: 1.2 !important;
     }
     </style>
     <?php
@@ -1288,7 +1288,7 @@ function barcodemine_search_shortcode() {
     ob_start();
     ?>
         <div class="barcode-search-container">
-            <form method="post" class="search-gepir-data">
+        <form method="post" class="search-gepir-data">
                 <div class="search-input-group">
                     <input placeholder="Enter GTIN-13 EAN / GTIN-12 UPC barcode" 
                            class="elementor-search-form__input barcode-input" 
@@ -1308,9 +1308,9 @@ function barcodemine_search_shortcode() {
                 <div class="search-help">
                     <small>Enter a 12 or 13 digit barcode number (UPC/EAN format)</small>
                 </div>
-            </form>
+        </form>
 
-            <div class="search-result"></div>
+        <div class="search-result"></div>
         </div>
         
         <style>
@@ -1783,8 +1783,8 @@ function barcodemine_barcode_search(){
             ));
             
             if ( $query->have_posts() ) {
-                while ( $query->have_posts() ) {
-                    $query->the_post();
+        while ( $query->have_posts() ) {
+            $query->the_post();
                     $current_order_id = get_the_ID();
                     $excel_data = get_post_meta( $current_order_id, '_excel_file_data', true );
                     
@@ -1793,9 +1793,9 @@ function barcodemine_barcode_search(){
                         error_log('Barcode Search: Found padded match (' . $search_term . ') in order ID - ' . $current_order_id);
                         break 2; // Break both loops
                     }
-                }
-                wp_reset_postdata();
-            }
+        }
+        wp_reset_postdata();
+    }
         }
     }
     
