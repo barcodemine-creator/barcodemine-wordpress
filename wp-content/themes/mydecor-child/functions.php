@@ -1203,14 +1203,14 @@ add_action( 'wp', 'barcodemine_fix_payment_gateways' );
 
 // REST API endpoint for barcode verification
 add_action( 'rest_api_init', function() {
-    register_rest_route( 'barcodemine/v1', '/verify/(?P<barcode>[0-9]+)', array(
+    register_rest_route( 'barcodemine/v1', '/verify/(?P<barcode>[a-zA-Z0-9]+)', array(
         'methods' => 'GET',
         'callback' => 'barcodemine_api_verify_barcode',
         'permission_callback' => '__return_true',
         'args' => array(
             'barcode' => array(
                 'validate_callback' => function($param, $request, $key) {
-                    return is_numeric($param) && strlen($param) >= 8 && strlen($param) <= 13;
+                    return preg_match('/^[a-zA-Z0-9]+$/', $param) && strlen($param) >= 5 && strlen($param) <= 20;
                 }
             ),
         ),
@@ -1234,8 +1234,9 @@ add_action( 'rest_api_init', function() {
 function barcodemine_api_verify_barcode( $request ) {
     $barcode = $request['barcode'];
     
-    // Clean barcode
-    $clean_barcode = preg_replace('/[^0-9]/', '', $barcode);
+    // Clean barcode but preserve alphanumeric characters
+    $clean_barcode = preg_replace('/[^a-zA-Z0-9]/', '', $barcode);
+    $clean_barcode = strtoupper($clean_barcode);
     
     if ( empty( $clean_barcode ) ) {
         return new WP_Error( 'invalid_barcode', 'Invalid barcode format', array( 'status' => 400 ) );
@@ -1305,7 +1306,8 @@ function barcodemine_api_bulk_verify( $request ) {
     $not_found_count = 0;
     
     foreach ( $barcodes as $barcode ) {
-        $clean_barcode = preg_replace('/[^0-9]/', '', $barcode);
+        $clean_barcode = preg_replace('/[^a-zA-Z0-9]/', '', $barcode);
+        $clean_barcode = strtoupper($clean_barcode);
         
         if ( empty( $clean_barcode ) ) {
             $results[] = array(
@@ -2079,14 +2081,14 @@ function barcodemine_search_shortcode() {
         <div class="barcode-search-container">
         <form method="post" class="search-gepir-data">
                 <div class="search-input-group">
-                    <input placeholder="Enter GTIN-13 EAN / GTIN-12 UPC barcode" 
+                    <input placeholder="Enter barcode (e.g., GIPIER12345 or 123456789012)" 
                            class="elementor-search-form__input barcode-input" 
                            type="text" 
                            name="geiper_name" 
                            title="Search for barcode" 
                            value=""
-                           maxlength="13"
-                           pattern="[0-9]*"
+                           maxlength="20"
+                           pattern="[a-zA-Z0-9]*"
                            autocomplete="off">
                     <button type="submit" class="barcode-search-btn">
                         <span class="btn-text">Search</span>
@@ -2095,7 +2097,7 @@ function barcodemine_search_shortcode() {
                     </button>
                 </div>
                 <div class="search-help">
-                    <small>Enter a 12 or 13 digit barcode number (UPC/EAN format)</small>
+                    <small>Enter a barcode number with or without GIPIER prefix (e.g., GIPIER12345 or 123456789012)</small>
                 </div>
         </form>
 
@@ -2377,6 +2379,10 @@ function barcodemine_bulk_barcode_search() {
 
 // Helper function for single barcode search
 function barcodemine_search_single_barcode($geiper_name) {
+    // Clean the input but preserve alphanumeric characters (for GIPIER prefix)
+    $geiper_name = preg_replace('/[^a-zA-Z0-9]/', '', $geiper_name);
+    $geiper_name = strtoupper($geiper_name); // Convert to uppercase for consistent matching
+    
     // Enhanced query with more order statuses and better meta query
     $args = array(
         'post_type' => 'shop_order',
@@ -2490,8 +2496,9 @@ function barcodemine_barcode_search(){
     // Enhanced input validation and sanitization
     $geiper_name = ! empty( $_POST['geiper_name'] ) ? sanitize_text_field( $_POST['geiper_name'] ) : '';
     
-    // Remove any non-numeric characters and leading zeros for better matching
-    $geiper_name = preg_replace('/[^0-9]/', '', $geiper_name);
+    // Clean the input but preserve alphanumeric characters (for GIPIER prefix)
+    $geiper_name = preg_replace('/[^a-zA-Z0-9]/', '', $geiper_name);
+    $geiper_name = strtoupper($geiper_name); // Convert to uppercase for consistent matching
     
     if ( empty( $geiper_name ) ) {
         echo '<h2>Search results</h2><p>Please enter a valid barcode number.</p>';
