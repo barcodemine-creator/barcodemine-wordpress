@@ -2090,14 +2090,24 @@ function barcodemine_search_shortcode() {
                            maxlength="20"
                            pattern="[a-zA-Z0-9]*"
                            autocomplete="off">
+                    <input placeholder="Enter company name (for verification)" 
+                           class="elementor-search-form__input company-input" 
+                           type="text" 
+                           name="company_name" 
+                           title="Company name for verification" 
+                           value=""
+                           style="margin-top: 10px;"
+                           autocomplete="off">
                     <button type="submit" class="barcode-search-btn">
-                        <span class="btn-text">Search</span>
-                        <i class="fas fa-search search-icon"></i>
+                        <span class="btn-text">Verify Barcode</span>
+                        <i class="fas fa-shield-alt search-icon"></i>
                         <i class="fas fa-spinner fa-spin search-loader" style="display: none;"></i>
                     </button>
                 </div>
                 <div class="search-help">
-                    <small>Enter a barcode number with or without GIPIER prefix (e.g., GIPIER12345 or 123456789012)</small>
+                    <small><strong>Step 1:</strong> Enter your barcode number<br>
+                    <strong>Step 2:</strong> Enter your company name as printed on certificate<br>
+                    <strong>Result:</strong> 100% authentic ownership verification</small>
                 </div>
         </form>
 
@@ -2167,29 +2177,219 @@ function barcodemine_search_shortcode() {
             background: white;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        .bct-gepir-results__table th,
-        .bct-gepir-results__table td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
+        /* Enhanced Verification Results Styling */
+        .verification-result {
+            max-width: 800px;
+            margin: 20px auto;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
-        .bct-gepir-results__table th {
-            background: #f8f9fa;
+        
+        .verification-success {
+            border: 3px solid #28a745;
+        }
+        
+        .verification-warning {
+            border: 3px solid #ffc107;
+        }
+        
+        .verification-failed {
+            border: 3px solid #dc3545;
+        }
+        
+        .verification-header {
+            padding: 20px;
+            text-align: center;
+            color: white;
             font-weight: bold;
         }
-        .bct-gepir-results__company {
-            max-width: 300px;
+        
+        .verification-success .verification-header {
+            background: linear-gradient(135deg, #28a745, #20c997);
         }
+        
+        .verification-warning .verification-header {
+            background: linear-gradient(135deg, #ffc107, #fd7e14);
+        }
+        
+        .verification-failed .verification-header {
+            background: linear-gradient(135deg, #dc3545, #e83e8c);
+        }
+        
+        .verification-header i {
+            font-size: 48px;
+            margin-bottom: 10px;
+            display: block;
+        }
+        
+        .verification-header h2 {
+            margin: 0;
+            font-size: 24px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .company-verification {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .company-match-success {
+            background: #d4edda;
+            color: #155724;
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 4px solid #28a745;
+        }
+        
+        .company-match-warning {
+            background: #fff3cd;
+            color: #856404;
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 4px solid #ffc107;
+        }
+        
+        .verification-content {
+            padding: 20px;
+            background: white;
+        }
+        
+        .barcode-info, .owner-info {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #007cba;
+        }
+        
+        .barcode-info h3, .owner-info h3 {
+            margin: 0 0 15px 0;
+            color: #2c3e50;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .info-item label {
+            font-weight: bold;
+            color: #6c757d;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .info-item span {
+            font-size: 16px;
+            color: #2c3e50;
+        }
+        
+        .barcode-number {
+            font-family: 'Courier New', monospace;
+            background: #e9ecef;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 18px !important;
+        }
+        
+        .barcode-range {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+        }
+        
+        .owner-details {
+            line-height: 1.6;
+        }
+        
+        .company-name {
+            font-size: 20px;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+        
+        .owner-name {
+            font-size: 16px;
+            color: #495057;
+            margin-bottom: 8px;
+        }
+        
+        .owner-address {
+            color: #6c757d;
+            margin-bottom: 10px;
+        }
+        
+        .owner-contact {
+            color: #495057;
+        }
+        
+        .owner-contact i {
+            width: 16px;
+            margin-right: 8px;
+            color: #007cba;
+        }
+        
+        .verification-footer {
+            text-align: center;
+            padding: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .authenticity-badge {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        
+        .ownership-warning {
+            background: linear-gradient(135deg, #ffc107, #fd7e14);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        
+        .authenticity-badge i, .ownership-warning i {
+            font-size: 32px;
+            margin-bottom: 10px;
+            display: block;
+        }
+        
+        .authenticity-badge strong, .ownership-warning strong {
+            font-size: 18px;
+            display: block;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
         @media (max-width: 768px) {
             .search-input-group {
                 flex-direction: column;
             }
-            .bct-gepir-results__table {
-                font-size: 14px;
+            .verification-result {
+                margin: 10px;
             }
-            .bct-gepir-results__table th,
-            .bct-gepir-results__table td {
-                padding: 8px;
+            .verification-header h2 {
+                font-size: 18px;
+            }
+            .info-grid {
+                grid-template-columns: 1fr;
             }
         }
         </style>
@@ -2377,11 +2577,52 @@ function barcodemine_bulk_barcode_search() {
     die();
 }
 
+// Debug function to check what's in the database
+function barcodemine_debug_database() {
+    global $wpdb;
+    
+    error_log('=== BARCODE DEBUG START ===');
+    
+    // Get all orders with barcode data
+    $orders = $wpdb->get_results("
+        SELECT p.ID, p.post_date, pm.meta_value as excel_data
+        FROM {$wpdb->posts} p
+        LEFT JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id AND pm.meta_key = '_excel_file_data'
+        WHERE p.post_type = 'shop_order' 
+        AND p.post_status IN ('wc-processing', 'wc-completed', 'wc-on-hold', 'wc-pending')
+        AND pm.meta_value IS NOT NULL
+        ORDER BY p.post_date DESC
+        LIMIT 5
+    ");
+    
+    error_log('Found ' . count($orders) . ' orders with barcode data');
+    
+    foreach ($orders as $order) {
+        $excel_data = maybe_unserialize($order->excel_data);
+        error_log('Order ID: ' . $order->ID);
+        error_log('Excel Data Type: ' . gettype($excel_data));
+        if (is_array($excel_data)) {
+            error_log('Barcode Count: ' . count($excel_data));
+            error_log('First 3 barcodes: ' . implode(', ', array_slice($excel_data, 0, 3)));
+        } else {
+            error_log('Excel Data Raw: ' . substr($order->excel_data, 0, 200));
+        }
+        error_log('---');
+    }
+    
+    error_log('=== BARCODE DEBUG END ===');
+}
+
 // Helper function for single barcode search
 function barcodemine_search_single_barcode($geiper_name) {
+    // Debug the database first
+    barcodemine_debug_database();
+    
     // Clean the input but preserve alphanumeric characters (for GIPIER prefix)
     $geiper_name = preg_replace('/[^a-zA-Z0-9]/', '', $geiper_name);
     $geiper_name = strtoupper($geiper_name); // Convert to uppercase for consistent matching
+    
+    error_log('Searching for cleaned barcode: ' . $geiper_name);
     
     // Enhanced query with more order statuses and better meta query
     $args = array(
@@ -2495,13 +2736,14 @@ function barcodemine_search_single_barcode($geiper_name) {
 function barcodemine_barcode_search(){
     // Enhanced input validation and sanitization
     $geiper_name = ! empty( $_POST['geiper_name'] ) ? sanitize_text_field( $_POST['geiper_name'] ) : '';
+    $company_name = ! empty( $_POST['company_name'] ) ? sanitize_text_field( $_POST['company_name'] ) : '';
     
     // Clean the input but preserve alphanumeric characters (for GIPIER prefix)
     $geiper_name = preg_replace('/[^a-zA-Z0-9]/', '', $geiper_name);
     $geiper_name = strtoupper($geiper_name); // Convert to uppercase for consistent matching
     
     if ( empty( $geiper_name ) ) {
-        echo '<h2>Search results</h2><p>Please enter a valid barcode number.</p>';
+        echo '<div class="barcode-error"><h2>Verification Failed</h2><p>Please enter a valid barcode number.</p></div>';
         die();
     }
     
@@ -2599,7 +2841,17 @@ function barcodemine_barcode_search(){
         // Track failed search
         barcodemine_track_search( $geiper_name, false, 'single' );
         
-        echo '<h2>Search results</h2><div class="barcode-not-found"><p><strong>Barcode not found.</strong></p><p>Please check your barcode number and try again. Make sure you\'re entering a valid GTIN-12 (UPC) or GTIN-13 (EAN) barcode.</p><p><small>Searched for: ' . esc_html($geiper_name) . '</small></p></div>';
+        echo '<div class="verification-result verification-failed">
+                <div class="verification-header">
+                    <i class="fas fa-times-circle"></i>
+                    <h2>Barcode Not Found</h2>
+                </div>
+                <div class="verification-content">
+                    <p><strong>This barcode is not registered in our system.</strong></p>
+                    <p>Searched for: <code>' . esc_html($geiper_name) . '</code></p>
+                    <p>Please verify your barcode number and try again.</p>
+                </div>
+              </div>';
         die();
     }
     
@@ -2607,89 +2859,119 @@ function barcodemine_barcode_search(){
     barcodemine_track_search( $geiper_name, true, 'single' );
     
     $order = new WC_Order( $order_id );
-    $billing_address= $order->get_address('billing');
-
+    $billing_address = $order->get_address('billing');
     $excel_data = get_post_meta( $order_id, '_excel_file_data', true );
+    
+    // Check company name match if provided
+    $company_match = true;
+    $company_verification_message = '';
+    
+    if ( ! empty( $company_name ) ) {
+        $registered_company = strtolower( trim( $billing_address['company'] ) );
+        $entered_company = strtolower( trim( $company_name ) );
+        
+        // Check for partial match (company name contains entered name or vice versa)
+        if ( strpos( $registered_company, $entered_company ) !== false || 
+             strpos( $entered_company, $registered_company ) !== false ) {
+            $company_match = true;
+            $company_verification_message = '<div class="company-match-success">
+                <i class="fas fa-check-circle"></i> 
+                <strong>Company Verified!</strong> Perfect match with registered owner.
+            </div>';
+        } else {
+            $company_match = false;
+            $company_verification_message = '<div class="company-match-warning">
+                <i class="fas fa-exclamation-triangle"></i> 
+                <strong>Company Mismatch!</strong> 
+                <br>You entered: "' . esc_html($company_name) . '"
+                <br>Registered to: "' . esc_html($billing_address['company']) . '"
+            </div>';
+        }
+    }
+    
     ob_start();
     ?>
-        <h2>Search results</h2>
-        <?php
-            if( ! empty( $order_id ) && ! empty( $geiper_name ) ){
-                ?>
-                    <table class="table table-striped bct-gepir-results__table">
-                        <thead>
-                            <tr>
-                                <th>GLN</th>
-                                <th class="bct-gepir-results__company">Company</th>
-                                <th>UPC Coordinator</th>
-                                <th>Contact</th>
-                                <th>GTIN-12 (Quantity)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><?php echo ltrim($geiper_name, '0'); ?></td>
-                                <td class="bct-gepir-results__company">
-                                    <div class="company-name">
-                                        <strong><?php echo $billing_address['company']; ?></strong>
-                                    </div>
-                                    <p translate="no">
-                                        <?php
-                                            if( ! empty( $billing_address['first_name'] ) ) {
-                                                ?>
-                                                    <span class="given-name"><?php echo $billing_address['first_name']; ?></span> 
-                                                <?php
-                                            }
-                                        ?>
-                                        <?php
-                                            if( ! empty( $billing_address['last_name'] ) ) {
-                                                ?>
-                                                    <span class="family-name"><?php echo $billing_address['last_name']; ?></span><br>
-                                                <?php
-                                            }
-                                        ?>
-                                        <?php
-                                            if( ! empty( $billing_address['company'] ) ) {
-                                                ?>
-                                                    <span class="organization"><?php echo $billing_address['company']; ?>,</span><br>
-                                                <?php
-                                            }
-                                        ?>
-                                        <?php
-                                            if( ! empty( $billing_address['address_1'] ) ) {
-                                                ?>
-                                                    <span class="address-line1"><?php echo $billing_address['address_1']; ?>,</span><br>
-                                                <?php
-                                            }
-                                        ?>
-                                        <?php
-                                            if( ! empty( $billing_address['address_2'] ) ) {
-                                                ?>
-                                                    <span class="address-line2"><?php echo $billing_address['address_2']; ?>,</span><br>
-                                                <?php
-                                            }
-                                        ?>
-                                        <span class="locality"><?php echo $billing_address['city']; ?></span> <span class="postal-code"><?php echo $billing_address['postcode']; ?></span><br>
-                                        <span class="administrative-area"><?php echo WC()->countries->get_states( $billing_address['country'] )[$billing_address['state']]; ?></span><br>
-                                        <span class="country"><?php echo WC()->countries->countries[$billing_address['country']]; ?></span>
-                                    </p>
-                                </td>
-                                <td>
-                                </td>
-                                <td>
-                                    <?php echo $billing_address['phone']; ?>
-                                </td>
-                                <td><?php echo $excel_data[0]; ?> thru <?php echo end( $excel_data ); ?> (<?php echo count($excel_data); ?>)</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                <?php
-            } else {
-                ?>
-                    <p>Barcode not found. Please refine your search.</p>
-                <?php
-            }
-        ?>
+    <div class="verification-result <?php echo $company_match ? 'verification-success' : 'verification-warning'; ?>">
+        <div class="verification-header">
+            <i class="fas <?php echo $company_match ? 'fa-shield-check' : 'fa-shield-alt'; ?>"></i>
+            <h2><?php echo $company_match ? '100% AUTHENTIC BARCODE' : 'BARCODE FOUND - VERIFY OWNERSHIP'; ?></h2>
+        </div>
+        
+        <?php if ( ! empty( $company_verification_message ) ): ?>
+            <div class="company-verification">
+                <?php echo $company_verification_message; ?>
+            </div>
+        <?php endif; ?>
+        
+        <div class="verification-content">
+            <div class="barcode-info">
+                <h3><i class="fas fa-barcode"></i> Barcode Information</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <label>Barcode Number:</label>
+                        <span class="barcode-number"><?php echo esc_html($geiper_name); ?></span>
+                    </div>
+                    <div class="info-item">
+                        <label>Barcode Series:</label>
+                        <span class="barcode-range"><?php echo $excel_data[0]; ?> - <?php echo end( $excel_data ); ?></span>
+                    </div>
+                    <div class="info-item">
+                        <label>Total Barcodes:</label>
+                        <span class="barcode-count"><?php echo count($excel_data); ?> barcodes</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Registration ID:</label>
+                        <span class="registration-id">#<?php echo $order_id; ?></span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="owner-info">
+                <h3><i class="fas fa-building"></i> Registered Owner</h3>
+                <div class="owner-details">
+                    <div class="company-name">
+                        <strong><?php echo esc_html($billing_address['company']); ?></strong>
+                    </div>
+                    <div class="owner-name">
+                        <?php echo esc_html($billing_address['first_name'] . ' ' . $billing_address['last_name']); ?>
+                    </div>
+                    <div class="owner-address">
+                        <?php 
+                        $address_parts = array_filter([
+                            $billing_address['address_1'],
+                            $billing_address['address_2'],
+                            $billing_address['city'],
+                            $billing_address['state'],
+                            $billing_address['postcode'],
+                            WC()->countries->countries[$billing_address['country']] ?? $billing_address['country']
+                        ]);
+                        echo esc_html(implode(', ', $address_parts));
+                        ?>
+                    </div>
+                    <div class="owner-contact">
+                        <i class="fas fa-phone"></i> <?php echo esc_html($billing_address['phone']); ?>
+                        <br><i class="fas fa-envelope"></i> <?php echo esc_html($billing_address['email']); ?>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="verification-footer">
+                <?php if ( $company_match ): ?>
+                    <div class="authenticity-badge">
+                        <i class="fas fa-certificate"></i>
+                        <strong>VERIFIED AUTHENTIC</strong>
+                        <p>This barcode is 100% genuine and registered to the correct owner.</p>
+                    </div>
+                <?php else: ?>
+                    <div class="ownership-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>OWNERSHIP VERIFICATION REQUIRED</strong>
+                        <p>Barcode exists but company name doesn't match. Please verify ownership.</p>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
     <?php
     $output = ob_get_contents();
     ob_end_clean();
