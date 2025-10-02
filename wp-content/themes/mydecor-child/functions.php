@@ -66,18 +66,54 @@ add_action( 'wp_enqueue_scripts', 'barcodemine_fix_cart_fragments', 101 );
 function barcodemine_fix_green_color_clash() {
     ?>
     <style type="text/css">
-    /* Only override inline styles with the problematic color */
-    *[style*="background-color: #00c49a"],
-    *[style*="background:#00c49a"] {
-        background-color: inherit !important;
-    }
-    
-    /* Only override the problematic UiCore color variable */
+    /* Force override the problematic UiCore color variables */
     :root {
-        --e-global-color-uicore_primary: inherit !important;
+        --e-global-color-uicore_primary: #333333 !important;
+        --e-global-color-primary: #333333 !important;
     }
     
-    /* Only target color properties, not sizing or layout */
+    /* Target all buttons that use the problematic green color */
+    .woocommerce .button,
+    .woocommerce button.button,
+    .woocommerce input.button,
+    .woocommerce a.button,
+    .elementor-button,
+    button,
+    input[type="button"],
+    input[type="submit"],
+    .single_add_to_cart_button,
+    .woocommerce div.product form.cart .button,
+    .woocommerce-cart .wc-proceed-to-checkout a.checkout-button,
+    .woocommerce #payment #place_order {
+        background-color: #333333 !important;
+        border-color: #333333 !important;
+        color: #ffffff !important;
+    }
+    
+    .woocommerce .button:hover,
+    .woocommerce button.button:hover,
+    .woocommerce input.button:hover,
+    .woocommerce a.button:hover,
+    .elementor-button:hover,
+    button:hover,
+    input[type="button"]:hover,
+    input[type="submit"]:hover,
+    .single_add_to_cart_button:hover,
+    .woocommerce div.product form.cart .button:hover,
+    .woocommerce-cart .wc-proceed-to-checkout a.checkout-button:hover,
+    .woocommerce #payment #place_order:hover {
+        background-color: #222222 !important;
+        border-color: #222222 !important;
+        color: #ffffff !important;
+    }
+    
+    /* Override any inline styles with the problematic color */
+    *[style*="#00c49a"] {
+        background-color: #333333 !important;
+        border-color: #333333 !important;
+    }
+    
+    /* Specific barcode search button */
     .barcode-search-btn,
     button.barcode-search-btn {
         background-color: #007cba !important;
