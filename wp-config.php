@@ -26,7 +26,7 @@ define( 'DB_NAME', 'kb_7ob15udm65' );
 define( 'DB_USER', 'kb_7ob15udm65' );
 
 /** Database password */
-define( 'DB_PASSWORD', 'S9f8Q2Ege825bRvq6W' );
+define( 'DB_PASSWORD', 'S9F8Q2Ege825bRvq6W' );
 
 /** Database hostname */
 define( 'DB_HOST', 'localhost' );
