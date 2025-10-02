@@ -97,6 +97,70 @@ function barcodemine_fix_green_color_clash() {
         --primary-color: #c41e3a !important;
         --accent-color: #c41e3a !important;
         --button-color: #c41e3a !important;
+        
+        /* Override Elementor Global Colors */
+        --e-global-color-primary: #c41e3a !important;
+        --e-global-color-secondary: #c41e3a !important;
+        --e-global-color-accent: #c41e3a !important;
+        --e-global-color-text: #333333 !important;
+        
+        /* Override UiCore specific color variables */
+        --e-global-color-uicore_primary: #c41e3a !important;
+        --e-global-color-uicore_secondary: #c41e3a !important;
+        --e-global-color-uicore_accent: #c41e3a !important;
+        --uicore-primary-color: #c41e3a !important;
+        --uicore-accent-color: #c41e3a !important;
+        
+        /* Override specific Elementor button colors */
+        --elementor-button-primary-color: #c41e3a !important;
+        --elementor-button-secondary-color: #c41e3a !important;
+        --elementor-button-accent-color: #c41e3a !important;
+    }
+    
+    /* Specifically target Elementor buttons and widgets */
+    .elementor-button-wrapper .elementor-button,
+    .elementor-widget-button .elementor-button,
+    .elementor-button-primary,
+    .elementor-button-secondary,
+    .elementor-button-success,
+    .elementor-button-info,
+    .elementor-button-warning,
+    .elementor-button-danger,
+    .elementor-widget-woocommerce-cart .elementor-button,
+    .elementor-widget-woocommerce-checkout .elementor-button,
+    .elementor-widget .woocommerce .button,
+    .elementor-widget .woocommerce button.button,
+    .elementor-widget .woocommerce input.button,
+    .elementor-widget .woocommerce #respond input#submit,
+    .elementor-widget .woocommerce a.button,
+    .elementor-kit-17061 button,
+    .elementor-kit-17061 input[type="button"],
+    .elementor-kit-17061 input[type="submit"],
+    .barcode-search-btn,
+    button.barcode-search-btn {
+        background-color: #c41e3a !important;
+        border-color: #c41e3a !important;
+        color: #ffffff !important;
+    }
+    
+    .elementor-button-wrapper .elementor-button:hover,
+    .elementor-widget-button .elementor-button:hover,
+    .elementor-button-primary:hover,
+    .elementor-button-secondary:hover,
+    .elementor-button-success:hover,
+    .elementor-button-info:hover,
+    .elementor-button-warning:hover,
+    .elementor-button-danger:hover,
+    .elementor-widget-woocommerce-cart .elementor-button:hover,
+    .elementor-widget-woocommerce-checkout .elementor-button:hover,
+    .elementor-widget .woocommerce .button:hover,
+    .elementor-widget .woocommerce button.button:hover,
+    .elementor-widget .woocommerce input.button:hover,
+    .elementor-widget .woocommerce #respond input#submit:hover,
+    .elementor-widget .woocommerce a.button:hover {
+        background-color: #a01729 !important;
+        border-color: #a01729 !important;
+        color: #ffffff !important;
     }
     </style>
     <?php
