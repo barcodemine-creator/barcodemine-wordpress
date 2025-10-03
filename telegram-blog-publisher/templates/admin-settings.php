@@ -62,15 +62,51 @@ $categories = get_categories(array('hide_empty' => false));
                             <label for="ai_api_key">API Key</label>
                         </th>
                         <td>
-                            <input type="password" id="ai_api_key" name="ai_api_key" value="<?php echo esc_attr($settings['ai_api_key']); ?>" class="regular-text" />
+                            <div class="tbp-api-key-container">
+                                <input type="password" id="ai_api_key" name="ai_api_key" value="<?php echo esc_attr($settings['ai_api_key']); ?>" class="tbp-api-key-input" placeholder="Enter your API key here..." />
+                                <button type="button" class="button tbp-toggle-key" onclick="toggleApiKey()">👁️</button>
+                                <button type="button" class="button tbp-test-key" onclick="testApiKey()">🧪 Test</button>
+                            </div>
+                            <div id="api-test-result" class="tbp-test-result"></div>
                             <p class="description">
-                                <span id="ai-service-info">Enter your OpenAI API key</span>
+                                <span id="ai-service-info">Enter your API key</span>
                                 <br>
                                 <a href="#" id="api-key-help" target="_blank">How to get API key</a>
                             </p>
                         </td>
                     </tr>
                 </table>
+            </div>
+            
+            <!-- Multiple API Keys -->
+            <div class="tbp-card">
+                <h2>🔑 Multiple API Keys</h2>
+                <p class="description">Add multiple API keys for different services. The plugin will automatically use the appropriate key based on your selected service.</p>
+                <div id="api-keys-container">
+                    <?php
+                    $api_keys = get_option('tbp_api_keys', array());
+                    if (empty($api_keys)) {
+                        $api_keys = array(
+                            'openai' => '',
+                            'deepseek' => '',
+                            'claude' => '',
+                            'gemini' => ''
+                        );
+                    }
+                    foreach ($api_keys as $service => $key): ?>
+                    <div class="tbp-api-key-row" data-service="<?php echo esc_attr($service); ?>">
+                        <div class="tbp-service-label">
+                            <strong><?php echo ucfirst($service); ?></strong>
+                        </div>
+                        <div class="tbp-api-key-container">
+                            <input type="password" name="api_keys[<?php echo esc_attr($service); ?>]" value="<?php echo esc_attr($key); ?>" class="tbp-api-key-input" placeholder="Enter <?php echo esc_attr($service); ?> API key..." />
+                            <button type="button" class="button tbp-toggle-key" onclick="toggleApiKey(this)">👁️</button>
+                            <button type="button" class="button tbp-test-key" onclick="testApiKey('<?php echo esc_attr($service); ?>')">🧪 Test</button>
+                        </div>
+                        <div class="tbp-test-result" id="test-result-<?php echo esc_attr($service); ?>"></div>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
             </div>
             
             <!-- Default Settings -->
@@ -258,6 +294,83 @@ jQuery(document).ready(function($) {
     
     $('#ai_service').on('change', updateApiKeyHelp);
     updateApiKeyHelp();
+    
+    // Toggle API key visibility
+    window.toggleApiKey = function(element) {
+        const input = element ? $(element).siblings('input[type="password"], input[type="text"]') : $('#ai_api_key');
+        const button = element ? element : $('.tbp-toggle-key')[0];
+        
+        if (input.attr('type') === 'password') {
+            input.attr('type', 'text');
+            button.textContent = '🙈';
+        } else {
+            input.attr('type', 'password');
+            button.textContent = '👁️';
+        }
+    };
+    
+    // Test API key
+    window.testApiKey = function(service) {
+        const serviceToTest = service || $('#ai_service').val();
+        const apiKey = service ? 
+            $(`input[name="api_keys[${service}]"]`).val() : 
+            $('#ai_api_key').val();
+        
+        if (!apiKey) {
+            showTestResult(serviceToTest, 'error', 'Please enter an API key first');
+            return;
+        }
+        
+        const button = service ? 
+            $(`button[onclick="testApiKey('${service}')"]`) : 
+            $('.tbp-test-key');
+        const resultDiv = service ? 
+            $(`#test-result-${service}`) : 
+            $('#api-test-result');
+        
+        button.prop('disabled', true).html('<span class="tbp-loading-spinner"></span>Testing...');
+        resultDiv.html('<div class="tbp-loading">Testing API key...</div>').addClass('show');
+        
+        $.ajax({
+            url: tbp_ajax.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'tbp_test_api_key',
+                nonce: tbp_ajax.nonce,
+                service: serviceToTest,
+                api_key: apiKey
+            },
+            success: function(response) {
+                if (response.success) {
+                    showTestResult(serviceToTest, 'success', response.data.message);
+                } else {
+                    showTestResult(serviceToTest, 'error', response.data);
+                }
+            },
+            error: function() {
+                showTestResult(serviceToTest, 'error', 'Network error occurred');
+            },
+            complete: function() {
+                button.prop('disabled', false).html('🧪 Test');
+            }
+        });
+    };
+    
+    function showTestResult(service, type, message) {
+        const resultDiv = service ? 
+            $(`#test-result-${service}`) : 
+            $('#api-test-result');
+        
+        const statusClass = type === 'success' ? 'tbp-success' : 'tbp-error';
+        const icon = type === 'success' ? '✅' : '❌';
+        
+        resultDiv.html(`<div class="${statusClass}">${icon} ${message}</div>`).addClass('show');
+        
+        // Auto-hide after 5 seconds
+        setTimeout(() => {
+            resultDiv.removeClass('show');
+        }, 5000);
+    }
     
     // Save settings
     $('#tbp-settings-form').on('submit', function(e) {

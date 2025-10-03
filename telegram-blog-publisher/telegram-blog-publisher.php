@@ -75,6 +75,7 @@ class TelegramBlogPublisher {
         add_action('wp_ajax_tbp_generate_content', array($this, 'generateContent'));
         add_action('wp_ajax_tbp_save_settings', array($this, 'saveSettings'));
         add_action('wp_ajax_tbp_reactivate_license', array($this, 'reactivateLicense'));
+        add_action('wp_ajax_tbp_test_api_key', array($this, 'testApiKey'));
     }
     
     /**
@@ -207,10 +208,16 @@ class TelegramBlogPublisher {
      */
     private function generateBlogContent($topic, $details, $params = array()) {
         $ai_service = get_option('tbp_ai_service', 'openai');
+        $api_keys = get_option('tbp_api_keys', array());
         $api_key = get_option('tbp_ai_api_key', '');
         
+        // Try to get API key from multiple keys first
+        if (!empty($api_keys[$ai_service])) {
+            $api_key = $api_keys[$ai_service];
+        }
+        
         if (empty($api_key)) {
-            return new WP_Error('no_api_key', 'AI API key not configured');
+            return new WP_Error('no_api_key', 'AI API key not configured for ' . $ai_service);
         }
         
         // Prepare the prompt
@@ -788,11 +795,66 @@ class TelegramBlogPublisher {
             'tbp_auto_publish' => isset($_POST['auto_publish']),
         );
         
+        // Save multiple API keys
+        if (isset($_POST['api_keys']) && is_array($_POST['api_keys'])) {
+            $api_keys = array();
+            foreach ($_POST['api_keys'] as $service => $key) {
+                $api_keys[sanitize_text_field($service)] = sanitize_text_field($key);
+            }
+            update_option('tbp_api_keys', $api_keys);
+        }
+        
         foreach ($settings as $key => $value) {
             update_option($key, $value);
         }
         
         wp_send_json_success('Settings saved successfully');
+    }
+    
+    /**
+     * Test API key AJAX handler
+     */
+    public function testApiKey() {
+        check_ajax_referer('tbp_nonce', 'nonce');
+        
+        if (!current_user_can('manage_options')) {
+            wp_die('Unauthorized');
+        }
+        
+        $service = sanitize_text_field($_POST['service']);
+        $api_key = sanitize_text_field($_POST['api_key']);
+        
+        if (empty($api_key)) {
+            wp_send_json_error('API key is required');
+        }
+        
+        // Test the API key
+        $test_prompt = "Hello, this is a test message. Please respond with 'API key is working correctly.'";
+        $result = $this->testAIService($service, $api_key, $test_prompt);
+        
+        if (is_wp_error($result)) {
+            wp_send_json_error($result->get_error_message());
+        }
+        
+        wp_send_json_success(array('message' => 'API key is working correctly!'));
+    }
+    
+    /**
+     * Test AI service with given API key
+     */
+    private function testAIService($service, $api_key, $prompt) {
+        switch ($service) {
+            case 'openai':
+                return $this->callOpenAI($prompt, $api_key);
+            case 'deepseek':
+                return $this->callDeepSeek($prompt, $api_key);
+            case 'claude':
+                return $this->callClaude($prompt, $api_key);
+            case 'gemini':
+                return $this->callGemini($prompt, $api_key);
+            default:
+                return new WP_Error('invalid_service', 'Invalid AI service');
+        }
     }
     
     /**
