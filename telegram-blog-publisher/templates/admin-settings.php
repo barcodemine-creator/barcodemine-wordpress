@@ -50,6 +50,7 @@ $categories = get_categories(array('hide_empty' => false));
                         <td>
                             <select id="ai_service" name="ai_service">
                                 <option value="openai" <?php selected($settings['ai_service'], 'openai'); ?>>OpenAI (GPT-3.5)</option>
+                                <option value="deepseek" <?php selected($settings['ai_service'], 'deepseek'); ?>>DeepSeek (Chat)</option>
                                 <option value="claude" <?php selected($settings['ai_service'], 'claude'); ?>>Claude (Anthropic)</option>
                                 <option value="gemini" <?php selected($settings['ai_service'], 'gemini'); ?>>Gemini (Google)</option>
                             </select>
@@ -155,6 +156,17 @@ $categories = get_categories(array('hide_empty' => false));
                 </ol>
             </div>
             
+            <div class="tbp-api-service" id="deepseek-help" style="display: none;">
+                <h3>DeepSeek API Key</h3>
+                <ol>
+                    <li>Go to <a href="https://platform.deepseek.com/api_keys" target="_blank">DeepSeek Platform</a></li>
+                    <li>Sign in or create an account</li>
+                    <li>Click "Create API Key"</li>
+                    <li>Copy the generated key and paste it above</li>
+                    <li>Make sure you have credits in your DeepSeek account</li>
+                </ol>
+            </div>
+            
             <div class="tbp-api-service" id="gemini-help" style="display: none;">
                 <h3>Gemini API Key</h3>
                 <ol>
@@ -228,6 +240,10 @@ jQuery(document).ready(function($) {
             case 'openai':
                 info.text('Enter your OpenAI API key');
                 help.attr('href', 'https://platform.openai.com/api-keys');
+                break;
+            case 'deepseek':
+                info.text('Enter your DeepSeek API key');
+                help.attr('href', 'https://platform.deepseek.com/api_keys');
                 break;
             case 'claude':
                 info.text('Enter your Claude API key');

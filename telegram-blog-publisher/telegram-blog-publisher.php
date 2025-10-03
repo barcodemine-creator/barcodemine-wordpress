@@ -220,6 +220,8 @@ class TelegramBlogPublisher {
         switch ($ai_service) {
             case 'openai':
                 return $this->callOpenAI($prompt, $api_key);
+            case 'deepseek':
+                return $this->callDeepSeek($prompt, $api_key);
             case 'claude':
                 return $this->callClaude($prompt, $api_key);
             case 'gemini':
@@ -291,6 +293,43 @@ class TelegramBlogPublisher {
         }
         
         return new WP_Error('ai_error', 'Failed to generate content from OpenAI');
+    }
+    
+    /**
+     * Call DeepSeek API
+     */
+    private function callDeepSeek($prompt, $api_key) {
+        $response = wp_remote_post('https://api.deepseek.com/v1/chat/completions', array(
+            'headers' => array(
+                'Authorization' => 'Bearer ' . $api_key,
+                'Content-Type' => 'application/json',
+            ),
+            'body' => json_encode(array(
+                'model' => 'deepseek-chat',
+                'messages' => array(
+                    array(
+                        'role' => 'user',
+                        'content' => $prompt
+                    )
+                ),
+                'max_tokens' => 2000,
+                'temperature' => 0.7,
+            )),
+            'timeout' => 60,
+        ));
+        
+        if (is_wp_error($response)) {
+            return $response;
+        }
+        
+        $body = wp_remote_retrieve_body($response);
+        $data = json_decode($body, true);
+        
+        if (isset($data['choices'][0]['message']['content'])) {
+            return $data['choices'][0]['message']['content'];
+        }
+        
+        return new WP_Error('ai_error', 'Failed to generate content from DeepSeek');
     }
     
     /**
