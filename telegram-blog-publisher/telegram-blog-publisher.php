@@ -170,6 +170,10 @@ class TelegramBlogPublisher {
      */
     public function handleWebhook($request) {
         try {
+            // Set timeout limits for webhook processing
+            set_time_limit(300); // 5 minutes
+            ini_set('memory_limit', '512M');
+            
             $params = $request->get_params();
             
             // Log the incoming request
@@ -319,10 +323,10 @@ class TelegramBlogPublisher {
                         'content' => $prompt
                     )
                 ),
-                'max_tokens' => 2000,
-                'temperature' => 0.7,
+                'max_tokens' => 1000, // Reduced for faster response
+                'temperature' => 0.5, // Reduced for faster response
             )),
-            'timeout' => 60,
+            'timeout' => 120, // Increased timeout
         ));
         
         if (is_wp_error($response)) {
