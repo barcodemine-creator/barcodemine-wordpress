@@ -1,0 +1,82 @@
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+RewriteBase /
+RewriteRule ^index\.php$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.php [L]
+</IfModule>
+
+
+
+# BEGIN WordPress
+# The directives (lines) between "BEGIN WordPress" and "END WordPress" are
+# dynamically generated, and should only be modified via WordPress filters.
+# Any changes to the directives between these markers will be overwritten.
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+RewriteBase /
+RewriteRule ^index\.php$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.php [L]
+</IfModule>
+
+# END WordPress
+
+# Security Headers and Hardening
+<IfModule mod_headers.c>
+    # Security Headers
+    Header always set X-Content-Type-Options nosniff
+    Header always set X-Frame-Options DENY
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+</IfModule>
+
+# Block suspicious requests
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Block access to wp-config.php
+    RewriteRule ^wp-config\.php$ - [F,L]
+    
+    # Block access to .htaccess
+    RewriteRule ^\.htaccess$ - [F,L]
+    
+    # Block PHP execution in uploads directory
+    RewriteRule ^wp-content/uploads/.*\.php$ - [F,L]
+    
+    # Block suspicious query strings
+    RewriteCond %{QUERY_STRING} (eval\(|base64_decode|gzinflate) [NC,OR]
+    RewriteCond %{QUERY_STRING} (javascript:|data:|vbscript:) [NC,OR]
+    RewriteCond %{QUERY_STRING} (<script|<iframe|<object) [NC]
+    RewriteRule .* - [F,L]
+    
+    # Block common malware patterns
+    RewriteCond %{REQUEST_URI} (timthumb\.php|phpthumb\.php|thumb\.php) [NC,OR]
+    RewriteCond %{REQUEST_URI} (c99|r57|webshell|shell|cmd) [NC,OR]
+    RewriteCond %{REQUEST_URI} (wp-config\.php~|wp-config\.php\.save) [NC]
+    RewriteRule .* - [F,L]
+</IfModule>
+
+# Disable directory browsing
+Options -Indexes
+
+# Protect sensitive files
+<Files "wp-config.php">
+    Order allow,deny
+    Deny from all
+</Files>
+
+<Files "readme.html">
+    Order allow,deny
+    Deny from all
+</Files>
+
+<Files "license.txt">
+    Order allow,deny
+    Deny from all
+</Files>

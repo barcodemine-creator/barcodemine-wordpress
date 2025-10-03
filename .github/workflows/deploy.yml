@@ -1,0 +1,46 @@
+name: Deploy WordPress to Production
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.1'
+        
+    - name: Deploy to server
+      uses: appleboy/ssh-action@v0.1.5
+      with:
+        host: ${{ secrets.REMOTE_HOST }}
+        username: ${{ secrets.REMOTE_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          # Navigate to your website directory
+          cd ${{ secrets.REMOTE_PATH }}
+          
+          # Create backup (optional but recommended)
+          tar -czf backup_$(date +%Y%m%d_%H%M%S).tar.gz --exclude='backup_*.tar.gz' .
+          
+          # Pull latest changes from GitHub
+          git pull origin master
+          
+          # Set correct permissions
+          find . -type d -exec chmod 755 {} \;
+          find . -type f -exec chmod 644 {} \;
+          chmod 600 wp-config.php
+          
+          # Clear any WordPress cache
+          # Uncomment if you have WP-CLI installed:
+          # wp cache flush --allow-root
+          
+          echo "✅ Deployment completed successfully!"

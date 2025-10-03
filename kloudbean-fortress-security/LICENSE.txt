@@ -1,0 +1,85 @@
+KLOUDBEAN FORTRESS SECURITY - PROPRIETARY LICENSE
+Copyright (c) 2025 Kloudbean LLC. All rights reserved.
+
+ENTERPRISE SECURITY PLUGIN LICENSE
+==================================
+
+This Kloudbean Fortress Security plugin is proprietary software developed exclusively by Kloudbean LLC.
+
+DEVELOPER: Vikram Jindal, CEO & Founder, Kloudbean LLC
+COMPANY: Kloudbean LLC
+WEBSITE: https://kloudbean.com
+CONTACT: security@kloudbean.com
+DESIGN INSPIRATION: https://kloudbean-fortress.lovable.app/
+
+VERSION: 2.0.0 (Professional Multi-Tab Interface)
+
+ENTERPRISE FEATURES INCLUDED:
+- Professional multi-tab settings interface
+- Comprehensive security dashboard
+- Advanced malware and vulnerability scanning
+- Intelligent firewall with IP management
+- Complete event logging and reporting
+- Auto-fix capabilities for security issues
+- Scheduled scans with notifications
+- Import/export settings functionality
+- Zero false positives guarantee
+- Mobile-responsive professional design
+
+PERMITTED USES:
+- Install and use on unlimited WordPress websites
+- Modify the software for your own use
+- Use for commercial purposes and client sites
+- Deploy for hosting customers (hosting providers only)
+- Create backups and maintain copies for business continuity
+
+RESTRICTIONS:
+- No redistribution or resale without written permission
+- No removal of copyright notices or author attribution
+- No reverse engineering for competing products
+- No sublicensing to third parties without authorization
+- No use of "Kloudbean" branding without permission
+
+OWNERSHIP:
+This software and all intellectual property rights remain the exclusive property of Kloudbean LLC. You receive usage rights, not ownership rights.
+
+ENTERPRISE VALUE:
+This plugin provides professional-grade security features typically costing $500+ per year from commercial security vendors, provided to you with full usage rights and professional support.
+
+DESIGN ATTRIBUTION:
+This plugin's interface design is inspired by the Kloudbean Fortress design created at https://kloudbean-fortress.lovable.app/ and represents the professional standards of Kloudbean LLC.
+
+SUPPORT & UPDATES:
+- Technical support available at security@kloudbean.com
+- Priority support for Kloudbean hosting customers
+- Regular updates and threat signature refreshes
+- Professional consultation services available
+
+QUALITY GUARANTEE:
+This professional security plugin provides:
+- Zero false positives with smart whitelist system
+- Enterprise-grade threat detection and prevention
+- Professional multi-tab interface comparable to premium solutions
+- Comprehensive logging and reporting capabilities
+- Auto-fix features for common security issues
+
+DISCLAIMER:
+This software is provided "as is" without warranty of any kind. Kloudbean LLC disclaims all warranties, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose, and non-infringement.
+
+LIMITATION OF LIABILITY:
+In no event shall Kloudbean LLC be liable for any direct, indirect, incidental, special, exemplary, or consequential damages arising out of the use or inability to use this software.
+
+TERMINATION:
+This license is effective until terminated. Your rights under this license will terminate automatically without notice if you fail to comply with any term(s) of this license.
+
+GOVERNING LAW:
+This license shall be governed by and construed in accordance with the laws of the jurisdiction in which Kloudbean LLC is incorporated.
+
+For complete license terms and enterprise licensing options:
+https://kloudbean.com/license
+
+For professional support and consultation:
+security@kloudbean.com
+
+
+

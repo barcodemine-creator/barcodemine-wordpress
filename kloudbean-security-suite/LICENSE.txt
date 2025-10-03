@@ -1,0 +1,27 @@
+KLOUDBEAN SECURITY SUITE - PROPRIETARY LICENSE
+Copyright (c) 2025 Kloudbean LLC. All rights reserved.
+
+This software is proprietary to Kloudbean LLC.
+Developed by: Vikram Jindal, CEO & Founder
+Company: Kloudbean LLC
+Website: https://kloudbean.com
+Contact: security@kloudbean.com
+
+PERMITTED USES:
+- Install on unlimited WordPress websites
+- Modify for your own use
+- Use for commercial purposes
+- Deploy for clients (hosting providers)
+
+RESTRICTIONS:
+- No redistribution or resale without permission
+- No removal of copyright notices
+- No reverse engineering for competing products
+
+This plugin provides enterprise-grade security worth $50,000+/year.
+You own this software completely with full usage rights.
+
+For full license terms, visit: https://kloudbean.com/license
+
+
+
