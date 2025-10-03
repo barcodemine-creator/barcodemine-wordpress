@@ -5,6 +5,8 @@
 
 $webhook_url = get_rest_url() . 'telegram-blog-publisher/v1/webhook';
 $webhook_secret = get_option('tbp_webhook_secret', '');
+$license_status = get_option('tbp_license_status', 'invalid');
+$license_key = get_option('tbp_license_key', '');
 $recent_posts = get_posts(array(
     'meta_key' => '_tbp_telegram_generated',
     'meta_value' => true,
@@ -17,6 +19,13 @@ $recent_logs = array_slice(array_reverse($logs), 0, 5);
 
 <div class="wrap tbp-dashboard">
     <h1>📱 Telegram Blog Publisher</h1>
+    
+    <?php if ($license_status !== 'valid'): ?>
+    <div class="notice notice-warning">
+        <p><strong>License Status:</strong> <?php echo esc_html($license_status); ?></p>
+        <button type="button" class="button" id="reactivate-license">Reactivate License</button>
+    </div>
+    <?php endif; ?>
     
     <div class="tbp-dashboard-grid">
         <!-- Webhook Info Card -->
@@ -217,6 +226,34 @@ function toggleSecret(elementId) {
 }
 
 jQuery(document).ready(function($) {
+    // Reactivate license
+    $('#reactivate-license').on('click', function() {
+        const button = $(this);
+        button.prop('disabled', true).text('Reactivating...');
+        
+        $.ajax({
+            url: tbp_ajax.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'tbp_reactivate_license',
+                nonce: tbp_ajax.nonce
+            },
+            success: function(response) {
+                if (response.success) {
+                    location.reload();
+                } else {
+                    alert('Failed to reactivate license: ' + response.data);
+                }
+            },
+            error: function() {
+                alert('Failed to reactivate license: Network error');
+            },
+            complete: function() {
+                button.prop('disabled', false).text('Reactivate License');
+            }
+        });
+    });
+    
     // Test webhook
     $('#test-webhook').on('click', function() {
         const button = $(this);

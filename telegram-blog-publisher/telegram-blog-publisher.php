@@ -74,6 +74,7 @@ class TelegramBlogPublisher {
         add_action('wp_ajax_tbp_test_webhook', array($this, 'testWebhook'));
         add_action('wp_ajax_tbp_generate_content', array($this, 'generateContent'));
         add_action('wp_ajax_tbp_save_settings', array($this, 'saveSettings'));
+        add_action('wp_ajax_tbp_reactivate_license', array($this, 'reactivateLicense'));
     }
     
     /**
@@ -142,12 +143,21 @@ class TelegramBlogPublisher {
             return new WP_Error('no_secret', 'Webhook secret not configured', array('status' => 401));
         }
         
-        // Get the secret from headers
+        // Get the secret from headers (try different header formats)
         $headers = $request->get_headers();
-        $provided_secret = isset($headers['x_webhook_secret']) ? $headers['x_webhook_secret'][0] : '';
+        $provided_secret = '';
+        
+        // Try different header formats
+        if (isset($headers['x_webhook_secret'])) {
+            $provided_secret = is_array($headers['x_webhook_secret']) ? $headers['x_webhook_secret'][0] : $headers['x_webhook_secret'];
+        } elseif (isset($headers['x-webhook-secret'])) {
+            $provided_secret = is_array($headers['x-webhook-secret']) ? $headers['x-webhook-secret'][0] : $headers['x-webhook-secret'];
+        } elseif (isset($_SERVER['HTTP_X_WEBHOOK_SECRET'])) {
+            $provided_secret = $_SERVER['HTTP_X_WEBHOOK_SECRET'];
+        }
         
         // Verify secret
-        if (!hash_equals($this->webhook_secret, $provided_secret)) {
+        if (empty($provided_secret) || !hash_equals($this->webhook_secret, $provided_secret)) {
             return new WP_Error('invalid_secret', 'Invalid webhook secret', array('status' => 401));
         }
         
@@ -541,6 +551,39 @@ class TelegramBlogPublisher {
     }
     
     /**
+     * Check license status
+     */
+    public function checkLicense() {
+        $license_key = get_option('tbp_license_key', '');
+        $license_status = get_option('tbp_license_status', 'invalid');
+        
+        // For free version, always return valid
+        if (strpos($license_key, 'free-license-') === 0) {
+            return array('status' => 'valid', 'message' => 'Free license active');
+        }
+        
+        return array('status' => $license_status, 'message' => 'License check completed');
+    }
+    
+    /**
+     * Reactivate license AJAX handler
+     */
+    public function reactivateLicense() {
+        check_ajax_referer('tbp_nonce', 'nonce');
+        
+        if (!current_user_can('manage_options')) {
+            wp_die('Unauthorized');
+        }
+        
+        // Generate new free license
+        $new_license = 'free-license-' . wp_generate_password(16, false);
+        update_option('tbp_license_key', $new_license);
+        update_option('tbp_license_status', 'valid');
+        
+        wp_send_json_success('License reactivated successfully');
+    }
+    
+    /**
      * Add admin menu
      */
     public function addAdminMenu() {
@@ -621,6 +664,10 @@ class TelegramBlogPublisher {
         $webhook_url = get_rest_url() . 'telegram-blog-publisher/v1/webhook';
         $webhook_secret = get_option('tbp_webhook_secret', '');
         
+        if (empty($webhook_secret)) {
+            wp_send_json_error('Webhook secret not configured');
+        }
+        
         $test_data = array(
             'topic' => 'Test Blog Post',
             'details' => 'This is a test blog post created via Telegram webhook.',
@@ -639,16 +686,25 @@ class TelegramBlogPublisher {
         ));
         
         if (is_wp_error($response)) {
-            wp_send_json_error($response->get_error_message());
+            wp_send_json_error('HTTP Error: ' . $response->get_error_message());
         }
         
+        $response_code = wp_remote_retrieve_response_code($response);
         $body = wp_remote_retrieve_body($response);
         $data = json_decode($body, true);
         
-        if (isset($data['success']) && $data['success']) {
+        if ($response_code === 200 && isset($data['success']) && $data['success']) {
             wp_send_json_success($data);
         } else {
-            wp_send_json_error($data);
+            $error_message = 'Webhook test failed';
+            if (isset($data['message'])) {
+                $error_message .= ': ' . $data['message'];
+            } elseif (!empty($body)) {
+                $error_message .= ': ' . $body;
+            } else {
+                $error_message .= ': HTTP ' . $response_code;
+            }
+            wp_send_json_error($error_message);
         }
     }
     
@@ -712,6 +768,8 @@ class TelegramBlogPublisher {
         add_option('tbp_webhook_secret', wp_generate_password(32, false));
         add_option('tbp_ai_service', 'openai');
         add_option('tbp_auto_publish', false);
+        add_option('tbp_license_key', 'free-license-' . wp_generate_password(16, false));
+        add_option('tbp_license_status', 'valid');
     }
     
     /**
