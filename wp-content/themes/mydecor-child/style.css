@@ -1,0 +1,30 @@
+/*
+Theme Name: MyDecor Child
+Theme URI: https://demo.theme-sky.com/mydecor/
+Author: Theme Sky Team
+Author URI: http://theme-sky.com/
+Description: A Premium and Responsive WordPress theme, designed for E-Commerce websites
+Template: mydecor
+Version: 1.0.0
+License: GNU General Public License v2 or later
+License URI:  http://www.gnu.org/licenses/gpl-2.0.html
+Tags: two-columns, left-sidebar, custom-background, custom-colors, custom-header, custom-menu, editor-style, featured-images, microformats, post-formats, rtl-language-support, sticky-post, threaded-comments, translation-ready
+Text Domain: mydecor-child
+*/
+
+/* Only keep essential barcode search styles */
+.search-gepir-data button .search-loader{
+    display: none;
+}
+
+.elementor-shortcode .search-result{
+    padding-top: 50px;
+}
+
+/* Minimal color fixes - only target specific problematic elements */
+/* Override any theme or plugin styles that use the problematic green */
+*[style*="#00c49a"],
+*[style*="00c49a"] {
+    background-color: inherit !important;
+    border-color: inherit !important;
+}

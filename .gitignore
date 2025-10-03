@@ -8,6 +8,33 @@ index.php
 # WordPress Content (exclude from Git)
 wp-content/
 
+# WordPress specific files
+wp-config.php
+wp-config-local.php
+wp-config-production.php
+
+# Database dumps
+*.sql
+latestdb.sql
+
+# User uploads (optional - uncomment if you don't want to track uploads)
+# wp-content/uploads/
+
+# Cache files
+wp-content/cache/
+wp-content/advanced-cache.php
+wp-content/object-cache.php
+
+# Backup files
+wp-content/upgrade/
+wp-content/upgrade-temp-backup/
+wp-content/backups/
+
+# Debug logs
+debug.log
+error_log
+wp-content/debug.log
+
 # Our Project Files (include these)
 !kloudbean-enterprise-security/
 !kloudbean-enterprise-security.php
@@ -37,19 +64,25 @@ wp-content/
 *.bak
 *.backup
 
-# Exclude OS files
+# OS generated files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
 desktop.ini
 
-# Exclude IDE files
+# IDE files
 .vscode/
 .idea/
 *.swp
 *.swo
 
-# Exclude node modules
+# Node modules (if using any build tools)
 node_modules/
+npm-debug.log
 
 # Exclude vendor files
 vendor/
