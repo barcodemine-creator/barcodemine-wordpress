@@ -1,41 +1,60 @@
-# WordPress
-wp-config.php
-wp-content/uploads/
-wp-content/cache/
-wp-content/backup-db/
-wp-content/advanced-cache.php
-wp-content/wp-cache-config.php
+# WordPress Core Files (exclude from Git)
+wp-admin/
+wp-includes/
+wp-*.php
+xmlrpc.php
+index.php
 
-# Logs
+# WordPress Content (exclude from Git)
+wp-content/
+
+# Our Project Files (include these)
+!kloudbean-enterprise-security/
+!kloudbean-enterprise-security.php
+!kloudbean-security-*.php
+!*.md
+!deploy-*.php
+!deploy-*.ps1
+!deploy-*.sh
+!fix-*.php
+!wp-config-fixed.php
+!BLOG_PUBLISHING_FIX.md
+!DEPLOYMENT_*.md
+!README.md
+!LICENSE.txt
+!license.txt
+
+# Exclude large files
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# Exclude temporary files
+*.tmp
+*.temp
 *.log
-error_log
-debug.log
+*.bak
+*.backup
 
-# OS
+# Exclude OS files
 .DS_Store
 Thumbs.db
+desktop.ini
 
-# IDE
+# Exclude IDE files
 .vscode/
 .idea/
 *.swp
 *.swo
 
-# Temporary files
-*.tmp
-*.temp
-
-# Large files
-*.zip
-*.tar.gz
-*.rar
-
-# Node modules
+# Exclude node modules
 node_modules/
 
-# Composer
+# Exclude vendor files
 vendor/
 
-# Backup files
-*.bak
-*.backup
+# Exclude test directories
+test-extract/
+backups/
+deployment-package/
