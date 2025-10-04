@@ -234,7 +234,7 @@ class TelegramBlogPublisher {
     }
     
     private function callGrok($api_key, $topic, $word_count, $tone) {
-        $prompt = "Write a comprehensive blog post about '{$topic}' in a {$tone} tone. Target word count: {$word_count} words. Include an engaging introduction, detailed main content with subheadings, and a compelling conclusion.";
+        $prompt = "Write a comprehensive blog post about {$topic} in a {$tone} tone. Target word count: {$word_count} words. Include an engaging introduction, detailed main content with subheadings, and a compelling conclusion.";
         
         $response = wp_remote_post('https://api.x.ai/v1/chat/completions', [
             'headers' => [
@@ -267,7 +267,7 @@ class TelegramBlogPublisher {
     }
     
     private function callDeepSeek($api_key, $topic, $word_count, $tone) {
-        $prompt = "Write a comprehensive blog post about '{$topic}' in a {$tone} tone. Target word count: {$word_count} words. Include an engaging introduction, detailed main content with subheadings, and a compelling conclusion.";
+        $prompt = "Write a comprehensive blog post about {$topic} in a {$tone} tone. Target word count: {$word_count} words. Include an engaging introduction, detailed main content with subheadings, and a compelling conclusion.";
         
         $response = wp_remote_post('https://api.deepseek.com/v1/chat/completions', [
             'headers' => [
@@ -300,7 +300,7 @@ class TelegramBlogPublisher {
     }
     
     private function callOpenAI($api_key, $topic, $word_count, $tone) {
-        $prompt = "Write a comprehensive blog post about '{$topic}' in a {$tone} tone. Target word count: {$word_count} words. Include an engaging introduction, detailed main content with subheadings, and a compelling conclusion.";
+        $prompt = "Write a comprehensive blog post about {$topic} in a {$tone} tone. Target word count: {$word_count} words. Include an engaging introduction, detailed main content with subheadings, and a compelling conclusion.";
         
         $response = wp_remote_post('https://api.openai.com/v1/chat/completions', [
             'headers' => [
@@ -333,7 +333,7 @@ class TelegramBlogPublisher {
     }
     
     private function callClaude($api_key, $topic, $word_count, $tone) {
-        $prompt = "Write a comprehensive blog post about '{$topic}' in a {$tone} tone. Target word count: {$word_count} words. Include an engaging introduction, detailed main content with subheadings, and a compelling conclusion.";
+        $prompt = "Write a comprehensive blog post about {$topic} in a {$tone} tone. Target word count: {$word_count} words. Include an engaging introduction, detailed main content with subheadings, and a compelling conclusion.";
         
         $response = wp_remote_post('https://api.anthropic.com/v1/messages', [
             'headers' => [
@@ -366,7 +366,7 @@ class TelegramBlogPublisher {
     }
     
     private function callGemini($api_key, $topic, $word_count, $tone) {
-        $prompt = "Write a comprehensive blog post about '{$topic}' in a {$tone} tone. Target word count: {$word_count} words. Include an engaging introduction, detailed main content with subheadings, and a compelling conclusion.";
+        $prompt = "Write a comprehensive blog post about {$topic} in a {$tone} tone. Target word count: {$word_count} words. Include an engaging introduction, detailed main content with subheadings, and a compelling conclusion.";
         
         // Use the latest Gemini models (in order of preference)
         $models = [
