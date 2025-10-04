@@ -3,7 +3,7 @@
  * Plugin Name: Telegram Blog Publisher
  * Plugin URI: https://github.com/barcodemine-creator/barcodemine-wordpress
  * Description: Publish blog posts from Telegram via n8n webhooks with AI content generation
- * Version: 2.0.0
+ * Version: 2.0.1
  * Author: Barcodemine
  * License: GPL v2 or later
  * Text Domain: telegram-blog-publisher
@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('TBP_VERSION', '2.0.0');
+define('TBP_VERSION', '2.0.1');
 define('TBP_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('TBP_PLUGIN_PATH', plugin_dir_path(__FILE__));
 
@@ -368,34 +368,72 @@ class TelegramBlogPublisher {
     private function callGemini($api_key, $topic, $word_count, $tone) {
         $prompt = "Write a comprehensive blog post about '{$topic}' in a {$tone} tone. Target word count: {$word_count} words. Include an engaging introduction, detailed main content with subheadings, and a compelling conclusion.";
         
-        $response = wp_remote_post('https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=' . $api_key, [
-            'headers' => [
-                'Content-Type' => 'application/json'
-            ],
-            'body' => json_encode([
-                'contents' => [
-                    ['parts' => [['text' => $prompt]]]
+        // Use the latest Gemini models (in order of preference)
+        $models = [
+            'gemini-2.5-flash',        // Fastest and most efficient
+            'gemini-flash-latest',     // Always latest flash model
+            'gemini-2.5-pro',          // Most capable
+            'gemini-pro-latest'        // Always latest pro model
+        ];
+        
+        foreach ($models as $model) {
+            $response = wp_remote_post("https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key=" . $api_key, [
+                'headers' => [
+                    'Content-Type' => 'application/json'
                 ],
-                'generationConfig' => [
-                    'maxOutputTokens' => 2000,
-                    'temperature' => 0.7
-                ]
-            ]),
-            'timeout' => 60
-        ]);
-        
-        if (is_wp_error($response)) {
-            return $response;
+                'body' => json_encode([
+                    'contents' => [
+                        ['parts' => [['text' => $prompt]]]
+                    ],
+                    'generationConfig' => [
+                        'maxOutputTokens' => 2000,
+                        'temperature' => 0.7,
+                        'topP' => 0.8,
+                        'topK' => 40
+                    ],
+                    'safetySettings' => [
+                        [
+                            'category' => 'HARM_CATEGORY_HARASSMENT',
+                            'threshold' => 'BLOCK_MEDIUM_AND_ABOVE'
+                        ],
+                        [
+                            'category' => 'HARM_CATEGORY_HATE_SPEECH',
+                            'threshold' => 'BLOCK_MEDIUM_AND_ABOVE'
+                        ],
+                        [
+                            'category' => 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
+                            'threshold' => 'BLOCK_MEDIUM_AND_ABOVE'
+                        ],
+                        [
+                            'category' => 'HARM_CATEGORY_DANGEROUS_CONTENT',
+                            'threshold' => 'BLOCK_MEDIUM_AND_ABOVE'
+                        ]
+                    ]
+                ]),
+                'timeout' => 45
+            ]);
+            
+            if (is_wp_error($response)) {
+                error_log("Gemini API Error with {$model}: " . $response->get_error_message());
+                continue; // Try next model
+            }
+            
+            $body = wp_remote_retrieve_body($response);
+            $data = json_decode($body, true);
+            
+            if (isset($data['candidates'][0]['content']['parts'][0]['text'])) {
+                error_log("Gemini API Success with model: {$model}");
+                return $data['candidates'][0]['content']['parts'][0]['text'];
+            }
+            
+            // If we get an error, try next model
+            if (isset($data['error'])) {
+                error_log("Gemini API Error with {$model}: " . $data['error']['message']);
+                continue;
+            }
         }
         
-        $body = wp_remote_retrieve_body($response);
-        $data = json_decode($body, true);
-        
-        if (isset($data['candidates'][0]['content']['parts'][0]['text'])) {
-            return $data['candidates'][0]['content']['parts'][0]['text'];
-        }
-        
-        return new WP_Error('gemini_error', 'Gemini API error: ' . $body);
+        return new WP_Error('gemini_error', 'All Gemini models failed to generate content');
     }
     
     public function saveSettings() {
@@ -486,7 +524,7 @@ class TelegramBlogPublisher {
     }
     
     private function testAIService($service, $api_key) {
-        $test_prompt = "Write a short test message.";
+        $test_prompt = "Write a short test message about barcodes.";
         
         switch ($service) {
             case 'grok':
@@ -498,7 +536,35 @@ class TelegramBlogPublisher {
             case 'claude':
                 return $this->callClaude($api_key, 'test', 50, 'professional');
             case 'gemini':
-                return $this->callGemini($api_key, 'test', 50, 'professional');
+                // Test with the latest Gemini model
+                $response = wp_remote_post("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" . $api_key, [
+                    'headers' => [
+                        'Content-Type' => 'application/json'
+                    ],
+                    'body' => json_encode([
+                        'contents' => [
+                            ['parts' => [['text' => $test_prompt]]]
+                        ],
+                        'generationConfig' => [
+                            'maxOutputTokens' => 100,
+                            'temperature' => 0.7
+                        ]
+                    ]),
+                    'timeout' => 30
+                ]);
+                
+                if (is_wp_error($response)) {
+                    return $response;
+                }
+                
+                $body = wp_remote_retrieve_body($response);
+                $data = json_decode($body, true);
+                
+                if (isset($data['candidates'][0]['content']['parts'][0]['text'])) {
+                    return $data['candidates'][0]['content']['parts'][0]['text'];
+                }
+                
+                return new WP_Error('gemini_test_error', 'Gemini test failed: ' . $body);
             default:
                 return new WP_Error('unknown_service', 'Unknown AI service');
         }
