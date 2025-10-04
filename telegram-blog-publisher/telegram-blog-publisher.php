@@ -3,7 +3,7 @@
  * Plugin Name: Telegram Blog Publisher
  * Plugin URI: https://github.com/barcodemine-creator/barcodemine-wordpress
  * Description: Publish blog posts from Telegram via n8n webhooks with AI content generation
- * Version: 2.0.1
+ * Version: 2.0.2
  * Author: Barcodemine
  * License: GPL v2 or later
  * Text Domain: telegram-blog-publisher
@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('TBP_VERSION', '2.0.1');
+define('TBP_VERSION', '2.0.2');
 define('TBP_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('TBP_PLUGIN_PATH', plugin_dir_path(__FILE__));
 
