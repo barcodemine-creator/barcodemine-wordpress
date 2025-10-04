@@ -186,14 +186,19 @@ class TelegramBlogPublisher {
         $word_count = $data['word_count'] ?? 500;
         $tone = $data['tone'] ?? 'professional';
         
+        // Reload API keys to ensure we have the latest
+        $this->loadApiKeys();
+        
         // Try APIs in order of preference (fastest first)
-        $api_order = ['grok', 'deepseek', 'openai', 'claude', 'gemini'];
+        $api_order = ['gemini', 'deepseek', 'grok', 'openai', 'claude'];
         
         foreach ($api_order as $service) {
             if (empty($this->api_keys[$service])) {
+                error_log("Telegram Plugin: No API key for {$service}");
                 continue;
             }
             
+            error_log("Telegram Plugin: Trying {$service} for topic: {$topic}");
             $content = $this->callAI($service, $topic, $word_count, $tone);
             
             if (!is_wp_error($content)) {
@@ -201,6 +206,7 @@ class TelegramBlogPublisher {
                     'service' => $service,
                     'topic' => $topic
                 ]);
+                error_log("Telegram Plugin: Success with {$service}");
                 return $content;
             }
             
@@ -209,6 +215,7 @@ class TelegramBlogPublisher {
                 'error' => $content->get_error_message(),
                 'topic' => $topic
             ]);
+            error_log("Telegram Plugin: Failed with {$service}: " . $content->get_error_message());
         }
         
         return new WP_Error('all_apis_failed', 'All AI services failed to generate content');
@@ -279,13 +286,14 @@ class TelegramBlogPublisher {
                 'messages' => [
                     ['role' => 'user', 'content' => $prompt]
                 ],
-                'max_tokens' => 1500,
-                'temperature' => 0.5
+                'max_tokens' => 2000,
+                'temperature' => 0.7
             ]),
-            'timeout' => 45
+            'timeout' => 60
         ]);
         
         if (is_wp_error($response)) {
+            error_log("DeepSeek API Error: " . $response->get_error_message());
             return $response;
         }
         
@@ -293,9 +301,11 @@ class TelegramBlogPublisher {
         $data = json_decode($body, true);
         
         if (isset($data['choices'][0]['message']['content'])) {
+            error_log("DeepSeek API Success");
             return $data['choices'][0]['message']['content'];
         }
         
+        error_log("DeepSeek API Error Response: " . $body);
         return new WP_Error('deepseek_error', 'DeepSeek API error: ' . $body);
     }
     
@@ -368,16 +378,17 @@ class TelegramBlogPublisher {
     private function callGemini($api_key, $topic, $word_count, $tone) {
         $prompt = "Write a comprehensive blog post about {$topic} in a {$tone} tone. Target word count: {$word_count} words. Include an engaging introduction, detailed main content with subheadings, and a compelling conclusion.";
         
-        // Use the latest Gemini models (in order of preference)
+        // Use working Gemini models
         $models = [
-            'gemini-2.5-flash',        // Fastest and most efficient
-            'gemini-flash-latest',     // Always latest flash model
-            'gemini-2.5-pro',          // Most capable
-            'gemini-pro-latest'        // Always latest pro model
+            'gemini-1.5-flash',        // Most reliable
+            'gemini-1.5-pro',          // Most capable
+            'gemini-pro'               // Fallback
         ];
         
         foreach ($models as $model) {
-            $response = wp_remote_post("https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key=" . $api_key, [
+            $url = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key=" . $api_key;
+            
+            $response = wp_remote_post($url, [
                 'headers' => [
                     'Content-Type' => 'application/json'
                 ],
@@ -387,35 +398,15 @@ class TelegramBlogPublisher {
                     ],
                     'generationConfig' => [
                         'maxOutputTokens' => 2000,
-                        'temperature' => 0.7,
-                        'topP' => 0.8,
-                        'topK' => 40
-                    ],
-                    'safetySettings' => [
-                        [
-                            'category' => 'HARM_CATEGORY_HARASSMENT',
-                            'threshold' => 'BLOCK_MEDIUM_AND_ABOVE'
-                        ],
-                        [
-                            'category' => 'HARM_CATEGORY_HATE_SPEECH',
-                            'threshold' => 'BLOCK_MEDIUM_AND_ABOVE'
-                        ],
-                        [
-                            'category' => 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
-                            'threshold' => 'BLOCK_MEDIUM_AND_ABOVE'
-                        ],
-                        [
-                            'category' => 'HARM_CATEGORY_DANGEROUS_CONTENT',
-                            'threshold' => 'BLOCK_MEDIUM_AND_ABOVE'
-                        ]
+                        'temperature' => 0.7
                     ]
                 ]),
-                'timeout' => 45
+                'timeout' => 60
             ]);
             
             if (is_wp_error($response)) {
                 error_log("Gemini API Error with {$model}: " . $response->get_error_message());
-                continue; // Try next model
+                continue;
             }
             
             $body = wp_remote_retrieve_body($response);
@@ -426,7 +417,6 @@ class TelegramBlogPublisher {
                 return $data['candidates'][0]['content']['parts'][0]['text'];
             }
             
-            // If we get an error, try next model
             if (isset($data['error'])) {
                 error_log("Gemini API Error with {$model}: " . $data['error']['message']);
                 continue;
@@ -455,7 +445,8 @@ class TelegramBlogPublisher {
         update_option('tbp_webhook_secret', $webhook_secret);
         update_option('tbp_api_keys', $api_keys);
         
-        $this->api_keys = $api_keys;
+        // Reload API keys immediately
+        $this->loadApiKeys();
         
         wp_send_json_success('Settings saved successfully');
     }
@@ -514,7 +505,14 @@ class TelegramBlogPublisher {
             wp_send_json_error('API key is required');
         }
         
+        // Temporarily set the API key for testing
+        $original_keys = $this->api_keys;
+        $this->api_keys[$service] = $api_key;
+        
         $result = $this->testAIService($service, $api_key);
+        
+        // Restore original keys
+        $this->api_keys = $original_keys;
         
         if (is_wp_error($result)) {
             wp_send_json_error($result->get_error_message());
