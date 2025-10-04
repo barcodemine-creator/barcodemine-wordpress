@@ -61,8 +61,8 @@ function mydecor_theme_setup(){
 	
 	if ( ! isset( $content_width ) ){ $content_width = 1200; }
 	
-	/* Translation */
-	load_theme_textdomain( 'mydecor', get_template_directory() . '/languages' );
+	/* Translation - moved to init action for WordPress 6.7+ compatibility */
+	// load_theme_textdomain( 'mydecor', get_template_directory() . '/languages' );
 	
 	/* Register Menu Location */
 	register_nav_menus( array(
@@ -85,6 +85,12 @@ function mydecor_support_wc_product_gallery_lightbox(){
 	if( mydecor_get_theme_options('ts_prod_lightbox') ){
 		add_theme_support( 'wc-product-gallery-lightbox' );
 	}
+}
+
+// Load theme translations in init action for WordPress 6.7+ compatibility
+add_action('init', 'mydecor_load_textdomain', 1);
+function mydecor_load_textdomain(){
+	load_theme_textdomain( 'mydecor', get_template_directory() . '/languages' );
 }
 
 /*** Add Image Size ***/
