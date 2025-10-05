@@ -627,12 +627,20 @@ class TelegramBlogPublisherEnhanced {
             ]
         ];
         
-        // Try both v1beta and v1 API versions
-        $api_versions = ['v1beta', 'v1'];
-        $response = null;
+        // Use the correct API version and model combination
+        $api_configs = [
+            ['version' => 'v1beta', 'model' => 'gemini-1.5-flash'],
+            ['version' => 'v1beta', 'model' => 'gemini-1.5-pro'],
+            ['version' => 'v1beta', 'model' => 'gemini-pro'],
+            ['version' => 'v1', 'model' => 'gemini-pro'],
+            ['version' => 'v1beta', 'model' => 'gemini-1.0-pro']
+        ];
         
-        foreach ($api_versions as $version) {
-            $url = "https://generativelanguage.googleapis.com/{$version}/models/{$model}:generateContent?key=" . $api_key;
+        $response = null;
+        $used_model = $model;
+        
+        foreach ($api_configs as $config) {
+            $url = "https://generativelanguage.googleapis.com/{$config['version']}/models/{$config['model']}:generateContent?key=" . $api_key;
             $response = wp_remote_post($url, [
                 'headers' => ['Content-Type' => 'application/json'],
                 'body' => json_encode($data),
@@ -642,6 +650,7 @@ class TelegramBlogPublisherEnhanced {
             if (!is_wp_error($response)) {
                 $response_code = wp_remote_retrieve_response_code($response);
                 if ($response_code === 200) {
+                    $used_model = $config['model'];
                     break; // Success, exit the loop
                 }
             }
@@ -667,6 +676,51 @@ class TelegramBlogPublisherEnhanced {
         }
         
         // Check for API errors
+        if (isset($data['error'])) {
+            return new WP_Error('gemini_api_error', $data['error']['message'] ?? 'Unknown Gemini API error');
+        }
+        
+        return new WP_Error('gemini_error', 'Failed to generate content with model: ' . $model . ' - Response: ' . $body);
+    }
+    
+    private function testGeminiModel($api_key, $version, $model, $prompt) {
+        $data = [
+            'contents' => [
+                [
+                    'parts' => [
+                        ['text' => $prompt]
+                    ]
+                ]
+            ],
+            'generationConfig' => [
+                'temperature' => 0.7,
+                'maxOutputTokens' => 100
+            ]
+        ];
+        
+        $url = "https://generativelanguage.googleapis.com/{$version}/models/{$model}:generateContent?key=" . $api_key;
+        $response = wp_remote_post($url, [
+            'headers' => ['Content-Type' => 'application/json'],
+            'body' => json_encode($data),
+            'timeout' => 30
+        ]);
+        
+        if (is_wp_error($response)) {
+            return new WP_Error('gemini_network_error', 'Network error: ' . $response->get_error_message());
+        }
+        
+        $body = wp_remote_retrieve_body($response);
+        $response_code = wp_remote_retrieve_response_code($response);
+        $data = json_decode($body, true);
+        
+        if ($response_code !== 200) {
+            return new WP_Error('gemini_http_error', "HTTP {$response_code}: " . ($data['error']['message'] ?? $body));
+        }
+        
+        if (isset($data['candidates'][0]['content']['parts'][0]['text'])) {
+            return $data['candidates'][0]['content']['parts'][0]['text'];
+        }
+        
         if (isset($data['error'])) {
             return new WP_Error('gemini_api_error', $data['error']['message'] ?? 'Unknown Gemini API error');
         }
@@ -907,17 +961,17 @@ class TelegramBlogPublisherEnhanced {
                 $models_data = json_decode($models_body, true);
                 
                 if (isset($models_data['models'])) {
-                    // API key is valid, now try content generation
-                    $models = [
-                        'gemini-1.5-flash',
-                        'gemini-1.5-pro', 
-                        'gemini-pro',
-                        'gemini-1.0-pro'
+                    // API key is valid, now try content generation with correct API versions
+                    $api_configs = [
+                        ['version' => 'v1beta', 'model' => 'gemini-1.5-flash'],
+                        ['version' => 'v1beta', 'model' => 'gemini-1.5-pro'],
+                        ['version' => 'v1beta', 'model' => 'gemini-pro'],
+                        ['version' => 'v1', 'model' => 'gemini-pro']
                     ];
                     
                     $last_error = '';
-                    foreach ($models as $model) {
-                        $result = $this->callGeminiModel($api_key, $model, $test_prompt);
+                    foreach ($api_configs as $config) {
+                        $result = $this->testGeminiModel($api_key, $config['version'], $config['model'], $test_prompt);
                         if (!is_wp_error($result)) {
                             return $result;
                         }
