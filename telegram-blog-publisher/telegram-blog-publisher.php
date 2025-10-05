@@ -592,24 +592,28 @@ class TelegramBlogPublisherEnhanced {
             return new WP_Error('invalid_api_key', 'Invalid Gemini API key format. Should be 39 characters long.');
         }
         
-        // Try multiple Gemini models in order of preference
-        $models = [
-            'gemini-1.5-flash',
-            'gemini-1.5-pro', 
-            'gemini-pro',
-            'gemini-1.0-pro'
-        ];
+        // Discover available models dynamically
+        $available_models = $this->discoverGeminiModels($api_key);
         
+        if (is_wp_error($available_models)) {
+            return $available_models;
+        }
+        
+        if (empty($available_models)) {
+            return new WP_Error('gemini_no_models', 'No Gemini models available for your API key.');
+        }
+        
+        // Try each available model
         $last_error = '';
-        foreach ($models as $model) {
-            $result = $this->callGeminiModel($api_key, $model, $prompt);
+        foreach ($available_models as $model_info) {
+            $result = $this->callGeminiModelWithVersion($api_key, $model_info['version'], $model_info['model'], $prompt);
             if (!is_wp_error($result)) {
                 return $result;
             }
             $last_error = $result->get_error_message();
         }
         
-        return new WP_Error('gemini_error', 'All Gemini models failed. Last error: ' . $last_error);
+        return new WP_Error('gemini_error', 'All available Gemini models failed. Last error: ' . $last_error);
     }
     
     private function callGeminiModel($api_key, $model, $prompt) {
@@ -712,6 +716,125 @@ class TelegramBlogPublisherEnhanced {
         $body = wp_remote_retrieve_body($response);
         $response_code = wp_remote_retrieve_response_code($response);
         $data = json_decode($body, true);
+        
+        if ($response_code !== 200) {
+            return new WP_Error('gemini_http_error', "HTTP {$response_code}: " . ($data['error']['message'] ?? $body));
+        }
+        
+        if (isset($data['candidates'][0]['content']['parts'][0]['text'])) {
+            return $data['candidates'][0]['content']['parts'][0]['text'];
+        }
+        
+        if (isset($data['error'])) {
+            return new WP_Error('gemini_api_error', $data['error']['message'] ?? 'Unknown Gemini API error');
+        }
+        
+        return new WP_Error('gemini_error', 'Failed to generate content with model: ' . $model . ' - Response: ' . $body);
+    }
+    
+    private function discoverGeminiModels($api_key) {
+        // Try both API versions to discover available models
+        $api_versions = ['v1beta', 'v1'];
+        $available_models = [];
+        
+        foreach ($api_versions as $version) {
+            $response = wp_remote_get("https://generativelanguage.googleapis.com/{$version}/models?key=" . $api_key, [
+                'timeout' => 30
+            ]);
+            
+            if (is_wp_error($response)) {
+                continue; // Try next version
+            }
+            
+            $body = wp_remote_retrieve_body($response);
+            $data = json_decode($body, true);
+            
+            if (isset($data['models']) && is_array($data['models'])) {
+                foreach ($data['models'] as $model) {
+                    $model_name = $model['name'] ?? '';
+                    
+                    // Extract model name from full path (e.g., "models/gemini-1.5-flash" -> "gemini-1.5-flash")
+                    if (strpos($model_name, 'models/') === 0) {
+                        $model_name = substr($model_name, 7); // Remove "models/" prefix
+                    }
+                    
+                    // Check if it's a Gemini model and supports generateContent
+                    if (strpos($model_name, 'gemini') === 0) {
+                        $supported_methods = $model['supportedGenerationMethods'] ?? [];
+                        if (in_array('generateContent', $supported_methods)) {
+                            $available_models[] = [
+                                'version' => $version,
+                                'model' => $model_name,
+                                'display_name' => $model['displayName'] ?? $model_name,
+                                'description' => $model['description'] ?? ''
+                            ];
+                        }
+                    }
+                }
+            }
+        }
+        
+        if (empty($available_models)) {
+            return new WP_Error('gemini_discovery_failed', 'Could not discover any available Gemini models. Please check your API key and billing settings.');
+        }
+        
+        // Sort by preference: newer models first, then by version
+        usort($available_models, function($a, $b) {
+            // Prefer v1beta over v1
+            if ($a['version'] !== $b['version']) {
+                return $a['version'] === 'v1beta' ? -1 : 1;
+            }
+            
+            // Prefer newer model versions
+            $a_version = $this->extractModelVersion($a['model']);
+            $b_version = $this->extractModelVersion($b['model']);
+            
+            return version_compare($b_version, $a_version);
+        });
+        
+        return $available_models;
+    }
+    
+    private function extractModelVersion($model_name) {
+        // Extract version number from model name for sorting
+        if (preg_match('/(\d+\.\d+)/', $model_name, $matches)) {
+            return $matches[1];
+        }
+        return '0.0'; // Fallback for models without version numbers
+    }
+    
+    private function callGeminiModelWithVersion($api_key, $version, $model, $prompt) {
+        $data = [
+            'contents' => [
+                [
+                    'parts' => [
+                        ['text' => $prompt]
+                    ]
+                ]
+            ],
+            'generationConfig' => [
+                'temperature' => 0.7,
+                'maxOutputTokens' => 4000
+            ]
+        ];
+        
+        $url = "https://generativelanguage.googleapis.com/{$version}/models/{$model}:generateContent?key=" . $api_key;
+        $response = wp_remote_post($url, [
+            'headers' => ['Content-Type' => 'application/json'],
+            'body' => json_encode($data),
+            'timeout' => 60
+        ]);
+        
+        if (is_wp_error($response)) {
+            return new WP_Error('gemini_network_error', 'Network error: ' . $response->get_error_message());
+        }
+        
+        $body = wp_remote_retrieve_body($response);
+        $response_code = wp_remote_retrieve_response_code($response);
+        $data = json_decode($body, true);
+        
+        // Log the response for debugging
+        error_log("Gemini API Response for {$version}/{$model}: HTTP {$response_code} - " . $body);
         
         if ($response_code !== 200) {
             return new WP_Error('gemini_http_error', "HTTP {$response_code}: " . ($data['error']['message'] ?? $body));
@@ -951,39 +1074,27 @@ class TelegramBlogPublisherEnhanced {
                 return new WP_Error('invalid_api_key', 'Invalid Gemini API key format. Should be 39 characters long.');
             }
             
-            // First, try to list available models to check if API key is valid
-            $models_response = wp_remote_get("https://generativelanguage.googleapis.com/v1beta/models?key=" . $api_key, [
-                'timeout' => 30
-            ]);
+            // First, discover available models dynamically
+            $available_models = $this->discoverGeminiModels($api_key);
             
-            if (!is_wp_error($models_response)) {
-                $models_body = wp_remote_retrieve_body($models_response);
-                $models_data = json_decode($models_body, true);
-                
-                if (isset($models_data['models'])) {
-                    // API key is valid, now try content generation with correct API versions
-                    $api_configs = [
-                        ['version' => 'v1beta', 'model' => 'gemini-1.5-flash'],
-                        ['version' => 'v1beta', 'model' => 'gemini-1.5-pro'],
-                        ['version' => 'v1beta', 'model' => 'gemini-pro'],
-                        ['version' => 'v1', 'model' => 'gemini-pro']
-                    ];
-                    
-                    $last_error = '';
-                    foreach ($api_configs as $config) {
-                        $result = $this->testGeminiModel($api_key, $config['version'], $config['model'], $test_prompt);
-                        if (!is_wp_error($result)) {
-                            return $result;
-                        }
-                        $last_error = $result->get_error_message();
-                    }
-                    return new WP_Error('gemini_error', 'All Gemini models failed. Last error: ' . $last_error);
-                } else {
-                    return new WP_Error('gemini_auth_error', 'API key authentication failed. Please check your key: ' . ($models_data['error']['message'] ?? 'Unknown error'));
-                }
-            } else {
-                return new WP_Error('gemini_network_error', 'Cannot connect to Gemini API: ' . $models_response->get_error_message());
+            if (is_wp_error($available_models)) {
+                return $available_models; // Return the error from discovery
             }
+            
+            if (empty($available_models)) {
+                return new WP_Error('gemini_no_models', 'No Gemini models available for your API key. Please check your billing or project settings.');
+            }
+            
+            // Try each available model
+            $last_error = '';
+            foreach ($available_models as $model_info) {
+                $result = $this->testGeminiModel($api_key, $model_info['version'], $model_info['model'], $test_prompt);
+                if (!is_wp_error($result)) {
+                    return $result;
+                }
+                $last_error = $result->get_error_message();
+            }
+            return new WP_Error('gemini_error', 'All available Gemini models failed. Last error: ' . $last_error);
         } elseif ($service === 'deepseek') {
             return $this->callDeepSeekAPI($api_key, 'test', 50, 'professional');
         }
