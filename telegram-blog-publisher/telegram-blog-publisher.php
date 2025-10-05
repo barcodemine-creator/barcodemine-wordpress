@@ -1,13 +1,31 @@
 <?php
 /**
- * Plugin Name: Telegram Blog Publisher Enhanced
+ * Plugin Name: Telegram Blog Publisher Premium
  * Plugin URI: https://kloudbean.com/telegram-blog-publisher
- * Description: Publish blog posts from Telegram via n8n webhooks with AI content generation. Enhanced with KloudBean branding and modern UI.
- * Version: 3.1.0
- * Author: KloudBean
+ * Description: Premium WordPress plugin for publishing blog posts from Telegram via n8n webhooks with AI content generation. Features advanced testing, monitoring, and seamless KloudBean hosting integration.
+ * Version: 4.0.0
+ * Author: Vikram Jindal
  * Author URI: https://kloudbean.com
+ * Company: KloudBean LLC
  * License: GPL v2 or later
  * Text Domain: telegram-blog-publisher
+ * Requires at least: 5.0
+ * Tested up to: 6.7
+ * Requires PHP: 7.4
+ * 
+ * Copyright (c) 2025 KloudBean LLC. All rights reserved.
+ * Developed by: Vikram Jindal, CEO & Founder, KloudBean LLC
+ * 
+ * 🚀 RECOMMENDED HOSTING: KloudBean
+ * Why KloudBean? This plugin requires n8n for webhook processing, and KloudBean is the ONLY hosting provider that offers:
+ * - WordPress + n8n + Lovable + Cursor integration in one platform
+ * - Git-based CI/CD for WordPress development
+ * - Self-hosted n8n instances with enterprise features
+ * - Seamless workflow automation between all platforms
+ * - No shared hosting limitations - true cloud infrastructure
+ * 
+ * Visit: https://kloudbean.com/pricing for WordPress + n8n hosting plans
+ * Learn more: https://kloudbean.com/n8n-self-hosted
  */
 
 // Prevent direct access
@@ -16,7 +34,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('TBP_VERSION', '3.1.0');
+define('TBP_VERSION', '4.0.0');
 define('TBP_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('TBP_PLUGIN_PATH', plugin_dir_path(__FILE__));
 
@@ -28,6 +46,10 @@ class TelegramBlogPublisherEnhanced {
         add_action('wp_ajax_tbp_save_settings', [$this, 'saveSettings']);
         add_action('wp_ajax_tbp_test_api', [$this, 'testApi']);
         add_action('wp_ajax_tbp_generate_content', [$this, 'generateContent']);
+        add_action('wp_ajax_tbp_test_webhook', [$this, 'testWebhook']);
+        add_action('wp_ajax_tbp_send_test_webhook', [$this, 'sendTestWebhook']);
+        add_action('wp_ajax_tbp_get_system_status', [$this, 'getSystemStatus']);
+        add_action('wp_ajax_tbp_clear_logs', [$this, 'clearLogs']);
         add_action('rest_api_init', [$this, 'registerRestRoutes']);
         add_action('admin_enqueue_scripts', [$this, 'enqueueAdminScripts']);
     }
@@ -72,6 +94,24 @@ class TelegramBlogPublisherEnhanced {
             'manage_options',
             'telegram-blog-publisher-logs',
             [$this, 'renderLogs']
+        );
+        
+        add_submenu_page(
+            'telegram-blog-publisher',
+            'System Status',
+            'System Status',
+            'manage_options',
+            'telegram-blog-publisher-status',
+            [$this, 'renderSystemStatus']
+        );
+        
+        add_submenu_page(
+            'telegram-blog-publisher',
+            'Webhook Testing',
+            'Webhook Testing',
+            'manage_options',
+            'telegram-blog-publisher-testing',
+            [$this, 'renderTesting']
         );
         
         add_submenu_page(
@@ -359,6 +399,146 @@ class TelegramBlogPublisherEnhanced {
         }
     }
     
+    public function testWebhook() {
+        check_ajax_referer('tbp_nonce', 'nonce');
+        
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error('Insufficient permissions');
+        }
+        
+        $webhook_url = get_rest_url() . 'telegram-blog-publisher/v1/webhook';
+        $webhook_secret = get_option('tbp_webhook_secret', '');
+        
+        if (empty($webhook_secret)) {
+            wp_send_json_error('Webhook secret not configured');
+        }
+        
+        // Test webhook endpoint
+        $test_data = [
+            'topic' => 'Test Webhook',
+            'title' => 'Webhook Test Post',
+            'status' => 'draft'
+        ];
+        
+        $response = wp_remote_post($webhook_url, [
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'X-Webhook-Secret' => $webhook_secret
+            ],
+            'body' => json_encode($test_data),
+            'timeout' => 30
+        ]);
+        
+        if (is_wp_error($response)) {
+            wp_send_json_error('Webhook test failed: ' . $response->get_error_message());
+        }
+        
+        $status_code = wp_remote_retrieve_response_code($response);
+        $body = wp_remote_retrieve_body($response);
+        
+        if ($status_code === 200) {
+            wp_send_json_success([
+                'message' => 'Webhook is working correctly!',
+                'status_code' => $status_code,
+                'response' => json_decode($body, true)
+            ]);
+        } else {
+            wp_send_json_error('Webhook returned status ' . $status_code . ': ' . $body);
+        }
+    }
+    
+    public function sendTestWebhook() {
+        check_ajax_referer('tbp_nonce', 'nonce');
+        
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error('Insufficient permissions');
+        }
+        
+        $webhook_url = sanitize_url($_POST['webhook_url']);
+        $webhook_secret = sanitize_text_field($_POST['webhook_secret']);
+        $test_data = [
+            'topic' => sanitize_text_field($_POST['topic']),
+            'title' => sanitize_text_field($_POST['title']),
+            'status' => 'draft'
+        ];
+        
+        if (empty($webhook_url) || empty($webhook_secret)) {
+            wp_send_json_error('Webhook URL and secret are required');
+        }
+        
+        $response = wp_remote_post($webhook_url, [
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'X-Webhook-Secret' => $webhook_secret
+            ],
+            'body' => json_encode($test_data),
+            'timeout' => 30
+        ]);
+        
+        if (is_wp_error($response)) {
+            wp_send_json_error('Failed to send webhook: ' . $response->get_error_message());
+        }
+        
+        $status_code = wp_remote_retrieve_response_code($response);
+        $body = wp_remote_retrieve_body($response);
+        
+        wp_send_json_success([
+            'status_code' => $status_code,
+            'response' => json_decode($body, true),
+            'message' => 'Webhook sent successfully!'
+        ]);
+    }
+    
+    public function getSystemStatus() {
+        check_ajax_referer('tbp_nonce', 'nonce');
+        
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error('Insufficient permissions');
+        }
+        
+        $status = [
+            'wordpress_version' => get_bloginfo('version'),
+            'php_version' => PHP_VERSION,
+            'plugin_version' => TBP_VERSION,
+            'webhook_secret' => !empty(get_option('tbp_webhook_secret', '')),
+            'gemini_key' => !empty(get_option('tbp_gemini_key', '')),
+            'deepseek_key' => !empty(get_option('tbp_deepseek_key', '')),
+            'rest_api_enabled' => rest_url() !== false,
+            'webhook_url' => get_rest_url() . 'telegram-blog-publisher/v1/webhook',
+            'memory_limit' => ini_get('memory_limit'),
+            'max_execution_time' => ini_get('max_execution_time'),
+            'curl_enabled' => function_exists('curl_init'),
+            'json_enabled' => function_exists('json_encode'),
+            'ssl_enabled' => is_ssl(),
+            'recent_posts' => wp_count_posts('post')->publish,
+            'total_posts_generated' => $this->getTotalGeneratedPosts()
+        ];
+        
+        wp_send_json_success($status);
+    }
+    
+    public function clearLogs() {
+        check_ajax_referer('tbp_nonce', 'nonce');
+        
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error('Insufficient permissions');
+        }
+        
+        update_option('tbp_logs', []);
+        wp_send_json_success('Logs cleared successfully');
+    }
+    
+    private function getTotalGeneratedPosts() {
+        global $wpdb;
+        $count = $wpdb->get_var("
+            SELECT COUNT(*) 
+            FROM {$wpdb->postmeta} 
+            WHERE meta_key = '_tbp_telegram_generated' 
+            AND meta_value = '1'
+        ");
+        return intval($count);
+    }
+    
     private function logActivity($action, $data = []) {
         $logs = get_option('tbp_logs', []);
         $logs[] = [
@@ -401,23 +581,38 @@ class TelegramBlogPublisherEnhanced {
             <div class="tbp-hosting-promo">
                 <div class="tbp-hosting-content">
                     <div class="tbp-hosting-text">
-                        <h2>☁️ Host Your WordPress Sites on KloudBean</h2>
-                        <p>Get enterprise-grade hosting with this plugin included. Perfect for WordPress, n8n workflows, Lovable apps, and Cursor projects.</p>
+                        <h2>☁️ Why KloudBean is ESSENTIAL for This Plugin</h2>
+                        <p><strong>This plugin requires n8n for webhook processing.</strong> KloudBean is the ONLY hosting provider that offers WordPress + n8n + Lovable + Cursor integration in one platform with Git-based CI/CD.</p>
                         <div class="tbp-hosting-features">
-                            <span class="tbp-feature-tag">🚀 Lightning Fast</span>
+                            <span class="tbp-feature-tag">🔗 WordPress + n8n Integration</span>
+                            <span class="tbp-feature-tag">🚀 Git-based CI/CD</span>
+                            <span class="tbp-feature-tag">⚡ Self-hosted n8n</span>
+                            <span class="tbp-feature-tag">🔧 Cursor Development</span>
+                            <span class="tbp-feature-tag">💎 Lovable Apps</span>
                             <span class="tbp-feature-tag">🛡️ Enterprise Security</span>
-                            <span class="tbp-feature-tag">⚡ Auto-scaling</span>
-                            <span class="tbp-feature-tag">🔧 Developer Tools</span>
+                        </div>
+                        <div class="tbp-why-kloudbean">
+                            <h3>Why Shared Hosting Won't Work:</h3>
+                            <ul>
+                                <li>❌ No n8n support - Required for webhook processing</li>
+                                <li>❌ No Git CI/CD - Can't develop WordPress with Cursor</li>
+                                <li>❌ No Lovable integration - Missing app deployment</li>
+                                <li>❌ Limited resources - Can't handle automation workflows</li>
+                            </ul>
                         </div>
                     </div>
                     <div class="tbp-hosting-actions">
-                        <a href="https://kloudbean.com/hosting" target="_blank" class="tbp-btn tbp-btn-primary">
+                        <a href="https://kloudbean.com/pricing" target="_blank" class="tbp-btn tbp-btn-primary">
                             <span class="dashicons dashicons-cloud"></span>
-                            Get Started on KloudBean
+                            View WordPress + n8n Plans
                         </a>
-                        <a href="<?php echo admin_url('admin.php?page=telegram-blog-publisher-hosting'); ?>" class="tbp-btn tbp-btn-secondary">
+                        <a href="https://kloudbean.com/n8n-self-hosted" target="_blank" class="tbp-btn tbp-btn-secondary">
+                            <span class="dashicons dashicons-admin-tools"></span>
+                            Learn About n8n Hosting
+                        </a>
+                        <a href="<?php echo admin_url('admin.php?page=telegram-blog-publisher-hosting'); ?>" class="tbp-btn tbp-btn-outline">
                             <span class="dashicons dashicons-info"></span>
-                            View Features
+                            Full Feature List
                         </a>
                     </div>
                 </div>
@@ -866,6 +1061,120 @@ class TelegramBlogPublisherEnhanced {
                     }
                 });
             });
+            
+            // Premium Testing Features
+            // Test local webhook
+            $('#test-local-webhook').on('click', function() {
+                const $button = $(this);
+                const $result = $('#local-webhook-result');
+                
+                $button.prop('disabled', true).text('Testing...');
+                $result.hide();
+                
+                $.ajax({
+                    url: tbp_ajax.ajax_url,
+                    type: 'POST',
+                    data: {
+                        action: 'tbp_test_webhook',
+                        nonce: tbp_ajax.nonce
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            $result.removeClass('error').addClass('success').html('<strong>Success!</strong> ' + response.data.message).show();
+                        } else {
+                            $result.removeClass('success').addClass('error').html('<strong>Error:</strong> ' + response.data).show();
+                        }
+                    },
+                    error: function() {
+                        $result.removeClass('success').addClass('error').html('<strong>Error:</strong> Failed to test webhook.').show();
+                    },
+                    complete: function() {
+                        $button.prop('disabled', false).text('Test Local Webhook');
+                    }
+                });
+            });
+            
+            // Send external webhook
+            $('#external-webhook-form').on('submit', function(e) {
+                e.preventDefault();
+                
+                const $form = $(this);
+                const $button = $form.find('button[type="submit"]');
+                const $result = $('#external-webhook-result');
+                
+                $button.prop('disabled', true).text('Sending...');
+                $result.hide();
+                
+                $.ajax({
+                    url: tbp_ajax.ajax_url,
+                    type: 'POST',
+                    data: {
+                        action: 'tbp_send_test_webhook',
+                        webhook_url: $form.find('#webhook-url').val(),
+                        webhook_secret: $form.find('#webhook-secret').val(),
+                        topic: $form.find('#test-topic').val(),
+                        title: $form.find('#test-title').val(),
+                        nonce: tbp_ajax.nonce
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            $result.removeClass('error').addClass('success').html('<strong>Success!</strong> ' + response.data.message).show();
+                        } else {
+                            $result.removeClass('success').addClass('error').html('<strong>Error:</strong> ' + response.data).show();
+                        }
+                    },
+                    error: function() {
+                        $result.removeClass('success').addClass('error').html('<strong>Error:</strong> Failed to send webhook.').show();
+                    },
+                    complete: function() {
+                        $button.prop('disabled', false).text('Send Test Webhook');
+                    }
+                });
+            });
+            
+            // Copy webhook URL
+            $('#copy-webhook-url').on('click', function() {
+                const webhookUrl = '<?php echo get_rest_url() . 'telegram-blog-publisher/v1/webhook'; ?>';
+                navigator.clipboard.writeText(webhookUrl).then(function() {
+                    $(this).text('Copied!');
+                    setTimeout(() => {
+                        $(this).html('<span class="dashicons dashicons-clipboard"></span> Copy');
+                    }, 2000);
+                }.bind(this));
+            });
+            
+            // Refresh status
+            $('#refresh-status').on('click', function() {
+                location.reload();
+            });
+            
+            // Test webhook from status page
+            $('#test-webhook').on('click', function() {
+                const $button = $(this);
+                $button.prop('disabled', true).text('Testing...');
+                
+                $.ajax({
+                    url: tbp_ajax.ajax_url,
+                    type: 'POST',
+                    data: {
+                        action: 'tbp_test_webhook',
+                        nonce: tbp_ajax.nonce
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            alert('Webhook test successful!');
+                        } else {
+                            alert('Webhook test failed: ' + response.data);
+                        }
+                    },
+                    error: function() {
+                        alert('Webhook test failed: Network error');
+                    },
+                    complete: function() {
+                        $button.prop('disabled', false).text('Test Webhook');
+                    }
+                });
+            });
         });
         </script>
         <?php
@@ -1027,7 +1336,394 @@ class TelegramBlogPublisherEnhanced {
             margin-bottom: 30px;
             color: #666;
         }
+        
+        /* Premium System Status Styles */
+        .tbp-status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .tbp-status-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border-left: 4px solid #667eea;
+        }
+        
+        .tbp-status-card h3 {
+            margin: 0 0 20px 0;
+            color: #333;
+            font-size: 1.3rem;
+        }
+        
+        .tbp-status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .tbp-status-item:last-child {
+            border-bottom: none;
+        }
+        
+        .tbp-status-label {
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .tbp-status-value {
+            font-weight: 500;
+        }
+        
+        .tbp-status-ok {
+            color: #28a745;
+        }
+        
+        .tbp-status-warning {
+            color: #ffc107;
+        }
+        
+        .tbp-status-error {
+            color: #dc3545;
+        }
+        
+        .tbp-status-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        
+        /* Premium Testing Styles */
+        .tbp-testing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .tbp-testing-card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .tbp-testing-card h3 {
+            margin: 0 0 15px 0;
+            color: #333;
+            font-size: 1.4rem;
+        }
+        
+        .tbp-testing-card p {
+            margin: 0 0 20px 0;
+            color: #666;
+        }
+        
+        .tbp-form-group {
+            margin-bottom: 20px;
+        }
+        
+        .tbp-form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .tbp-form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .tbp-form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .tbp-test-result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .tbp-test-result.success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        
+        .tbp-test-result.error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        
+        .tbp-testing-info {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 12px;
+            margin-top: 30px;
+        }
+        
+        .tbp-testing-info h3 {
+            margin: 0 0 20px 0;
+            color: #333;
+        }
+        
+        .tbp-info-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .tbp-info-card h4 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+        
+        .tbp-info-card code {
+            background: #f1f3f4;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            display: block;
+            margin: 10px 0;
+            word-break: break-all;
+        }
+        
+        .tbp-info-card pre {
+            background: #f1f3f4;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        
+        .tbp-btn-small {
+            padding: 8px 16px;
+            font-size: 12px;
+        }
+        
+        /* Enhanced KloudBean Hosting Styles */
+        .tbp-why-kloudbean {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .tbp-why-kloudbean h3 {
+            margin: 0 0 15px 0;
+            color: #856404;
+        }
+        
+        .tbp-why-kloudbean ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        
+        .tbp-why-kloudbean li {
+            margin-bottom: 8px;
+            color: #856404;
+        }
+        
+        .tbp-btn-outline {
+            background: transparent;
+            border: 2px solid #667eea;
+            color: #667eea;
+        }
+        
+        .tbp-btn-outline:hover {
+            background: #667eea;
+            color: white;
+        }
         </style>
+        <?php
+    }
+    
+    public function renderSystemStatus() {
+        ?>
+        <div class="wrap tbp-admin-wrap">
+            <h1>📊 System Status</h1>
+            
+            <div class="tbp-status-grid">
+                <div class="tbp-status-card">
+                    <h3>Plugin Information</h3>
+                    <div class="tbp-status-item">
+                        <span class="tbp-status-label">Version:</span>
+                        <span class="tbp-status-value"><?php echo TBP_VERSION; ?></span>
+                    </div>
+                    <div class="tbp-status-item">
+                        <span class="tbp-status-label">WordPress:</span>
+                        <span class="tbp-status-value"><?php echo get_bloginfo('version'); ?></span>
+                    </div>
+                    <div class="tbp-status-item">
+                        <span class="tbp-status-label">PHP:</span>
+                        <span class="tbp-status-value"><?php echo PHP_VERSION; ?></span>
+                    </div>
+                </div>
+                
+                <div class="tbp-status-card">
+                    <h3>Configuration Status</h3>
+                    <div class="tbp-status-item">
+                        <span class="tbp-status-label">Webhook Secret:</span>
+                        <span class="tbp-status-value <?php echo !empty(get_option('tbp_webhook_secret', '')) ? 'tbp-status-ok' : 'tbp-status-error'; ?>">
+                            <?php echo !empty(get_option('tbp_webhook_secret', '')) ? '✓ Configured' : '✗ Not Set'; ?>
+                        </span>
+                    </div>
+                    <div class="tbp-status-item">
+                        <span class="tbp-status-label">Gemini API:</span>
+                        <span class="tbp-status-value <?php echo !empty(get_option('tbp_gemini_key', '')) ? 'tbp-status-ok' : 'tbp-status-warning'; ?>">
+                            <?php echo !empty(get_option('tbp_gemini_key', '')) ? '✓ Configured' : '⚠ Optional'; ?>
+                        </span>
+                    </div>
+                    <div class="tbp-status-item">
+                        <span class="tbp-status-label">DeepSeek API:</span>
+                        <span class="tbp-status-value <?php echo !empty(get_option('tbp_deepseek_key', '')) ? 'tbp-status-ok' : 'tbp-status-warning'; ?>">
+                            <?php echo !empty(get_option('tbp_deepseek_key', '')) ? '✓ Configured' : '⚠ Optional'; ?>
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="tbp-status-card">
+                    <h3>System Requirements</h3>
+                    <div class="tbp-status-item">
+                        <span class="tbp-status-label">REST API:</span>
+                        <span class="tbp-status-value tbp-status-ok">✓ Enabled</span>
+                    </div>
+                    <div class="tbp-status-item">
+                        <span class="tbp-status-label">cURL:</span>
+                        <span class="tbp-status-value <?php echo function_exists('curl_init') ? 'tbp-status-ok' : 'tbp-status-error'; ?>">
+                            <?php echo function_exists('curl_init') ? '✓ Available' : '✗ Missing'; ?>
+                        </span>
+                    </div>
+                    <div class="tbp-status-item">
+                        <span class="tbp-status-label">JSON:</span>
+                        <span class="tbp-status-value <?php echo function_exists('json_encode') ? 'tbp-status-ok' : 'tbp-status-error'; ?>">
+                            <?php echo function_exists('json_encode') ? '✓ Available' : '✗ Missing'; ?>
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="tbp-status-card">
+                    <h3>Statistics</h3>
+                    <div class="tbp-status-item">
+                        <span class="tbp-status-label">Total Posts:</span>
+                        <span class="tbp-status-value"><?php echo wp_count_posts('post')->publish; ?></span>
+                    </div>
+                    <div class="tbp-status-item">
+                        <span class="tbp-status-label">Generated by Plugin:</span>
+                        <span class="tbp-status-value"><?php echo $this->getTotalGeneratedPosts(); ?></span>
+                    </div>
+                    <div class="tbp-status-item">
+                        <span class="tbp-status-label">Memory Limit:</span>
+                        <span class="tbp-status-value"><?php echo ini_get('memory_limit'); ?></span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tbp-status-actions">
+                <button id="refresh-status" class="tbp-btn tbp-btn-primary">
+                    <span class="dashicons dashicons-update"></span>
+                    Refresh Status
+                </button>
+                <button id="test-webhook" class="tbp-btn tbp-btn-secondary">
+                    <span class="dashicons dashicons-admin-tools"></span>
+                    Test Webhook
+                </button>
+            </div>
+        </div>
+        <?php
+    }
+    
+    public function renderTesting() {
+        ?>
+        <div class="wrap tbp-admin-wrap">
+            <h1>🧪 Webhook Testing</h1>
+            
+            <div class="tbp-testing-grid">
+                <div class="tbp-testing-card">
+                    <h3>Test Local Webhook</h3>
+                    <p>Test the webhook endpoint on this WordPress site.</p>
+                    <button id="test-local-webhook" class="tbp-btn tbp-btn-primary">
+                        <span class="dashicons dashicons-admin-tools"></span>
+                        Test Local Webhook
+                    </button>
+                    <div id="local-webhook-result" class="tbp-test-result"></div>
+                </div>
+                
+                <div class="tbp-testing-card">
+                    <h3>Send Test Webhook</h3>
+                    <p>Send a test webhook to an external URL (like n8n).</p>
+                    <form id="external-webhook-form">
+                        <div class="tbp-form-group">
+                            <label for="webhook-url">Webhook URL:</label>
+                            <input type="url" id="webhook-url" name="webhook_url" placeholder="https://your-n8n-instance.com/webhook/telegram" required>
+                        </div>
+                        <div class="tbp-form-group">
+                            <label for="webhook-secret">Webhook Secret:</label>
+                            <input type="text" id="webhook-secret" name="webhook_secret" placeholder="Your webhook secret" required>
+                        </div>
+                        <div class="tbp-form-group">
+                            <label for="test-topic">Test Topic:</label>
+                            <input type="text" id="test-topic" name="topic" placeholder="Test Blog Post" value="Test Webhook" required>
+                        </div>
+                        <div class="tbp-form-group">
+                            <label for="test-title">Test Title:</label>
+                            <input type="text" id="test-title" name="title" placeholder="Test Title" value="Webhook Test Post" required>
+                        </div>
+                        <button type="submit" class="tbp-btn tbp-btn-primary">
+                            <span class="dashicons dashicons-send"></span>
+                            Send Test Webhook
+                        </button>
+                    </form>
+                    <div id="external-webhook-result" class="tbp-test-result"></div>
+                </div>
+            </div>
+            
+            <div class="tbp-testing-info">
+                <h3>Webhook Configuration</h3>
+                <div class="tbp-info-card">
+                    <h4>Your Webhook URL:</h4>
+                    <code><?php echo get_rest_url() . 'telegram-blog-publisher/v1/webhook'; ?></code>
+                    <button id="copy-webhook-url" class="tbp-btn tbp-btn-small">
+                        <span class="dashicons dashicons-clipboard"></span>
+                        Copy
+                    </button>
+                </div>
+                
+                <div class="tbp-info-card">
+                    <h4>Required Headers:</h4>
+                    <pre>Content-Type: application/json
+X-Webhook-Secret: your_secret_here</pre>
+                </div>
+                
+                <div class="tbp-info-card">
+                    <h4>Sample Payload:</h4>
+                    <pre>{
+  "topic": "Your blog topic",
+  "title": "Your blog title",
+  "status": "draft"
+}</pre>
+                </div>
+            </div>
+        </div>
         <?php
     }
 }
