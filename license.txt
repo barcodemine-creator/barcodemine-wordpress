@@ -1,48 +1,10 @@
-WordPress - Web publishing software
+GNU GENERAL PUBLIC LICENSE
+Version 2, June 1991
 
-Copyright 2011-2024 by the contributors
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-
-This program incorporates work covered by the following copyright and
-permission notices:
-
-  b2 is (c) 2001, 2002 Michel Valdrighi - https://cafelog.com
-
-  Wherever third party code has been used, credit has been given in the code's
-  comments.
-
-  b2 is released under the GPL
-
-and
-
-  WordPress - Web publishing software
-
-  Copyright 2003-2010 by the contributors
-
-  WordPress is released under the GPL
-
-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-
-                    GNU GENERAL PUBLIC LICENSE
-                       Version 2, June 1991
-
- Copyright (C) 1989, 1991 Free Software Foundation, Inc.,
- 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
- Everyone is permitted to copy and distribute verbatim copies
- of this license document, but changing it is not allowed.
+Copyright (C) 1989, 1991 Free Software Foundation, Inc.
+51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+Everyone is permitted to copy and distribute verbatim copies
+of this license document, but changing it is not allowed.
 
                             Preamble
 
@@ -282,8 +244,8 @@ specifies a version number of this License which applies to it and "any
 later version", you have the option of following the terms and conditions
 either of that version or of any later version published by the Free
 Software Foundation.  If the Program does not specify a version number of
-this License, you may choose any version ever published by the Free Software
-Foundation.
+this License, you may choose any version ever published by the Free
+Software Foundation.
 
   10. If you wish to incorporate parts of the Program into other free
 programs whose distribution conditions are different, write to the author
@@ -343,14 +305,14 @@ the "copyright" line and a pointer to where the full notice is found.
 
     You should have received a copy of the GNU General Public License along
     with this program; if not, write to the Free Software Foundation, Inc.,
-    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+    51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA.
 
 Also add information on how to contact you by electronic and paper mail.
 
-If the program is interactive, make it output a short notice like this
+If the program is interactive, make it print a short notice like this
 when it starts in an interactive mode:
 
-    Gnomovision version 69, Copyright (C) year name of author
+    Gnomovision version 69, Copyright (C) year  name of author
     Gnomovision comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
     This is free software, and you are welcome to redistribute it
     under certain conditions; type `show c' for details.
@@ -375,10 +337,3 @@ proprietary programs.  If your program is a subroutine library, you may
 consider it more useful to permit linking proprietary applications with the
 library.  If this is what you want to do, use the GNU Lesser General
 Public License instead of this License.
-
-WRITTEN OFFER
-
-The source code for any program binaries or compressed scripts that are
-included with WordPress can be freely obtained at the following URL:
-
-	https://wordpress.org/download/source/
