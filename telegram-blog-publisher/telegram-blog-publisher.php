@@ -454,7 +454,7 @@ class TelegramBlogPublisherEnhanced {
     private function callGeminiAPI($api_key, $topic, $word_count, $tone) {
         $prompt = "Write a comprehensive blog post about {$topic} in a {$tone} tone. Target word count: {$word_count} words. Include an engaging introduction, detailed main content with subheadings, and a compelling conclusion.";
         
-        $response = wp_remote_post("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" . $api_key, [
+        $response = wp_remote_post("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=" . $api_key, [
             'headers' => [
                 'Content-Type' => 'application/json'
             ],
@@ -613,7 +613,7 @@ class TelegramBlogPublisherEnhanced {
             ]
         ];
         
-        $response = wp_remote_post('https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=' . $api_key, [
+        $response = wp_remote_post('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=' . $api_key, [
             'headers' => ['Content-Type' => 'application/json'],
             'body' => json_encode($data),
             'timeout' => 60
