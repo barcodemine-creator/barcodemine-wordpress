@@ -621,37 +621,37 @@ class TelegramBlogPublisherEnhanced {
             <div class="tbp-dashboard-grid">
                 <div class="tbp-card tbp-card-large">
                     <h2>🚀 Quick Test</h2>
-                    <form id="quick-test-form">
-                        <table class="form-table">
-                            <tr>
-                                <th>Topic:</th>
+                <form id="quick-test-form">
+                    <table class="form-table">
+                        <tr>
+                            <th>Topic:</th>
                                 <td><input type="text" id="test-topic" name="topic" class="regular-text" placeholder="Enter topic here..." value="r3e" /></td>
-                            </tr>
-                            <tr>
-                                <th>Details:</th>
+                        </tr>
+                        <tr>
+                            <th>Details:</th>
                                 <td><textarea id="test-details" name="details" rows="3" cols="50" placeholder="Enter additional details...">3f</textarea></td>
-                            </tr>
-                        </table>
-                        <p class="submit">
-                            <button type="submit" class="button button-primary">Generate Content</button>
-                        </p>
-                    </form>
-                    
-                    <div id="generated-content" style="margin-top: 20px; padding: 15px; border: 1px solid #ddd; background: #f9f9f9; display: none;">
-                        <h3>Generated Content:</h3>
-                        <div id="content-result"></div>
-                    </div>
-                </div>
+                        </tr>
+                    </table>
+                    <p class="submit">
+                        <button type="submit" class="button button-primary">Generate Content</button>
+                    </p>
+                </form>
                 
+                <div id="generated-content" style="margin-top: 20px; padding: 15px; border: 1px solid #ddd; background: #f9f9f9; display: none;">
+                    <h3>Generated Content:</h3>
+                    <div id="content-result"></div>
+                </div>
+            </div>
+            
                 <div class="tbp-card">
                     <h2>🔗 Webhook Information</h2>
-                    <p><strong>Webhook URL:</strong> <code><?php echo esc_html($webhook_url); ?></code></p>
-                    <p><strong>Webhook Secret:</strong> <code><?php echo esc_html($webhook_secret); ?></code></p>
+                <p><strong>Webhook URL:</strong> <code><?php echo esc_html($webhook_url); ?></code></p>
+                <p><strong>Webhook Secret:</strong> <code><?php echo esc_html($webhook_secret); ?></code></p>
                     <div class="tbp-button-group">
-                        <button onclick="navigator.clipboard.writeText('<?php echo esc_js($webhook_url); ?>')" class="button">Copy URL</button>
-                        <button onclick="navigator.clipboard.writeText('<?php echo esc_js($webhook_secret); ?>')" class="button">Copy Secret</button>
-                    </div>
-                </div>
+                <button onclick="navigator.clipboard.writeText('<?php echo esc_js($webhook_url); ?>')" class="button">Copy URL</button>
+                <button onclick="navigator.clipboard.writeText('<?php echo esc_js($webhook_secret); ?>')" class="button">Copy Secret</button>
+            </div>
+        </div>
                 
                 <div class="tbp-card">
                     <h2>🤖 AI Services Status</h2>
@@ -1072,28 +1072,28 @@ class TelegramBlogPublisherEnhanced {
                 $result.hide();
                 
                 $.ajax({
-                    url: tbp_ajax.ajax_url,
-                    type: 'POST',
-                    data: {
+                url: tbp_ajax.ajax_url,
+                type: 'POST',
+                data: {
                         action: 'tbp_test_webhook',
                         nonce: tbp_ajax.nonce
-                    },
-                    success: function(response) {
-                        if (response.success) {
+                },
+                success: function(response) {
+                    if (response.success) {
                             $result.removeClass('error').addClass('success').html('<strong>Success!</strong> ' + response.data.message).show();
-                        } else {
+                    } else {
                             $result.removeClass('success').addClass('error').html('<strong>Error:</strong> ' + response.data).show();
-                        }
-                    },
-                    error: function() {
-                        $result.removeClass('success').addClass('error').html('<strong>Error:</strong> Failed to test webhook.').show();
-                    },
-                    complete: function() {
-                        $button.prop('disabled', false).text('Test Local Webhook');
                     }
-                });
+                },
+                error: function() {
+                        $result.removeClass('success').addClass('error').html('<strong>Error:</strong> Failed to test webhook.').show();
+                },
+                complete: function() {
+                        $button.prop('disabled', false).text('Test Local Webhook');
+                }
             });
-            
+            });
+        
             // Send external webhook
             $('#external-webhook-form').on('submit', function(e) {
                 e.preventDefault();
@@ -1243,66 +1243,580 @@ class TelegramBlogPublisherEnhanced {
     public function renderHosting() {
         ?>
         <div class="wrap tbp-hosting-page">
+            <!-- Hero Section -->
             <div class="tbp-hosting-hero">
-                <h1>☁️ KloudBean Hosting</h1>
-                <p>Enterprise-grade hosting for WordPress, n8n workflows, Lovable apps, and Cursor projects</p>
-            </div>
-            
-            <div class="tbp-hosting-features">
-                <div class="tbp-feature-card">
-                    <h3>🚀 Lightning Fast Performance</h3>
-                    <p>SSD storage, CDN integration, and optimized server configurations ensure your WordPress sites load in milliseconds.</p>
-                </div>
-                
-                <div class="tbp-feature-card">
-                    <h3>🛡️ Enterprise Security</h3>
-                    <p>Advanced security measures including DDoS protection, SSL certificates, and automated backups keep your sites safe.</p>
-                </div>
-                
-                <div class="tbp-feature-card">
-                    <h3>🔧 Developer-Friendly</h3>
-                    <p>Built for developers with Git integration, staging environments, and support for modern development tools.</p>
+                <div class="tbp-hero-content">
+                    <div class="tbp-kloudbean-logo">
+                        <img src="https://www.kloudbean.com/wp-content/uploads/2024/08/logo.svg" alt="KloudBean Logo" width="80" height="80">
+                    </div>
+                    <h1>☁️ KloudBean Hosting</h1>
+                    <p class="tbp-hero-subtitle">The ONLY hosting platform that supports WordPress + n8n + Lovable + Cursor development with Git-based CI/CD</p>
+                    <div class="tbp-hero-cta">
+                        <a href="https://kloudbean.com/pricing" target="_blank" class="tbp-btn tbp-btn-primary tbp-btn-large">
+                            <span class="dashicons dashicons-cloud"></span>
+                            View Pricing Plans
+                        </a>
+                        <a href="https://kloudbean.com/n8n-self-hosted" target="_blank" class="tbp-btn tbp-btn-secondary tbp-btn-large">
+                            <span class="dashicons dashicons-admin-tools"></span>
+                            Learn About n8n
+                        </a>
+                    </div>
                 </div>
             </div>
-            
+
+            <!-- Why KloudBean is Essential -->
+            <div class="tbp-essential-section">
+                <h2>Why KloudBean is ESSENTIAL for This Plugin</h2>
+                <div class="tbp-essential-content">
+                    <div class="tbp-essential-text">
+                        <p><strong>This Telegram Blog Publisher plugin requires n8n for webhook processing.</strong> KloudBean is the ONLY hosting provider that offers complete integration of WordPress, n8n, Lovable, and Cursor development in one unified platform.</p>
+                        
+                        <div class="tbp-integration-highlights">
+                            <div class="tbp-integration-item">
+                                <span class="tbp-integration-icon">🔗</span>
+                                <div class="tbp-integration-text">
+                                    <h4>WordPress + n8n Integration</h4>
+                                    <p>Seamless webhook processing and workflow automation</p>
+                                </div>
+                            </div>
+                            <div class="tbp-integration-item">
+                                <span class="tbp-integration-icon">🚀</span>
+                                <div class="tbp-integration-text">
+                                    <h4>Git-based CI/CD</h4>
+                                    <p>Develop WordPress with Cursor and deploy automatically via Git</p>
+                                </div>
+                            </div>
+                            <div class="tbp-integration-item">
+                                <span class="tbp-integration-icon">💎</span>
+                                <div class="tbp-integration-text">
+                                    <h4>Lovable Apps</h4>
+                                    <p>Deploy and manage Lovable applications alongside WordPress</p>
+                                </div>
+                            </div>
+                            <div class="tbp-integration-item">
+                                <span class="tbp-integration-icon">🔧</span>
+                                <div class="tbp-integration-text">
+                                    <h4>Cursor Development</h4>
+                                    <p>AI-powered development environment with cloud integration</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Before vs After Comparison -->
+            <div class="tbp-comparison-section">
+                <h2>Before vs After KloudBean</h2>
+                <div class="tbp-comparison-container">
+                    <div class="tbp-comparison-box tbp-before-box">
+                        <h3>❌ Shared Hosting Limitations</h3>
+                        <div class="tbp-problem-list">
+                            <div class="tbp-problem-item">
+                                <span class="tbp-problem-icon">❌</span>
+                                <span>No n8n support - Plugin won't work</span>
+                            </div>
+                            <div class="tbp-problem-item">
+                                <span class="tbp-problem-icon">❌</span>
+                                <span>No Git CI/CD - Can't develop with Cursor</span>
+                            </div>
+                            <div class="tbp-problem-item">
+                                <span class="tbp-problem-icon">❌</span>
+                                <span>No Lovable integration</span>
+                            </div>
+                            <div class="tbp-problem-item">
+                                <span class="tbp-problem-icon">❌</span>
+                                <span>Limited resources for automation</span>
+                            </div>
+                            <div class="tbp-problem-item">
+                                <span class="tbp-problem-icon">❌</span>
+                                <span>Multiple vendors and billing</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tbp-arrow-container">
+                        <div class="tbp-arrow">
+                            <span class="dashicons dashicons-arrow-right-alt2"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="tbp-comparison-box tbp-after-box">
+                        <h3>✅ KloudBean Solution</h3>
+                        <div class="tbp-solution-center">
+                            <div class="tbp-kloudbean-logo-small">
+                                <img src="https://www.kloudbean.com/wp-content/uploads/2024/08/logo.svg" alt="KloudBean" width="50" height="50">
+                            </div>
+                            <h4>One Platform</h4>
+                            <div class="tbp-solution-list">
+                                <div class="tbp-solution-item">
+                                    <span class="tbp-solution-icon">✅</span>
+                                    <span>Complete n8n integration</span>
+                                </div>
+                                <div class="tbp-solution-item">
+                                    <span class="tbp-solution-icon">✅</span>
+                                    <span>Git-based CI/CD for Cursor</span>
+                                </div>
+                                <div class="tbp-solution-item">
+                                    <span class="tbp-solution-icon">✅</span>
+                                    <span>Lovable app deployment</span>
+                                </div>
+                                <div class="tbp-solution-item">
+                                    <span class="tbp-solution-icon">✅</span>
+                                    <span>Unified dashboard & billing</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KloudBean Magic Steps -->
+            <div class="tbp-magic-section">
+                <h2>🚀 Deploy in Seconds, Not Days</h2>
+                <div class="tbp-steps">
+                    <div class="tbp-step">
+                        <div class="tbp-step-content">
+                            <i class="fas fa-cubes"></i>
+                            <h3>1. Select Application</h3>
+                            <p>Choose from WordPress, n8n, Lovable, or Cursor projects</p>
+                        </div>
+                        <div class="tbp-step-line"></div>
+                    </div>
+                    <div class="tbp-step">
+                        <div class="tbp-step-content">
+                            <i class="fas fa-server"></i>
+                            <h3>2. Select Your Server Size</h3>
+                            <p>Pick the right resources for your needs (easily scalable anytime)</p>
+                        </div>
+                        <div class="tbp-step-line"></div>
+                    </div>
+                    <div class="tbp-step">
+                        <div class="tbp-step-content">
+                            <i class="fas fa-rocket"></i>
+                            <h3>3. One-Click Deploy</h3>
+                            <p>Watch as your entire digital workspace comes to life in minutes</p>
+                        </div>
+                        <div class="tbp-step-line"></div>
+                    </div>
+                    <div class="tbp-step">
+                        <div class="tbp-step-content">
+                            <i class="fas fa-lock"></i>
+                            <h3>4. Focus on Your Work</h3>
+                            <p>While we handle maintenance, backups, updates, and security</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feature Cards -->
+            <div class="tbp-features-grid">
+                <div class="tbp-feature-card">
+                    <h5>🚀 Deploy in Seconds, Not Days</h5>
+                    <p>Turn multi-hour setups into single-click deployments. Launch N8N workflows, GitLab repositories, Penpot designs, or private AI models in less time than it takes to make coffee.</p>
+                </div>
+                <div class="tbp-feature-card">
+                    <h5>💰 Save Up to 90% on Software Costs</h5>
+                    <p>Why pay for separate SaaS subscriptions when you can run everything on one affordable server? A typical business saves $2,400+ annually by consolidating tools on Kloudbean.</p>
+                </div>
+                <div class="tbp-feature-card">
+                    <h5>🔒 Your Data, Your Control</h5>
+                    <p>Deploy client projects seamlessly with ready-to-deploy environments for Node.js, React, Laravel, Python, WordPress, and more—eliminating setup hassles.</p>
+                </div>
+                <div class="tbp-feature-card">
+                    <h5>🔒 Enterprise-Grade Security</h5>
+                    <p>Deliver peace of mind to your clients with 24/7 advanced security—DDoS prevention, IP whitelisting, bot protection, and BitNinja shielding to protect your applications and client data effortlessly.</p>
+                </div>
+                <div class="tbp-feature-card">
+                    <h5>⚡ Ultra-Fast Performance</h5>
+                    <p>Enjoy optimized servers with cutting-edge caching, PHP-FPM, and HTTP/2 for ultra-fast load times and low latency—no delays, no complaints.</p>
+                </div>
+                <div class="tbp-feature-card">
+                    <h5>🛠️ Pre-Built Environments</h5>
+                    <p>Deploy client projects seamlessly with ready-to-deploy environments for Node.js, React, Laravel, Python, WordPress, and more—eliminating setup hassles.</p>
+                </div>
+            </div>
+
+            <!-- Pricing Plans -->
+            <div class="tbp-pricing-section">
+                <h2>Pricing Plans</h2>
+                <div class="tbp-pricing-grid">
+                    <div class="tbp-pricing-card">
+                        <h3>Starter</h3>
+                        <div class="tbp-price">$29<span>/month</span></div>
+                        <ul>
+                            <li>WordPress Hosting</li>
+                            <li>Basic n8n Instance</li>
+                            <li>Git Integration</li>
+                            <li>5GB Storage</li>
+                            <li>Basic Support</li>
+                        </ul>
+                        <a href="https://kloudbean.com/pricing" target="_blank" class="tbp-btn tbp-btn-primary">Get Started</a>
+                    </div>
+                    
+                    <div class="tbp-pricing-card tbp-featured">
+                        <div class="tbp-featured-badge">Most Popular</div>
+                        <h3>Professional</h3>
+                        <div class="tbp-price">$79<span>/month</span></div>
+                        <ul>
+                            <li>Everything in Starter</li>
+                            <li>Advanced n8n Features</li>
+                            <li>Cursor Development</li>
+                            <li>Lovable Integration</li>
+                            <li>25GB Storage</li>
+                            <li>Priority Support</li>
+                        </ul>
+                        <a href="https://kloudbean.com/pricing" target="_blank" class="tbp-btn tbp-btn-primary">Get Started</a>
+                    </div>
+                    
+                    <div class="tbp-pricing-card">
+                        <h3>Enterprise</h3>
+                        <div class="tbp-price">$199<span>/month</span></div>
+                        <ul>
+                            <li>Everything in Professional</li>
+                            <li>Unlimited n8n Workflows</li>
+                            <li>Custom Integrations</li>
+                            <li>100GB Storage</li>
+                            <li>24/7 Priority Support</li>
+                            <li>Dedicated Account Manager</li>
+                        </ul>
+                        <a href="https://kloudbean.com/pricing" target="_blank" class="tbp-btn tbp-btn-primary">Get Started</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Final CTA -->
             <div class="tbp-hosting-cta">
                 <h2>Ready to Get Started?</h2>
-                <p>Join thousands of developers who trust KloudBean for their hosting needs.</p>
-                <a href="https://kloudbean.com/hosting" target="_blank" class="button button-primary button-large">Get Started on KloudBean</a>
+                <p>Join thousands of developers who trust KloudBean for their WordPress + n8n + automation needs.</p>
+                <div class="tbp-cta-actions">
+                    <a href="https://kloudbean.com/pricing" target="_blank" class="tbp-btn tbp-btn-primary tbp-btn-large">
+                        <span class="dashicons dashicons-cloud"></span>
+                        View All Plans
+                    </a>
+                    <a href="https://kloudbean.com/n8n-self-hosted" target="_blank" class="tbp-btn tbp-btn-secondary tbp-btn-large">
+                        <span class="dashicons dashicons-admin-tools"></span>
+                        Learn About n8n
+                    </a>
+                </div>
             </div>
         </div>
         
         <style>
         .tbp-hosting-page {
-            max-width: 1200px;
+            max-width: 1400px;
+            margin: 0 auto;
         }
         
+        /* Hero Section */
         .tbp-hosting-hero {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #000F27 0%, #04142E 50%, #4F1AF3 100%);
             color: white;
-            padding: 60px 40px;
-            border-radius: 12px;
-            margin-bottom: 40px;
+            padding: 80px 40px;
+            border-radius: 16px;
+            margin-bottom: 60px;
             text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .tbp-hosting-hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: tbp-float 6s ease-in-out infinite;
+        }
+        
+        .tbp-hero-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .tbp-kloudbean-logo {
+            margin-bottom: 30px;
+        }
+        
+        .tbp-kloudbean-logo img {
+            border-radius: 50%;
+            box-shadow: 0 10px 25px rgba(0, 15, 39, 0.3);
+            border: 3px solid rgba(64, 183, 95, 0.6);
         }
         
         .tbp-hosting-hero h1 {
-            font-size: 3rem;
+            font-size: 3.5rem;
             margin: 0 0 20px 0;
             font-weight: 700;
+            position: relative;
+            z-index: 1;
         }
         
-        .tbp-hosting-hero p {
-            font-size: 1.2rem;
-            margin: 0;
+        .tbp-hero-subtitle {
+            font-size: 1.4rem;
+            margin: 0 0 40px 0;
             opacity: 0.9;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
         }
         
-        .tbp-hosting-features {
+        .tbp-hero-cta {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        /* Essential Section */
+        .tbp-essential-section {
+            background: #f8f9fa;
+            padding: 60px 40px;
+            border-radius: 16px;
+            margin-bottom: 60px;
+        }
+        
+        .tbp-essential-section h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+            color: #333;
+        }
+        
+        .tbp-integration-highlights {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .tbp-integration-item {
+            display: flex;
+            align-items: flex-start;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .tbp-integration-item:hover {
+            transform: translateY(-5px);
+        }
+        
+        .tbp-integration-icon {
+            font-size: 2rem;
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+        
+        .tbp-integration-text h4 {
+            margin: 0 0 10px 0;
+            color: #333;
+            font-size: 1.3rem;
+        }
+        
+        .tbp-integration-text p {
+            margin: 0;
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        /* Comparison Section */
+        .tbp-comparison-section {
+            margin-bottom: 60px;
+        }
+        
+        .tbp-comparison-section h2 {
+            text-align: center;
+            font-size: 2.5rem;
             margin-bottom: 40px;
+            color: #333;
+        }
+        
+        .tbp-comparison-container {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            margin-top: 40px;
+        }
+        
+        .tbp-comparison-box {
+            flex: 1;
+            padding: 40px;
+            border-radius: 16px;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .tbp-before-box {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+        }
+        
+        .tbp-after-box {
+            background: linear-gradient(135deg, #40B75F, #28a745);
+            color: white;
+        }
+        
+        .tbp-comparison-box h3 {
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .tbp-problem-list, .tbp-solution-list {
+            flex: 1;
+        }
+        
+        .tbp-problem-item, .tbp-solution-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        
+        .tbp-problem-icon, .tbp-solution-icon {
+            margin-right: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .tbp-solution-center {
+            text-align: center;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .tbp-kloudbean-logo-small {
+            margin: 0 auto 20px;
+        }
+        
+        .tbp-kloudbean-logo-small img {
+            border-radius: 50%;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .tbp-solution-center h4 {
+            font-size: 2rem;
+            margin-bottom: 30px;
+        }
+        
+        .tbp-arrow-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .tbp-arrow {
+            width: 60px;
+            height: 60px;
+            background: #4F1AF3;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            box-shadow: 0 5px 15px rgba(79, 26, 243, 0.3);
+            animation: tbp-pulse 2s infinite;
+        }
+        
+        /* Magic Steps Section */
+        .tbp-magic-section {
+            background: linear-gradient(135deg, #000F27, #04142E);
+            color: white;
+            padding: 60px 40px;
+            border-radius: 16px;
+            margin-bottom: 60px;
+        }
+        
+        .tbp-magic-section h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 50px;
+        }
+        
+        .tbp-steps {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .tbp-step {
+            flex: 1;
+            min-width: 250px;
+            max-width: 300px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .tbp-step:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .tbp-step i {
+            font-size: 3rem;
+            color: #40B75F;
+            margin-bottom: 20px;
+        }
+        
+        .tbp-step h3 {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            color: white;
+        }
+        
+        .tbp-step p {
+            color: #ccc;
+            line-height: 1.6;
+        }
+        
+        .tbp-step-line {
+            position: absolute;
+            top: 50%;
+            right: -20px;
+            width: 40px;
+            height: 2px;
+            background: white;
+            transform: translateY(-50%);
+        }
+        
+        .tbp-step-line::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            right: 0;
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .tbp-step:last-child .tbp-step-line {
+            display: none;
+        }
+        
+        /* Features Grid */
+        .tbp-features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
         }
         
         .tbp-feature-card {
@@ -1310,31 +1824,202 @@ class TelegramBlogPublisherEnhanced {
             padding: 30px;
             border-radius: 12px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            text-align: center;
+            transition: all 0.3s ease;
+            border-left: 4px solid #40B75F;
         }
         
-        .tbp-feature-card h3 {
-            font-size: 1.5rem;
+        .tbp-feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .tbp-feature-card h5 {
+            font-size: 1.4rem;
             margin-bottom: 15px;
             color: #333;
         }
         
+        .tbp-feature-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        /* Pricing Section */
+        .tbp-pricing-section {
+            margin-bottom: 60px;
+        }
+        
+        .tbp-pricing-section h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 50px;
+            color: #333;
+        }
+        
+        .tbp-pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .tbp-pricing-card {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            text-align: center;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .tbp-pricing-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+        
+        .tbp-pricing-card.tbp-featured {
+            border: 3px solid #40B75F;
+            transform: scale(1.05);
+        }
+        
+        .tbp-featured-badge {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #40B75F;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .tbp-pricing-card h3 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .tbp-price {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #40B75F;
+            margin-bottom: 30px;
+        }
+        
+        .tbp-price span {
+            font-size: 1rem;
+            color: #666;
+        }
+        
+        .tbp-pricing-card ul {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 30px 0;
+        }
+        
+        .tbp-pricing-card li {
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+            color: #666;
+        }
+        
+        .tbp-pricing-card li:last-child {
+            border-bottom: none;
+        }
+        
+        /* CTA Section */
         .tbp-hosting-cta {
-            background: #f8f9fa;
-            padding: 40px;
-            border-radius: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 40px;
+            border-radius: 16px;
             text-align: center;
         }
         
         .tbp-hosting-cta h2 {
-            font-size: 2rem;
-            margin-bottom: 15px;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
         }
         
         .tbp-hosting-cta p {
-            font-size: 1.1rem;
-            margin-bottom: 30px;
-            color: #666;
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+        
+        .tbp-cta-actions {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        /* Animations */
+        @keyframes tbp-float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(-20px, -20px) rotate(180deg); }
+        }
+        
+        @keyframes tbp-pulse {
+            0% { transform: scale(1); box-shadow: 0 5px 15px rgba(79, 26, 243, 0.3); }
+            50% { transform: scale(1.1); box-shadow: 0 5px 25px rgba(79, 26, 243, 0.5); }
+            100% { transform: scale(1); box-shadow: 0 5px 15px rgba(79, 26, 243, 0.3); }
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .tbp-hosting-hero {
+                padding: 40px 20px;
+            }
+            
+            .tbp-hosting-hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .tbp-hero-subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .tbp-hero-cta {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .tbp-comparison-container {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .tbp-arrow-container {
+                transform: rotate(90deg);
+            }
+            
+            .tbp-steps {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .tbp-step {
+                max-width: 100%;
+            }
+            
+            .tbp-step-line {
+                display: none;
+            }
+            
+            .tbp-features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tbp-pricing-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tbp-pricing-card.tbp-featured {
+                transform: none;
+            }
         }
         
         /* Premium System Status Styles */
