@@ -992,37 +992,298 @@ class TelegramBlogPublisherEnhanced {
         $webhook_secret = get_option('tbp_webhook_secret', '');
         $gemini_key = get_option('tbp_gemini_key', '');
         $deepseek_key = get_option('tbp_deepseek_key', '');
+        $openai_key = get_option('tbp_openai_key', '');
+        $claude_key = get_option('tbp_claude_key', '');
+        $openrouter_key = get_option('tbp_openrouter_key', '');
+        $cohere_key = get_option('tbp_cohere_key', '');
+        $groq_key = get_option('tbp_groq_key', '');
         ?>
-        <div class="wrap">
-            <h1>Settings</h1>
+        <div class="wrap tbp-settings-wrap">
+            <h1>⚙️ Advanced Settings</h1>
+            
             <form id="tbp-settings-form">
-                <table class="form-table">
-                    <tr>
-                        <th>Webhook Secret</th>
-                        <td><input type="text" name="webhook_secret" value="<?php echo esc_attr($webhook_secret); ?>" class="regular-text" /></td>
-                    </tr>
-                    <tr>
-                        <th>Gemini API Key</th>
-                        <td>
-                            <input type="password" name="gemini_key" value="<?php echo esc_attr($gemini_key); ?>" class="regular-text" />
-                            <button type="button" class="button" onclick="testAPI('gemini')">Test</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>DeepSeek API Key</th>
-                        <td>
-                            <input type="password" name="deepseek_key" value="<?php echo esc_attr($deepseek_key); ?>" class="regular-text" />
-                            <button type="button" class="button" onclick="testAPI('deepseek')">Test</button>
-                        </td>
-                    </tr>
-                </table>
-                <p class="submit">
-                    <button type="submit" class="button button-primary">Save Settings</button>
-                </p>
+                <div class="tbp-api-section">
+                    <h3>🔑 API Configuration</h3>
+                    <p class="tbp-section-description">Configure your preferred AI service for content generation. You can use multiple APIs for better content quality.</p>
+                    
+                    <div class="tbp-api-grid">
+                        <!-- Webhook Secret -->
+                        <div class="tbp-api-card">
+                            <div class="tbp-api-header">
+                                <h4>🔐 Webhook Secret</h4>
+                                <span class="tbp-required">Required</span>
+                            </div>
+                            <div class="tbp-input-group">
+                                <input type="password" id="webhook-secret" name="webhook_secret" value="<?php echo esc_attr($webhook_secret); ?>" class="tbp-api-input" placeholder="Enter webhook secret" />
+                                <button type="button" class="tbp-eye-btn" data-target="webhook-secret">
+                                    <span class="dashicons dashicons-visibility"></span>
+                                </button>
+                            </div>
+                            <p class="tbp-field-description">Secret key for webhook authentication</p>
+                        </div>
+
+                        <!-- OpenAI -->
+                        <div class="tbp-api-card">
+                            <div class="tbp-api-header">
+                                <h4>🤖 OpenAI</h4>
+                                <span class="tbp-recommended">Recommended</span>
+                            </div>
+                            <div class="tbp-input-group">
+                                <input type="password" id="openai-key" name="openai_key" value="<?php echo esc_attr($openai_key); ?>" class="tbp-api-input" placeholder="sk-..." />
+                                <button type="button" class="tbp-eye-btn" data-target="openai-key">
+                                    <span class="dashicons dashicons-visibility"></span>
+                                </button>
+                                <button type="button" class="tbp-test-btn" data-api="openai">Test</button>
+                            </div>
+                            <p class="tbp-field-description">GPT-4, GPT-3.5, and other OpenAI models</p>
+                        </div>
+
+                        <!-- Google Gemini -->
+                        <div class="tbp-api-card">
+                            <div class="tbp-api-header">
+                                <h4>💎 Google Gemini</h4>
+                                <span class="tbp-free">Free Tier</span>
+                            </div>
+                            <div class="tbp-input-group">
+                                <input type="password" id="gemini-key" name="gemini_key" value="<?php echo esc_attr($gemini_key); ?>" class="tbp-api-input" placeholder="AI..." />
+                                <button type="button" class="tbp-eye-btn" data-target="gemini-key">
+                                    <span class="dashicons dashicons-visibility"></span>
+                                </button>
+                                <button type="button" class="tbp-test-btn" data-api="gemini">Test</button>
+                            </div>
+                            <p class="tbp-field-description">Gemini Pro and Gemini Ultra models</p>
+                        </div>
+
+                        <!-- Anthropic Claude -->
+                        <div class="tbp-api-card">
+                            <div class="tbp-api-header">
+                                <h4>🧠 Anthropic Claude</h4>
+                                <span class="tbp-premium">Premium</span>
+                            </div>
+                            <div class="tbp-input-group">
+                                <input type="password" id="claude-key" name="claude_key" value="<?php echo esc_attr($claude_key); ?>" class="tbp-api-input" placeholder="sk-ant-..." />
+                                <button type="button" class="tbp-eye-btn" data-target="claude-key">
+                                    <span class="dashicons dashicons-visibility"></span>
+                                </button>
+                                <button type="button" class="tbp-test-btn" data-api="claude">Test</button>
+                            </div>
+                            <p class="tbp-field-description">Claude 3.5 Sonnet, Claude 3 Opus, and Claude 3 Haiku</p>
+                        </div>
+
+                        <!-- DeepSeek -->
+                        <div class="tbp-api-card">
+                            <div class="tbp-api-header">
+                                <h4>🔍 DeepSeek</h4>
+                                <span class="tbp-affordable">Affordable</span>
+                            </div>
+                            <div class="tbp-input-group">
+                                <input type="password" id="deepseek-key" name="deepseek_key" value="<?php echo esc_attr($deepseek_key); ?>" class="tbp-api-input" placeholder="sk-..." />
+                                <button type="button" class="tbp-eye-btn" data-target="deepseek-key">
+                                    <span class="dashicons dashicons-visibility"></span>
+                                </button>
+                                <button type="button" class="tbp-test-btn" data-api="deepseek">Test</button>
+                            </div>
+                            <p class="tbp-field-description">DeepSeek V2.5 and DeepSeek Coder models</p>
+                        </div>
+
+                        <!-- OpenRouter -->
+                        <div class="tbp-api-card">
+                            <div class="tbp-api-header">
+                                <h4>🌐 OpenRouter</h4>
+                                <span class="tbp-universal">Universal</span>
+                            </div>
+                            <div class="tbp-input-group">
+                                <input type="password" id="openrouter-key" name="openrouter_key" value="<?php echo esc_attr($openrouter_key); ?>" class="tbp-api-input" placeholder="sk-or-..." />
+                                <button type="button" class="tbp-eye-btn" data-target="openrouter-key">
+                                    <span class="dashicons dashicons-visibility"></span>
+                                </button>
+                                <button type="button" class="tbp-test-btn" data-api="openrouter">Test</button>
+                            </div>
+                            <p class="tbp-field-description">Access to 100+ models from various providers</p>
+                        </div>
+
+                        <!-- Cohere -->
+                        <div class="tbp-api-card">
+                            <div class="tbp-api-header">
+                                <h4>⚡ Cohere</h4>
+                                <span class="tbp-enterprise">Enterprise</span>
+                            </div>
+                            <div class="tbp-input-group">
+                                <input type="password" id="cohere-key" name="cohere_key" value="<?php echo esc_attr($cohere_key); ?>" class="tbp-api-input" placeholder="co-..." />
+                                <button type="button" class="tbp-eye-btn" data-target="cohere-key">
+                                    <span class="dashicons dashicons-visibility"></span>
+                                </button>
+                                <button type="button" class="tbp-test-btn" data-api="cohere">Test</button>
+                            </div>
+                            <p class="tbp-field-description">Command, Command Light, and Command Nightly</p>
+                        </div>
+
+                        <!-- Groq -->
+                        <div class="tbp-api-card">
+                            <div class="tbp-api-header">
+                                <h4>⚡ Groq</h4>
+                                <span class="tbp-fast">Ultra Fast</span>
+                            </div>
+                            <div class="tbp-input-group">
+                                <input type="password" id="groq-key" name="groq_key" value="<?php echo esc_attr($groq_key); ?>" class="tbp-api-input" placeholder="gsk_..." />
+                                <button type="button" class="tbp-eye-btn" data-target="groq-key">
+                                    <span class="dashicons dashicons-visibility"></span>
+                                </button>
+                                <button type="button" class="tbp-test-btn" data-api="groq">Test</button>
+                            </div>
+                            <p class="tbp-field-description">Llama 3.1, Mixtral, and other fast models</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tbp-content-section">
+                    <h3>📝 Content Generation Settings</h3>
+                    <div class="tbp-content-grid">
+                        <div class="tbp-content-card">
+                            <h4>🎯 Content Quality</h4>
+                            <select name="content_quality" id="content-quality">
+                                <option value="basic" <?php selected(get_option('tbp_content_quality', 'premium'), 'basic'); ?>>Basic (300-500 words)</option>
+                                <option value="standard" <?php selected(get_option('tbp_content_quality', 'premium'), 'standard'); ?>>Standard (500-800 words)</option>
+                                <option value="premium" <?php selected(get_option('tbp_content_quality', 'premium'), 'premium'); ?>>Premium (800-1200 words)</option>
+                                <option value="enterprise" <?php selected(get_option('tbp_content_quality', 'premium'), 'enterprise'); ?>>Enterprise (1200+ words)</option>
+                            </select>
+                        </div>
+
+                        <div class="tbp-content-card">
+                            <h4>🖼️ Media Integration</h4>
+                            <label class="tbp-checkbox-label">
+                                <input type="checkbox" name="include_images" value="1" <?php checked(get_option('tbp_include_images', 1), 1); ?> />
+                                <span class="tbp-checkbox-text">Auto-generate relevant images</span>
+                            </label>
+                            <label class="tbp-checkbox-label">
+                                <input type="checkbox" name="include_featured_image" value="1" <?php checked(get_option('tbp_include_featured_image', 1), 1); ?> />
+                                <span class="tbp-checkbox-text">Generate featured image</span>
+                            </label>
+                        </div>
+
+                        <div class="tbp-content-card">
+                            <h4>📊 SEO Optimization</h4>
+                            <label class="tbp-checkbox-label">
+                                <input type="checkbox" name="seo_optimized" value="1" <?php checked(get_option('tbp_seo_optimized', 1), 1); ?> />
+                                <span class="tbp-checkbox-text">SEO-optimized content</span>
+                            </label>
+                            <label class="tbp-checkbox-label">
+                                <input type="checkbox" name="include_meta" value="1" <?php checked(get_option('tbp_include_meta', 1), 1); ?> />
+                                <span class="tbp-checkbox-text">Auto-generate meta descriptions</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tbp-save-section">
+                    <button type="submit" class="tbp-save-btn">
+                        <span class="dashicons dashicons-saved"></span>
+                        Save All Settings
+                    </button>
+                </div>
             </form>
         </div>
         
         <script>
+        jQuery(document).ready(function($) {
+            // Eye button functionality
+            $('.tbp-eye-btn').on('click', function() {
+                var target = $(this).data('target');
+                var input = $('#' + target);
+                var icon = $(this).find('.dashicons');
+                
+                if (input.attr('type') === 'password') {
+                    input.attr('type', 'text');
+                    icon.removeClass('dashicons-visibility').addClass('dashicons-hidden');
+                } else {
+                    input.attr('type', 'password');
+                    icon.removeClass('dashicons-hidden').addClass('dashicons-visibility');
+                }
+            });
+            
+            // API testing functionality
+            $('.tbp-test-btn').on('click', function() {
+                var api = $(this).data('api');
+                var input = $('input[name="' + api + '_key"]');
+                var apiKey = input.val();
+                var button = $(this);
+                
+                if (!apiKey) {
+                    alert('Please enter an API key first');
+                    return;
+                }
+                
+                button.prop('disabled', true).text('Testing...');
+                
+                $.ajax({
+                    url: tbp_ajax.ajax_url,
+                    type: 'POST',
+                    data: {
+                        action: 'tbp_test_api',
+                        service: api,
+                        api_key: apiKey,
+                        nonce: tbp_ajax.nonce
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            button.text('✓ Working').css('background', '#40B75F');
+                            setTimeout(function() {
+                                button.text('Test').css('background', '#40B75F');
+                            }, 2000);
+                        } else {
+                            button.text('✗ Error').css('background', '#ff6b6b');
+                            alert('Error: ' + response.data);
+                            setTimeout(function() {
+                                button.text('Test').css('background', '#40B75F');
+                            }, 2000);
+                        }
+                    },
+                    error: function() {
+                        button.text('✗ Error').css('background', '#ff6b6b');
+                        alert('Network error occurred');
+                        setTimeout(function() {
+                            button.text('Test').css('background', '#40B75F');
+                        }, 2000);
+                    },
+                    complete: function() {
+                        button.prop('disabled', false);
+                    }
+                });
+            });
+            
+            // Settings form submission
+            $('#tbp-settings-form').on('submit', function(e) {
+                e.preventDefault();
+                
+                var formData = $(this).serialize();
+                var submitBtn = $('.tbp-save-btn');
+                
+                submitBtn.prop('disabled', true).html('<span class="dashicons dashicons-update"></span> Saving...');
+                
+                $.ajax({
+                    url: tbp_ajax.ajax_url,
+                    type: 'POST',
+                    data: formData + '&action=tbp_save_settings&nonce=' + tbp_ajax.nonce,
+                    success: function(response) {
+                        if (response.success) {
+                            submitBtn.html('<span class="dashicons dashicons-saved"></span> Saved!');
+                            setTimeout(function() {
+                                submitBtn.html('<span class="dashicons dashicons-saved"></span> Save All Settings');
+                            }, 2000);
+                        } else {
+                            alert('Error: ' + response.data);
+                        }
+                    },
+                    error: function() {
+                        alert('Network error occurred');
+                    },
+                    complete: function() {
+                        submitBtn.prop('disabled', false);
+                    }
+                });
+            });
+        });
+        
         function testAPI(service) {
             var apiKey = document.querySelector('input[name="' + service + '_key"]').value;
             if (!apiKey) {
@@ -1442,45 +1703,60 @@ class TelegramBlogPublisherEnhanced {
                 <h2>Pricing Plans</h2>
                 <div class="tbp-pricing-grid">
                     <div class="tbp-pricing-card">
-                        <h3>Starter</h3>
-                        <div class="tbp-price">$29<span>/month</span></div>
+                        <h3>g6-nanode-1</h3>
+                        <div class="tbp-price">$8<span>/month</span></div>
                         <ul>
-                            <li>WordPress Hosting</li>
-                            <li>Basic n8n Instance</li>
-                            <li>Git Integration</li>
-                            <li>5GB Storage</li>
+                            <li>1 GB RAM</li>
+                            <li>1 Core Processor</li>
+                            <li>25 GB SSD Storage</li>
+                            <li>1000 GB Bandwidth</li>
+                            <li>WordPress + n8n Ready</li>
                             <li>Basic Support</li>
                         </ul>
-                        <a href="https://kloudbean.com/pricing" target="_blank" class="tbp-btn tbp-btn-primary">Get Started</a>
+                        <a href="https://kloudbean.com/pricing" target="_blank" class="tbp-btn tbp-btn-primary">Get Started →</a>
                     </div>
                     
                     <div class="tbp-pricing-card tbp-featured">
                         <div class="tbp-featured-badge">Most Popular</div>
-                        <h3>Professional</h3>
-                        <div class="tbp-price">$79<span>/month</span></div>
+                        <h3>g6-standard-1</h3>
+                        <div class="tbp-price">$24<span>/month</span></div>
                         <ul>
-                            <li>Everything in Starter</li>
-                            <li>Advanced n8n Features</li>
-                            <li>Cursor Development</li>
-                            <li>Lovable Integration</li>
-                            <li>25GB Storage</li>
+                            <li>2 GB RAM</li>
+                            <li>1 Core Processor</li>
+                            <li>50 GB SSD Storage</li>
+                            <li>2000 GB Bandwidth</li>
+                            <li>WordPress + n8n + Cursor</li>
                             <li>Priority Support</li>
                         </ul>
-                        <a href="https://kloudbean.com/pricing" target="_blank" class="tbp-btn tbp-btn-primary">Get Started</a>
+                        <a href="https://kloudbean.com/pricing" target="_blank" class="tbp-btn tbp-btn-primary">Get Started →</a>
                     </div>
                     
                     <div class="tbp-pricing-card">
-                        <h3>Enterprise</h3>
-                        <div class="tbp-price">$199<span>/month</span></div>
+                        <h3>g6-standard-2</h3>
+                        <div class="tbp-price">$48<span>/month</span></div>
                         <ul>
-                            <li>Everything in Professional</li>
-                            <li>Unlimited n8n Workflows</li>
-                            <li>Custom Integrations</li>
-                            <li>100GB Storage</li>
-                            <li>24/7 Priority Support</li>
-                            <li>Dedicated Account Manager</li>
+                            <li>4 GB RAM</li>
+                            <li>2 Core Processor</li>
+                            <li>80 GB SSD Storage</li>
+                            <li>4000 GB Bandwidth</li>
+                            <li>WordPress + n8n + Lovable</li>
+                            <li>Advanced Features</li>
                         </ul>
-                        <a href="https://kloudbean.com/pricing" target="_blank" class="tbp-btn tbp-btn-primary">Get Started</a>
+                        <a href="https://kloudbean.com/pricing" target="_blank" class="tbp-btn tbp-btn-primary">Get Started →</a>
+                    </div>
+                    
+                    <div class="tbp-pricing-card">
+                        <h3>g6-standard-4</h3>
+                        <div class="tbp-price">$96<span>/month</span></div>
+                        <ul>
+                            <li>8 GB RAM</li>
+                            <li>4 Core Processor</li>
+                            <li>160 GB SSD Storage</li>
+                            <li>5000 GB Bandwidth</li>
+                            <li>Full Stack Integration</li>
+                            <li>24/7 Priority Support</li>
+                        </ul>
+                        <a href="https://kloudbean.com/pricing" target="_blank" class="tbp-btn tbp-btn-primary">Get Started →</a>
                     </div>
                 </div>
             </div>
@@ -2237,6 +2513,304 @@ class TelegramBlogPublisherEnhanced {
         .tbp-btn-outline:hover {
             background: #667eea;
             color: white;
+        }
+        
+        /* Enhanced Settings Page Styles */
+        .tbp-settings-wrap {
+            background: linear-gradient(135deg, #000F27 0%, #04142E 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 40px;
+            border-radius: 16px;
+        }
+        
+        .tbp-settings-wrap h1 {
+            color: white;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .tbp-api-section, .tbp-content-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .tbp-api-section h3, .tbp-content-section h3 {
+            color: white;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .tbp-section-description {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+        }
+        
+        .tbp-api-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+        }
+        
+        .tbp-api-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .tbp-api-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        .tbp-api-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .tbp-api-header h4 {
+            color: white;
+            font-size: 1.3rem;
+            margin: 0;
+        }
+        
+        .tbp-required, .tbp-recommended, .tbp-free, .tbp-premium, .tbp-affordable, .tbp-universal, .tbp-enterprise, .tbp-fast {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .tbp-required { background: #ff6b6b; color: white; }
+        .tbp-recommended { background: #40B75F; color: white; }
+        .tbp-free { background: #4F1AF3; color: white; }
+        .tbp-premium { background: #ffc107; color: #000; }
+        .tbp-affordable { background: #17a2b8; color: white; }
+        .tbp-universal { background: #6f42c1; color: white; }
+        .tbp-enterprise { background: #fd7e14; color: white; }
+        .tbp-fast { background: #e83e8c; color: white; }
+        
+        .tbp-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .tbp-api-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .tbp-api-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .tbp-api-input:focus {
+            outline: none;
+            border-color: #40B75F;
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .tbp-eye-btn, .tbp-test-btn {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .tbp-eye-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            min-width: 45px;
+        }
+        
+        .tbp-eye-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .tbp-test-btn {
+            background: #40B75F;
+            color: white;
+            font-weight: 600;
+            min-width: 60px;
+        }
+        
+        .tbp-test-btn:hover {
+            background: #28a745;
+            transform: translateY(-2px);
+        }
+        
+        .tbp-field-description {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            margin: 0;
+        }
+        
+        .tbp-content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .tbp-content-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .tbp-content-card h4 {
+            color: white;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+        
+        .tbp-content-card select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 14px;
+        }
+        
+        .tbp-content-card select option {
+            background: #000F27;
+            color: white;
+        }
+        
+        .tbp-checkbox-label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+        
+        .tbp-checkbox-label input[type="checkbox"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+        
+        .tbp-checkbox-text {
+            color: white;
+            font-size: 14px;
+        }
+        
+        .tbp-save-section {
+            text-align: center;
+            margin-top: 40px;
+        }
+        
+        .tbp-save-btn {
+            background: linear-gradient(135deg, #40B75F, #28a745);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .tbp-save-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(64, 183, 95, 0.3);
+        }
+        
+        /* Updated Pricing Styles */
+        .tbp-pricing-card h3 {
+            color: white !important;
+        }
+        
+        .tbp-pricing-card p, .tbp-pricing-card li {
+            color: rgba(255, 255, 255, 0.9) !important;
+        }
+        
+        .tbp-pricing-card {
+            background: rgba(255, 255, 255, 0.1) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        }
+        
+        .tbp-pricing-card.tbp-featured {
+            border: 3px solid #40B75F !important;
+            background: rgba(64, 183, 95, 0.1) !important;
+        }
+        
+        .tbp-price {
+            color: #40B75F !important;
+        }
+        
+        .tbp-hosting-cta h2, .tbp-hosting-cta p {
+            color: white !important;
+        }
+        
+        .tbp-hosting-hero h1, .tbp-hosting-hero p {
+            color: white !important;
+        }
+        
+        .tbp-essential-section h2, .tbp-comparison-section h2, .tbp-magic-section h2, .tbp-pricing-section h2 {
+            color: white !important;
+        }
+        
+        .tbp-integration-text h4, .tbp-integration-text p {
+            color: white !important;
+        }
+        
+        .tbp-step h3, .tbp-step p {
+            color: white !important;
+        }
+        
+        .tbp-feature-card h5, .tbp-feature-card p {
+            color: white !important;
+        }
+        
+        /* Responsive Design for Settings */
+        @media (max-width: 768px) {
+            .tbp-settings-wrap {
+                padding: 20px;
+            }
+            
+            .tbp-api-grid, .tbp-content-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tbp-input-group {
+                flex-direction: column;
+            }
+            
+            .tbp-eye-btn, .tbp-test-btn {
+                width: 100%;
+            }
         }
         </style>
         <?php
