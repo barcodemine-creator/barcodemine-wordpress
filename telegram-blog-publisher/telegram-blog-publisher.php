@@ -204,29 +204,229 @@ class TelegramBlogPublisherEnhanced {
         $topic = $data['topic'];
         $word_count = $data['word_count'] ?? 500;
         $tone = $data['tone'] ?? 'professional';
+        $include_images = get_option('tbp_include_images', 1);
+        $seo_optimized = get_option('tbp_seo_optimized', 1);
+        $content_quality = get_option('tbp_content_quality', 'premium');
         
-        // Get API keys
-        $gemini_key = get_option('tbp_gemini_key', '');
-        $deepseek_key = get_option('tbp_deepseek_key', '');
+        // Enhanced prompt for better content generation
+        $enhanced_prompt = $this->buildEnhancedPrompt($topic, $word_count, $tone, $content_quality, $seo_optimized);
         
-        // Try Gemini first
-        if (!empty($gemini_key)) {
-            $content = $this->callGeminiAPI($gemini_key, $topic, $word_count, $tone);
+        // Try multiple AI services in order of preference
+        $ai_services = $this->getAvailableAIServices();
+        
+        foreach ($ai_services as $service) {
+            $content = $this->generateWithService($service, $enhanced_prompt, $topic);
             if (!is_wp_error($content)) {
-                return $content;
-            }
-        }
-        
-        // Try DeepSeek
-        if (!empty($deepseek_key)) {
-            $content = $this->callDeepSeekAPI($deepseek_key, $topic, $word_count, $tone);
-            if (!is_wp_error($content)) {
-                return $content;
+                // Enhance content with media and SEO
+                $enhanced_content = $this->enhanceContent($content, $topic, $include_images, $seo_optimized);
+                return $enhanced_content;
             }
         }
         
         // Fallback: Generate basic content if no AI service is available
         return $this->generateFallbackContent($topic, $word_count, $tone);
+    }
+    
+    private function getAvailableAIServices() {
+        $services = [];
+        
+        // Check for available API keys in order of preference
+        if (!empty(get_option('tbp_openai_key', ''))) $services[] = 'openai';
+        if (!empty(get_option('tbp_claude_key', ''))) $services[] = 'claude';
+        if (!empty(get_option('tbp_gemini_key', ''))) $services[] = 'gemini';
+        if (!empty(get_option('tbp_groq_key', ''))) $services[] = 'groq';
+        if (!empty(get_option('tbp_openrouter_key', ''))) $services[] = 'openrouter';
+        if (!empty(get_option('tbp_deepseek_key', ''))) $services[] = 'deepseek';
+        if (!empty(get_option('tbp_cohere_key', ''))) $services[] = 'cohere';
+        
+        return $services;
+    }
+    
+    private function buildEnhancedPrompt($topic, $word_count, $tone, $quality, $seo_optimized) {
+        $quality_instructions = [
+            'basic' => 'Write a basic blog post with clear structure and simple language.',
+            'standard' => 'Write a well-structured blog post with good flow and engaging content.',
+            'premium' => 'Write a comprehensive, high-quality blog post with detailed insights and professional structure.',
+            'enterprise' => 'Write an in-depth, authoritative blog post with expert-level content, detailed analysis, and comprehensive coverage.'
+        ];
+        
+        $word_ranges = [
+            'basic' => '300-500 words',
+            'standard' => '500-800 words', 
+            'premium' => '800-1200 words',
+            'enterprise' => '1200+ words'
+        ];
+        
+        $seo_instructions = $seo_optimized ? 'Optimize for SEO with relevant keywords, meta descriptions, and structured headings.' : '';
+        
+        return "Write a professional blog post about '{$topic}' with the following requirements:
+
+**Content Quality:** {$quality_instructions[$quality]}
+**Word Count:** {$word_ranges[$quality]}
+**Tone:** {$tone}
+**SEO Requirements:** {$seo_instructions}
+
+**Structure Requirements:**
+1. Compelling headline (H1)
+2. Engaging introduction with hook
+3. 3-5 main sections with descriptive subheadings (H2, H3)
+4. Bullet points and numbered lists where appropriate
+5. Strong conclusion with call-to-action
+6. Meta description (150-160 characters)
+7. Focus keywords for SEO
+8. Internal linking suggestions
+
+**Content Guidelines:**
+- Use active voice and engaging language
+- Include relevant statistics, examples, or case studies
+- Add practical tips and actionable advice
+- Ensure content is original and valuable
+- Use proper heading hierarchy (H1, H2, H3)
+- Include a compelling call-to-action
+
+**Format the response as JSON with these fields:**
+{
+  \"title\": \"Blog post title\",
+  \"content\": \"Full HTML formatted content\",
+  \"excerpt\": \"Short excerpt for meta description\",
+  \"meta_description\": \"SEO meta description\",
+  \"focus_keywords\": [\"keyword1\", \"keyword2\", \"keyword3\"],
+  \"internal_links\": [\"suggested internal link 1\", \"suggested internal link 2\"],
+  \"tags\": [\"tag1\", \"tag2\", \"tag3\"],
+  \"category\": \"suggested category\"
+}";
+    }
+    
+    private function generateWithService($service, $prompt, $topic) {
+        switch ($service) {
+            case 'openai':
+                return $this->generateWithOpenAI($prompt);
+            case 'claude':
+                return $this->generateWithClaude($prompt);
+            case 'gemini':
+                return $this->generateWithGemini($prompt);
+            case 'groq':
+                return $this->generateWithGroq($prompt);
+            case 'openrouter':
+                return $this->generateWithOpenRouter($prompt);
+            case 'deepseek':
+                return $this->generateWithDeepSeek($prompt);
+            case 'cohere':
+                return $this->generateWithCohere($prompt);
+            default:
+                return new WP_Error('unknown_service', 'Unknown AI service');
+        }
+    }
+    
+    private function enhanceContent($content, $topic, $include_images, $seo_optimized) {
+        // Parse JSON response
+        $data = json_decode($content, true);
+        
+        if (!$data) {
+            // If not JSON, treat as plain content
+            return $this->formatPlainContent($content, $topic);
+        }
+        
+        $enhanced_content = $data['content'] ?? $content;
+        
+        // Add media if enabled
+        if ($include_images) {
+            $enhanced_content = $this->addMediaToContent($enhanced_content, $topic);
+        }
+        
+        // Add SEO enhancements
+        if ($seo_optimized) {
+            $enhanced_content = $this->addSEOEnhancements($enhanced_content, $data);
+        }
+        
+        // Store additional metadata
+        $this->storeContentMetadata($data);
+        
+        return $enhanced_content;
+    }
+    
+    private function addMediaToContent($content, $topic) {
+        // Add placeholder for featured image
+        $featured_image_placeholder = '<div class="featured-image-placeholder" data-topic="' . esc_attr($topic) . '">[AI Generated Featured Image]</div>';
+        
+        // Add image placeholders throughout content
+        $content = $this->insertImagePlaceholders($content, $topic);
+        
+        // Add featured image at the top
+        $content = $featured_image_placeholder . "\n\n" . $content;
+        
+        return $content;
+    }
+    
+    private function insertImagePlaceholders($content, $topic) {
+        // Find good spots for images (after H2 headings)
+        $pattern = '/(<h2[^>]*>.*?<\/h2>)/i';
+        $replacement = '$1' . "\n\n" . '<div class="content-image-placeholder" data-topic="' . esc_attr($topic) . '">[AI Generated Content Image]</div>';
+        
+        return preg_replace($pattern, $replacement, $content, 2); // Limit to 2 images
+    }
+    
+    private function addSEOEnhancements($content, $data) {
+        // Add structured data
+        $structured_data = $this->generateStructuredData($data);
+        
+        // Add meta tags
+        $meta_tags = $this->generateMetaTags($data);
+        
+        return $meta_tags . "\n" . $structured_data . "\n" . $content;
+    }
+    
+    private function generateStructuredData($data) {
+        $title = $data['title'] ?? 'Blog Post';
+        $excerpt = $data['excerpt'] ?? '';
+        
+        return '<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "' . esc_js($title) . '",
+  "description": "' . esc_js($excerpt) . '",
+  "author": {
+    "@type": "Organization",
+    "name": "' . get_bloginfo('name') . '"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "' . get_bloginfo('name') . '"
+  },
+  "datePublished": "' . current_time('c') . '",
+  "dateModified": "' . current_time('c') . '"
+}
+</script>';
+    }
+    
+    private function generateMetaTags($data) {
+        $meta_description = $data['meta_description'] ?? $data['excerpt'] ?? '';
+        $focus_keywords = $data['focus_keywords'] ?? [];
+        $keywords_string = implode(', ', $focus_keywords);
+        
+        return '<!-- SEO Meta Tags -->
+<meta name="description" content="' . esc_attr($meta_description) . '">
+<meta name="keywords" content="' . esc_attr($keywords_string) . '">
+<meta property="og:title" content="' . esc_attr($data['title'] ?? '') . '">
+<meta property="og:description" content="' . esc_attr($meta_description) . '">
+<meta property="og:type" content="article">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="' . esc_attr($data['title'] ?? '') . '">
+<meta name="twitter:description" content="' . esc_attr($meta_description) . '">';
+    }
+    
+    private function storeContentMetadata($data) {
+        // Store additional metadata for later use
+        update_option('tbp_last_generated_metadata', $data);
+    }
+    
+    private function formatPlainContent($content, $topic) {
+        // If AI returns plain text, format it properly
+        $formatted = '<h1>' . $topic . '</h1>' . "\n\n";
+        $formatted .= '<div class="blog-content">' . wpautop($content) . '</div>';
+        
+        return $formatted;
     }
     
     private function generateFallbackContent($topic, $word_count, $tone) {
@@ -317,6 +517,274 @@ class TelegramBlogPublisherEnhanced {
         return new WP_Error('deepseek_error', 'DeepSeek API error: ' . $body);
     }
     
+    private function generateWithOpenAI($prompt) {
+        $api_key = get_option('tbp_openai_key', '');
+        if (empty($api_key)) {
+            return new WP_Error('no_api_key', 'OpenAI API key not configured');
+        }
+        
+        $data = [
+            'model' => 'gpt-4',
+            'messages' => [
+                ['role' => 'user', 'content' => $prompt]
+            ],
+            'max_tokens' => 4000,
+            'temperature' => 0.7
+        ];
+        
+        $response = wp_remote_post('https://api.openai.com/v1/chat/completions', [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $api_key,
+                'Content-Type' => 'application/json'
+            ],
+            'body' => json_encode($data),
+            'timeout' => 60
+        ]);
+        
+        if (is_wp_error($response)) {
+            return $response;
+        }
+        
+        $body = wp_remote_retrieve_body($response);
+        $data = json_decode($body, true);
+        
+        if (isset($data['choices'][0]['message']['content'])) {
+            return $data['choices'][0]['message']['content'];
+        }
+        
+        return new WP_Error('openai_error', 'Failed to generate content with OpenAI');
+    }
+    
+    private function generateWithClaude($prompt) {
+        $api_key = get_option('tbp_claude_key', '');
+        if (empty($api_key)) {
+            return new WP_Error('no_api_key', 'Claude API key not configured');
+        }
+        
+        $data = [
+            'model' => 'claude-3-5-sonnet-20241022',
+            'max_tokens' => 4000,
+            'messages' => [
+                ['role' => 'user', 'content' => $prompt]
+            ]
+        ];
+        
+        $response = wp_remote_post('https://api.anthropic.com/v1/messages', [
+            'headers' => [
+                'x-api-key' => $api_key,
+                'Content-Type' => 'application/json',
+                'anthropic-version' => '2023-06-01'
+            ],
+            'body' => json_encode($data),
+            'timeout' => 60
+        ]);
+        
+        if (is_wp_error($response)) {
+            return $response;
+        }
+        
+        $body = wp_remote_retrieve_body($response);
+        $data = json_decode($body, true);
+        
+        if (isset($data['content'][0]['text'])) {
+            return $data['content'][0]['text'];
+        }
+        
+        return new WP_Error('claude_error', 'Failed to generate content with Claude');
+    }
+    
+    private function generateWithGemini($prompt) {
+        $api_key = get_option('tbp_gemini_key', '');
+        if (empty($api_key)) {
+            return new WP_Error('no_api_key', 'Gemini API key not configured');
+        }
+        
+        $data = [
+            'contents' => [
+                [
+                    'parts' => [
+                        ['text' => $prompt]
+                    ]
+                ]
+            ],
+            'generationConfig' => [
+                'temperature' => 0.7,
+                'maxOutputTokens' => 4000
+            ]
+        ];
+        
+        $response = wp_remote_post('https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=' . $api_key, [
+            'headers' => ['Content-Type' => 'application/json'],
+            'body' => json_encode($data),
+            'timeout' => 60
+        ]);
+        
+        if (is_wp_error($response)) {
+            return $response;
+        }
+        
+        $body = wp_remote_retrieve_body($response);
+        $data = json_decode($body, true);
+        
+        if (isset($data['candidates'][0]['content']['parts'][0]['text'])) {
+            return $data['candidates'][0]['content']['parts'][0]['text'];
+        }
+        
+        return new WP_Error('gemini_error', 'Failed to generate content with Gemini');
+    }
+    
+    private function generateWithGroq($prompt) {
+        $api_key = get_option('tbp_groq_key', '');
+        if (empty($api_key)) {
+            return new WP_Error('no_api_key', 'Groq API key not configured');
+        }
+        
+        $data = [
+            'model' => 'llama-3.1-70b-versatile',
+            'messages' => [
+                ['role' => 'user', 'content' => $prompt]
+            ],
+            'max_tokens' => 4000,
+            'temperature' => 0.7
+        ];
+        
+        $response = wp_remote_post('https://api.groq.com/openai/v1/chat/completions', [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $api_key,
+                'Content-Type' => 'application/json'
+            ],
+            'body' => json_encode($data),
+            'timeout' => 30
+        ]);
+        
+        if (is_wp_error($response)) {
+            return $response;
+        }
+        
+        $body = wp_remote_retrieve_body($response);
+        $data = json_decode($body, true);
+        
+        if (isset($data['choices'][0]['message']['content'])) {
+            return $data['choices'][0]['message']['content'];
+        }
+        
+        return new WP_Error('groq_error', 'Failed to generate content with Groq');
+    }
+    
+    private function generateWithOpenRouter($prompt) {
+        $api_key = get_option('tbp_openrouter_key', '');
+        if (empty($api_key)) {
+            return new WP_Error('no_api_key', 'OpenRouter API key not configured');
+        }
+        
+        $data = [
+            'model' => 'anthropic/claude-3.5-sonnet',
+            'messages' => [
+                ['role' => 'user', 'content' => $prompt]
+            ],
+            'max_tokens' => 4000,
+            'temperature' => 0.7
+        ];
+        
+        $response = wp_remote_post('https://openrouter.ai/api/v1/chat/completions', [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $api_key,
+                'Content-Type' => 'application/json',
+                'HTTP-Referer' => home_url(),
+                'X-Title' => get_bloginfo('name')
+            ],
+            'body' => json_encode($data),
+            'timeout' => 60
+        ]);
+        
+        if (is_wp_error($response)) {
+            return $response;
+        }
+        
+        $body = wp_remote_retrieve_body($response);
+        $data = json_decode($body, true);
+        
+        if (isset($data['choices'][0]['message']['content'])) {
+            return $data['choices'][0]['message']['content'];
+        }
+        
+        return new WP_Error('openrouter_error', 'Failed to generate content with OpenRouter');
+    }
+    
+    private function generateWithDeepSeek($prompt) {
+        $api_key = get_option('tbp_deepseek_key', '');
+        if (empty($api_key)) {
+            return new WP_Error('no_api_key', 'DeepSeek API key not configured');
+        }
+        
+        $data = [
+            'model' => 'deepseek-chat',
+            'messages' => [
+                ['role' => 'user', 'content' => $prompt]
+            ],
+            'max_tokens' => 4000,
+            'temperature' => 0.7
+        ];
+        
+        $response = wp_remote_post('https://api.deepseek.com/v1/chat/completions', [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $api_key,
+                'Content-Type' => 'application/json'
+            ],
+            'body' => json_encode($data),
+            'timeout' => 60
+        ]);
+        
+        if (is_wp_error($response)) {
+            return $response;
+        }
+        
+        $body = wp_remote_retrieve_body($response);
+        $data = json_decode($body, true);
+        
+        if (isset($data['choices'][0]['message']['content'])) {
+            return $data['choices'][0]['message']['content'];
+        }
+        
+        return new WP_Error('deepseek_error', 'Failed to generate content with DeepSeek');
+    }
+    
+    private function generateWithCohere($prompt) {
+        $api_key = get_option('tbp_cohere_key', '');
+        if (empty($api_key)) {
+            return new WP_Error('no_api_key', 'Cohere API key not configured');
+        }
+        
+        $data = [
+            'model' => 'command',
+            'message' => $prompt,
+            'max_tokens' => 4000,
+            'temperature' => 0.7
+        ];
+        
+        $response = wp_remote_post('https://api.cohere.ai/v1/chat', [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $api_key,
+                'Content-Type' => 'application/json'
+            ],
+            'body' => json_encode($data),
+            'timeout' => 60
+        ]);
+        
+        if (is_wp_error($response)) {
+            return $response;
+        }
+        
+        $body = wp_remote_retrieve_body($response);
+        $data = json_decode($body, true);
+        
+        if (isset($data['text'])) {
+            return $data['text'];
+        }
+        
+        return new WP_Error('cohere_error', 'Failed to generate content with Cohere');
+    }
+    
     public function saveSettings() {
         check_ajax_referer('tbp_nonce', 'nonce');
         
@@ -324,13 +792,34 @@ class TelegramBlogPublisherEnhanced {
             wp_send_json_error('Insufficient permissions');
         }
         
-        $webhook_secret = sanitize_text_field($_POST['webhook_secret']);
-        $gemini_key = sanitize_text_field($_POST['gemini_key']);
-        $deepseek_key = sanitize_text_field($_POST['deepseek_key']);
+        // Save all API keys
+        $api_keys = [
+            'tbp_webhook_secret' => sanitize_text_field($_POST['webhook_secret'] ?? ''),
+            'tbp_openai_key' => sanitize_text_field($_POST['openai_key'] ?? ''),
+            'tbp_gemini_key' => sanitize_text_field($_POST['gemini_key'] ?? ''),
+            'tbp_claude_key' => sanitize_text_field($_POST['claude_key'] ?? ''),
+            'tbp_groq_key' => sanitize_text_field($_POST['groq_key'] ?? ''),
+            'tbp_openrouter_key' => sanitize_text_field($_POST['openrouter_key'] ?? ''),
+            'tbp_deepseek_key' => sanitize_text_field($_POST['deepseek_key'] ?? ''),
+            'tbp_cohere_key' => sanitize_text_field($_POST['cohere_key'] ?? '')
+        ];
         
-        update_option('tbp_webhook_secret', $webhook_secret);
-        update_option('tbp_gemini_key', $gemini_key);
-        update_option('tbp_deepseek_key', $deepseek_key);
+        foreach ($api_keys as $option => $value) {
+            update_option($option, $value);
+        }
+        
+        // Save content generation settings
+        $content_settings = [
+            'tbp_content_quality' => sanitize_text_field($_POST['content_quality'] ?? 'premium'),
+            'tbp_include_images' => isset($_POST['include_images']) ? 1 : 0,
+            'tbp_include_featured_image' => isset($_POST['include_featured_image']) ? 1 : 0,
+            'tbp_seo_optimized' => isset($_POST['seo_optimized']) ? 1 : 0,
+            'tbp_include_meta' => isset($_POST['include_meta']) ? 1 : 0
+        ];
+        
+        foreach ($content_settings as $option => $value) {
+            update_option($option, $value);
+        }
         
         wp_send_json_success('Settings saved successfully');
     }
