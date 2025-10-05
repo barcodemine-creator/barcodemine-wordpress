@@ -3236,27 +3236,31 @@ class TelegramBlogPublisherEnhanced {
             box-shadow: 0 10px 25px rgba(64, 183, 95, 0.3);
         }
         
-        /* Updated Pricing Styles */
+        /* Fixed Pricing Styles - Better Contrast */
         .tbp-pricing-card h3 {
-            color: white !important;
+            color: #333 !important;
+            font-weight: 700;
         }
         
         .tbp-pricing-card p, .tbp-pricing-card li {
-            color: rgba(255, 255, 255, 0.9) !important;
+            color: #666 !important;
         }
         
         .tbp-pricing-card {
-            background: rgba(255, 255, 255, 0.1) !important;
-            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            background: white !important;
+            border: 2px solid #e0e0e0 !important;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1) !important;
         }
         
         .tbp-pricing-card.tbp-featured {
             border: 3px solid #40B75F !important;
-            background: rgba(64, 183, 95, 0.1) !important;
+            background: linear-gradient(135deg, #f8fff9, #ffffff) !important;
+            transform: scale(1.05);
         }
         
         .tbp-price {
             color: #40B75F !important;
+            font-weight: 700;
         }
         
         .tbp-hosting-cta h2, .tbp-hosting-cta p {
@@ -3267,11 +3271,48 @@ class TelegramBlogPublisherEnhanced {
             color: white !important;
         }
         
-        .tbp-essential-section h2, .tbp-comparison-section h2, .tbp-magic-section h2, .tbp-pricing-section h2 {
+        /* Fixed Essential Section - Better Contrast */
+        .tbp-essential-section {
+            background: linear-gradient(135deg, #f8f9fa, #ffffff) !important;
+            border: 1px solid #e0e0e0 !important;
+        }
+        
+        .tbp-essential-section h2 {
+            color: #333 !important;
+            font-weight: 700;
+        }
+        
+        .tbp-integration-text h4 {
+            color: #333 !important;
+            font-weight: 600;
+        }
+        
+        .tbp-integration-text p {
+            color: #666 !important;
+        }
+        
+        .tbp-integration-item {
+            background: white !important;
+            border: 1px solid #e0e0e0 !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05) !important;
+        }
+        
+        /* Fixed Comparison Section */
+        .tbp-comparison-section h2 {
+            color: #333 !important;
+            font-weight: 700;
+        }
+        
+        .tbp-before-box h3, .tbp-after-box h3 {
             color: white !important;
         }
         
-        .tbp-integration-text h4, .tbp-integration-text p {
+        .tbp-before-box .tbp-problem-text, .tbp-after-box .tbp-solution-text {
+            color: white !important;
+        }
+        
+        /* Fixed Magic Section */
+        .tbp-magic-section h2 {
             color: white !important;
         }
         
@@ -3279,17 +3320,343 @@ class TelegramBlogPublisherEnhanced {
             color: white !important;
         }
         
-        .tbp-feature-card h5, .tbp-feature-card p {
-            color: white !important;
+        /* Fixed Feature Cards */
+        .tbp-feature-card h5 {
+            color: #333 !important;
+            font-weight: 600;
+        }
+        
+        .tbp-feature-card p {
+            color: #666 !important;
+        }
+        
+        .tbp-feature-card {
+            background: white !important;
+            border: 1px solid #e0e0e0 !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05) !important;
+        }
+        
+        /* Enhanced Testing Page Styles */
+        .tbp-testing-wrap {
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            min-height: 100vh;
+            padding: 40px;
+        }
+        
+        .tbp-testing-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .tbp-testing-header h1 {
+            color: #333;
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+        
+        .tbp-testing-subtitle {
+            color: #666;
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .tbp-testing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+        
+        .tbp-test-card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+        
+        .tbp-test-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+        
+        .tbp-primary-card {
+            border-left: 4px solid #40B75F;
+        }
+        
+        .tbp-secondary-card {
+            border-left: 4px solid #4F1AF3;
+        }
+        
+        .tbp-card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .tbp-card-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #40B75F, #28a745);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+        }
+        
+        .tbp-secondary-card .tbp-card-icon {
+            background: linear-gradient(135deg, #4F1AF3, #6f42c1);
+        }
+        
+        .tbp-card-icon .dashicons {
+            color: white;
+            font-size: 24px;
+        }
+        
+        .tbp-test-card h3 {
+            color: #333;
+            font-size: 1.5rem;
+            margin: 0;
+            font-weight: 600;
+        }
+        
+        .tbp-test-card p {
+            color: #666;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+        
+        .tbp-test-form {
+            margin-bottom: 20px;
+        }
+        
+        .tbp-form-row {
+            margin-bottom: 20px;
+        }
+        
+        .tbp-form-row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .tbp-form-group {
+            margin-bottom: 15px;
+        }
+        
+        .tbp-form-group label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .tbp-form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .tbp-form-group input:focus {
+            outline: none;
+            border-color: #40B75F;
+            box-shadow: 0 0 0 3px rgba(64, 183, 95, 0.1);
+        }
+        
+        .tbp-form-group small {
+            color: #666;
+            font-size: 12px;
+            margin-top: 5px;
+            display: block;
+        }
+        
+        .tbp-card-actions {
+            margin-top: 25px;
+        }
+        
+        .tbp-btn-large {
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .tbp-test-result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .tbp-test-result.success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        
+        .tbp-test-result.error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        
+        /* Webhook Configuration Styles */
+        .tbp-webhook-config {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+        
+        .tbp-config-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .tbp-config-header h3 {
+            color: #333;
+            font-size: 2rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+        
+        .tbp-config-header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        .tbp-config-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+        
+        .tbp-config-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+        
+        .tbp-config-card:hover {
+            background: #ffffff;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .tbp-config-card-wide {
+            grid-column: 1 / -1;
+        }
+        
+        .tbp-config-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #40B75F, #28a745);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+        
+        .tbp-config-icon .dashicons {
+            color: white;
+            font-size: 20px;
+        }
+        
+        .tbp-config-card h4 {
+            color: #333;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .tbp-url-display {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .tbp-url-display input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            background: white;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        
+        .tbp-headers {
+            margin-bottom: 10px;
+        }
+        
+        .tbp-header-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 15px;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+        
+        .tbp-header-item code {
+            color: #333;
+            font-family: monospace;
+            font-size: 13px;
+        }
+        
+        .tbp-copy-btn {
+            padding: 5px 10px;
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .tbp-copy-btn:hover {
+            background: #40B75F;
+            color: white;
+        }
+        
+        .tbp-payload-container {
+            position: relative;
+        }
+        
+        .tbp-payload {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            margin-bottom: 15px;
+            overflow-x: auto;
+        }
+        
+        .tbp-config-card small {
+            color: #666;
+            font-size: 12px;
         }
         
         /* Responsive Design for Settings */
         @media (max-width: 768px) {
-            .tbp-settings-wrap {
+            .tbp-settings-wrap, .tbp-testing-wrap {
                 padding: 20px;
             }
             
-            .tbp-api-grid, .tbp-content-grid {
+            .tbp-api-grid, .tbp-content-grid, .tbp-testing-grid {
                 grid-template-columns: 1fr;
             }
             
@@ -3299,6 +3666,14 @@ class TelegramBlogPublisherEnhanced {
             
             .tbp-eye-btn, .tbp-test-btn {
                 width: 100%;
+            }
+            
+            .tbp-form-row-2 {
+                grid-template-columns: 1fr;
+            }
+            
+            .tbp-config-grid {
+                grid-template-columns: 1fr;
             }
         }
         </style>
@@ -3401,74 +3776,140 @@ class TelegramBlogPublisherEnhanced {
     }
     
     public function renderTesting() {
+        $webhook_url = get_rest_url() . 'telegram-blog-publisher/v1/webhook';
+        $webhook_secret = get_option('tbp_webhook_secret', '');
         ?>
-        <div class="wrap tbp-admin-wrap">
-            <h1>🧪 Webhook Testing</h1>
+        <div class="wrap tbp-testing-wrap">
+            <div class="tbp-testing-header">
+                <h1>🔧 Webhook Testing & Configuration</h1>
+                <p class="tbp-testing-subtitle">Test your webhook endpoints and configure integration with n8n or other automation tools</p>
+            </div>
             
             <div class="tbp-testing-grid">
-                <div class="tbp-testing-card">
-                    <h3>Test Local Webhook</h3>
-                    <p>Test the webhook endpoint on this WordPress site.</p>
-                    <button id="test-local-webhook" class="tbp-btn tbp-btn-primary">
-                        <span class="dashicons dashicons-admin-tools"></span>
-                        Test Local Webhook
-                    </button>
+                <div class="tbp-test-card tbp-primary-card">
+                    <div class="tbp-card-header">
+                        <div class="tbp-card-icon">
+                            <span class="dashicons dashicons-admin-tools"></span>
+                        </div>
+                        <h3>Test Local Webhook</h3>
+                    </div>
+                    <p>Test the webhook endpoint on this WordPress site to ensure it's working correctly.</p>
+                    <div class="tbp-card-actions">
+                        <button id="test-local-webhook" class="tbp-btn tbp-btn-primary tbp-btn-large">
+                            <span class="dashicons dashicons-admin-tools"></span>
+                            Test Local Webhook
+                        </button>
+                    </div>
                     <div id="local-webhook-result" class="tbp-test-result"></div>
                 </div>
                 
-                <div class="tbp-testing-card">
-                    <h3>Send Test Webhook</h3>
-                    <p>Send a test webhook to an external URL (like n8n).</p>
-                    <form id="external-webhook-form">
-                        <div class="tbp-form-group">
-                            <label for="webhook-url">Webhook URL:</label>
-                            <input type="url" id="webhook-url" name="webhook_url" placeholder="https://your-n8n-instance.com/webhook/telegram" required>
+                <div class="tbp-test-card tbp-secondary-card">
+                    <div class="tbp-card-header">
+                        <div class="tbp-card-icon">
+                            <span class="dashicons dashicons-external"></span>
                         </div>
-                        <div class="tbp-form-group">
-                            <label for="webhook-secret">Webhook Secret:</label>
-                            <input type="text" id="webhook-secret" name="webhook_secret" placeholder="Your webhook secret" required>
+                        <h3>Send Test Webhook</h3>
+                    </div>
+                    <p>Send a test webhook to an external URL (like n8n) to verify integration.</p>
+                    <form id="external-webhook-form" class="tbp-test-form">
+                        <div class="tbp-form-row">
+                            <div class="tbp-form-group">
+                                <label for="webhook-url">Webhook URL</label>
+                                <input type="url" id="webhook-url" name="webhook_url" placeholder="https://your-n8n-instance.com/webhook/telegram" required>
+                                <small>Enter your n8n or external webhook URL</small>
+                            </div>
                         </div>
-                        <div class="tbp-form-group">
-                            <label for="test-topic">Test Topic:</label>
-                            <input type="text" id="test-topic" name="topic" placeholder="Test Blog Post" value="Test Webhook" required>
+                        <div class="tbp-form-row">
+                            <div class="tbp-form-group">
+                                <label for="webhook-secret">Webhook Secret</label>
+                                <input type="text" id="webhook-secret" name="webhook_secret" placeholder="Your webhook secret" required>
+                                <small>Enter the secret key for authentication</small>
+                            </div>
                         </div>
-                        <div class="tbp-form-group">
-                            <label for="test-title">Test Title:</label>
-                            <input type="text" id="test-title" name="title" placeholder="Test Title" value="Webhook Test Post" required>
+                        <div class="tbp-form-row tbp-form-row-2">
+                            <div class="tbp-form-group">
+                                <label for="test-topic">Test Topic</label>
+                                <input type="text" id="test-topic" name="topic" placeholder="Test Blog Post" value="Test Webhook" required>
+                            </div>
+                            <div class="tbp-form-group">
+                                <label for="test-title">Test Title</label>
+                                <input type="text" id="test-title" name="title" placeholder="Test Title" value="Webhook Test Post" required>
+                            </div>
                         </div>
-                        <button type="submit" class="tbp-btn tbp-btn-primary">
-                            <span class="dashicons dashicons-send"></span>
-                            Send Test Webhook
-                        </button>
+                        <div class="tbp-card-actions">
+                            <button type="submit" class="tbp-btn tbp-btn-primary tbp-btn-large">
+                                <span class="dashicons dashicons-send"></span>
+                                Send Test Webhook
+                            </button>
+                        </div>
                     </form>
                     <div id="external-webhook-result" class="tbp-test-result"></div>
                 </div>
             </div>
             
-            <div class="tbp-testing-info">
-                <h3>Webhook Configuration</h3>
-                <div class="tbp-info-card">
-                    <h4>Your Webhook URL:</h4>
-                    <code><?php echo get_rest_url() . 'telegram-blog-publisher/v1/webhook'; ?></code>
-                    <button id="copy-webhook-url" class="tbp-btn tbp-btn-small">
-                        <span class="dashicons dashicons-clipboard"></span>
-                        Copy
-                    </button>
+            <div class="tbp-webhook-config">
+                <div class="tbp-config-header">
+                    <h3>🔗 Webhook Configuration</h3>
+                    <p>Use these details to configure your n8n workflows or other automation tools</p>
                 </div>
                 
-                <div class="tbp-info-card">
-                    <h4>Required Headers:</h4>
-                    <pre>Content-Type: application/json
-X-Webhook-Secret: your_secret_here</pre>
-                </div>
-                
-                <div class="tbp-info-card">
-                    <h4>Sample Payload:</h4>
-                    <pre>{
+                <div class="tbp-config-grid">
+                    <div class="tbp-config-card">
+                        <div class="tbp-config-icon">
+                            <span class="dashicons dashicons-admin-links"></span>
+                        </div>
+                        <h4>Webhook URL</h4>
+                        <div class="tbp-url-display">
+                            <input type="text" value="<?php echo esc_attr($webhook_url); ?>" readonly />
+                            <button id="copy-webhook-url" class="tbp-btn tbp-btn-secondary">
+                                <span class="dashicons dashicons-admin-page"></span>
+                                Copy
+                            </button>
+                        </div>
+                        <small>Use this URL in your n8n webhook node</small>
+                    </div>
+                    
+                    <div class="tbp-config-card">
+                        <div class="tbp-config-icon">
+                            <span class="dashicons dashicons-shield"></span>
+                        </div>
+                        <h4>Required Headers</h4>
+                        <div class="tbp-headers">
+                            <div class="tbp-header-item">
+                                <code>Content-Type: application/json</code>
+                                <button class="tbp-copy-btn" data-text="Content-Type: application/json">
+                                    <span class="dashicons dashicons-admin-page"></span>
+                                </button>
+                            </div>
+                            <div class="tbp-header-item">
+                                <code>X-Webhook-Secret: your_secret_here</code>
+                                <button class="tbp-copy-btn" data-text="X-Webhook-Secret: your_secret_here">
+                                    <span class="dashicons dashicons-admin-page"></span>
+                                </button>
+                            </div>
+                        </div>
+                        <small>Include these headers in your webhook requests</small>
+                    </div>
+                    
+                    <div class="tbp-config-card tbp-config-card-wide">
+                        <div class="tbp-config-icon">
+                            <span class="dashicons dashicons-editor-code"></span>
+                        </div>
+                        <h4>Sample Payload</h4>
+                        <div class="tbp-payload-container">
+                            <pre class="tbp-payload">{
   "topic": "Your blog topic",
   "title": "Your blog title",
-  "status": "draft"
+  "content": "Your blog content",
+  "secret": "<?php echo esc_attr($webhook_secret); ?>"
 }</pre>
+                            <button id="copy-payload" class="tbp-btn tbp-btn-secondary">
+                                <span class="dashicons dashicons-admin-page"></span>
+                                Copy Payload
+                            </button>
+                        </div>
+                        <small>Use this JSON structure for your webhook requests</small>
+                    </div>
                 </div>
             </div>
         </div>
