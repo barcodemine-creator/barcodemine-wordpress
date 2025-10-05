@@ -3475,6 +3475,104 @@ class TelegramBlogPublisherEnhanced {
             font-size: 12px;
             margin-top: 5px;
             display: block;
+            line-height: 1.4;
+        }
+        
+        /* Fix form layout issues */
+        .tbp-form-group {
+            margin-bottom: 20px;
+        }
+        
+        .tbp-form-group label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .tbp-form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+        
+        .tbp-form-group input:focus {
+            outline: none;
+            border-color: #40B75F;
+            box-shadow: 0 0 0 3px rgba(64, 183, 95, 0.1);
+        }
+        
+        /* Fix button styling */
+        .tbp-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        
+        .tbp-btn-primary {
+            background: linear-gradient(135deg, #40B75F, #28a745);
+            color: white;
+        }
+        
+        .tbp-btn-primary:hover {
+            background: linear-gradient(135deg, #28a745, #1e7e34);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(64, 183, 95, 0.3);
+        }
+        
+        .tbp-btn-secondary {
+            background: #f8f9fa;
+            color: #333;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .tbp-btn-secondary:hover {
+            background: #40B75F;
+            color: white;
+            border-color: #40B75F;
+        }
+        
+        /* Fix icon alignment */
+        .tbp-btn .dashicons {
+            font-size: 16px;
+            line-height: 1;
+        }
+        
+        /* Fix copy button styling */
+        .tbp-copy-btn {
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+        }
+        
+        .tbp-copy-btn:hover {
+            background: #40B75F;
+            color: white;
+            border-color: #40B75F;
+        }
+        
+        .tbp-copy-btn .dashicons {
+            font-size: 14px;
         }
         
         .tbp-card-actions {
@@ -3581,7 +3679,8 @@ class TelegramBlogPublisherEnhanced {
         .tbp-url-display {
             display: flex;
             gap: 10px;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            align-items: center;
         }
         
         .tbp-url-display input {
@@ -3592,6 +3691,13 @@ class TelegramBlogPublisherEnhanced {
             background: white;
             font-family: monospace;
             font-size: 14px;
+            color: #333;
+        }
+        
+        .tbp-url-display input:focus {
+            outline: none;
+            border-color: #40B75F;
+            box-shadow: 0 0 0 3px rgba(64, 183, 95, 0.1);
         }
         
         .tbp-headers {
@@ -3602,17 +3708,24 @@ class TelegramBlogPublisherEnhanced {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 10px 15px;
+            padding: 12px 16px;
             background: white;
             border: 1px solid #e0e0e0;
-            border-radius: 6px;
-            margin-bottom: 8px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .tbp-header-item:hover {
+            border-color: #40B75F;
+            box-shadow: 0 2px 8px rgba(64, 183, 95, 0.1);
         }
         
         .tbp-header-item code {
             color: #333;
             font-family: monospace;
             font-size: 13px;
+            font-weight: 500;
         }
         
         .tbp-copy-btn {
@@ -3650,7 +3763,7 @@ class TelegramBlogPublisherEnhanced {
             font-size: 12px;
         }
         
-        /* Responsive Design for Settings */
+        /* Enhanced Responsive Design */
         @media (max-width: 768px) {
             .tbp-settings-wrap, .tbp-testing-wrap {
                 padding: 20px;
@@ -3674,6 +3787,54 @@ class TelegramBlogPublisherEnhanced {
             
             .tbp-config-grid {
                 grid-template-columns: 1fr;
+            }
+            
+            .tbp-url-display {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .tbp-header-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .tbp-header-item code {
+                word-break: break-all;
+            }
+            
+            .tbp-testing-header h1 {
+                font-size: 2rem;
+            }
+            
+            .tbp-testing-subtitle {
+                font-size: 1rem;
+            }
+        }
+        
+        /* Fix for very small screens */
+        @media (max-width: 480px) {
+            .tbp-testing-wrap {
+                padding: 15px;
+            }
+            
+            .tbp-test-card {
+                padding: 20px;
+            }
+            
+            .tbp-webhook-config {
+                padding: 25px;
+            }
+            
+            .tbp-form-group input {
+                padding: 10px 12px;
+                font-size: 13px;
+            }
+            
+            .tbp-btn {
+                padding: 10px 20px;
+                font-size: 13px;
             }
         }
         </style>
