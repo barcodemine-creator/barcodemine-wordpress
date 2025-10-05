@@ -454,34 +454,22 @@ class TelegramBlogPublisherEnhanced {
     private function callGeminiAPI($api_key, $topic, $word_count, $tone) {
         $prompt = "Write a comprehensive blog post about {$topic} in a {$tone} tone. Target word count: {$word_count} words. Include an engaging introduction, detailed main content with subheadings, and a compelling conclusion.";
         
-        $response = wp_remote_post("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=" . $api_key, [
-            'headers' => [
-                'Content-Type' => 'application/json'
-            ],
-            'body' => json_encode([
-                'contents' => [
-                    ['parts' => [['text' => $prompt]]]
-                ],
-                'generationConfig' => [
-                    'maxOutputTokens' => 2000,
-                    'temperature' => 0.7
-                ]
-            ]),
-            'timeout' => 60
-        ]);
+        // Try multiple Gemini models
+        $models = [
+            'gemini-1.5-flash',
+            'gemini-1.5-pro', 
+            'gemini-pro',
+            'gemini-1.0-pro'
+        ];
         
-        if (is_wp_error($response)) {
-            return $response;
+        foreach ($models as $model) {
+            $result = $this->callGeminiModel($api_key, $model, $prompt);
+            if (!is_wp_error($result)) {
+                return $result;
+            }
         }
         
-        $body = wp_remote_retrieve_body($response);
-        $data = json_decode($body, true);
-        
-        if (isset($data['candidates'][0]['content']['parts'][0]['text'])) {
-            return $data['candidates'][0]['content']['parts'][0]['text'];
-        }
-        
-        return new WP_Error('gemini_error', 'Gemini API error: ' . $body);
+        return new WP_Error('gemini_error', 'All Gemini models failed. Please check your API key.');
     }
     
     private function callDeepSeekAPI($api_key, $topic, $word_count, $tone) {
@@ -599,6 +587,25 @@ class TelegramBlogPublisherEnhanced {
             return new WP_Error('no_api_key', 'Gemini API key not configured');
         }
         
+        // Try multiple Gemini models in order of preference
+        $models = [
+            'gemini-1.5-flash',
+            'gemini-1.5-pro', 
+            'gemini-pro',
+            'gemini-1.0-pro'
+        ];
+        
+        foreach ($models as $model) {
+            $result = $this->callGeminiModel($api_key, $model, $prompt);
+            if (!is_wp_error($result)) {
+                return $result;
+            }
+        }
+        
+        return new WP_Error('gemini_error', 'All Gemini models failed. Please check your API key and try again.');
+    }
+    
+    private function callGeminiModel($api_key, $model, $prompt) {
         $data = [
             'contents' => [
                 [
@@ -613,7 +620,7 @@ class TelegramBlogPublisherEnhanced {
             ]
         ];
         
-        $response = wp_remote_post('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=' . $api_key, [
+        $response = wp_remote_post("https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key=" . $api_key, [
             'headers' => ['Content-Type' => 'application/json'],
             'body' => json_encode($data),
             'timeout' => 60
@@ -630,7 +637,12 @@ class TelegramBlogPublisherEnhanced {
             return $data['candidates'][0]['content']['parts'][0]['text'];
         }
         
-        return new WP_Error('gemini_error', 'Failed to generate content with Gemini');
+        // Check for API errors
+        if (isset($data['error'])) {
+            return new WP_Error('gemini_api_error', $data['error']['message'] ?? 'Unknown Gemini API error');
+        }
+        
+        return new WP_Error('gemini_error', 'Failed to generate content with model: ' . $model);
     }
     
     private function generateWithGroq($prompt) {
@@ -851,7 +863,21 @@ class TelegramBlogPublisherEnhanced {
         $test_prompt = "Write a short test message about barcodes.";
         
         if ($service === 'gemini') {
-            return $this->callGeminiAPI($api_key, 'test', 50, 'professional');
+            // Try multiple Gemini models for testing
+            $models = [
+                'gemini-1.5-flash',
+                'gemini-1.5-pro', 
+                'gemini-pro',
+                'gemini-1.0-pro'
+            ];
+            
+            foreach ($models as $model) {
+                $result = $this->callGeminiModel($api_key, $model, $test_prompt);
+                if (!is_wp_error($result)) {
+                    return $result;
+                }
+            }
+            return new WP_Error('gemini_error', 'All Gemini models failed. Please check your API key.');
         } elseif ($service === 'deepseek') {
             return $this->callDeepSeekAPI($api_key, 'test', 50, 'professional');
         }
