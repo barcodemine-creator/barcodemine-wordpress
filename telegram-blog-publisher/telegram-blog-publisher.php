@@ -1288,7 +1288,11 @@ class TelegramBlogPublisherEnhanced {
     }
     
     public function renderDashboard() {
+        // Ensure we get the current site's URL dynamically
         $webhook_url = get_rest_url() . 'telegram-blog-publisher/v1/webhook';
+        
+        // Add cache-busting to ensure URL is always fresh
+        $webhook_url_with_cache = $webhook_url . '?t=' . time();
         $webhook_secret = get_option('tbp_webhook_secret', '');
         $gemini_key = get_option('tbp_gemini_key', '');
         $deepseek_key = get_option('tbp_deepseek_key', '');
@@ -1379,6 +1383,7 @@ class TelegramBlogPublisherEnhanced {
                     <h2>🔗 Webhook Information</h2>
                 <p><strong>Webhook URL:</strong> <code><?php echo esc_html($webhook_url); ?></code></p>
                 <p><strong>Webhook Secret:</strong> <code><?php echo esc_html($webhook_secret); ?></code></p>
+                <p><small><em>✅ URL is dynamically generated for this website: <?php echo esc_html(home_url()); ?></em></small></p>
                     <div class="tbp-button-group">
                 <button onclick="navigator.clipboard.writeText('<?php echo esc_js($webhook_url); ?>')" class="button">Copy URL</button>
                 <button onclick="navigator.clipboard.writeText('<?php echo esc_js($webhook_secret); ?>')" class="button">Copy Secret</button>
@@ -4180,6 +4185,7 @@ class TelegramBlogPublisherEnhanced {
     }
     
     public function renderTesting() {
+        // Generate dynamic webhook URL for current website
         $webhook_url = get_rest_url() . 'telegram-blog-publisher/v1/webhook';
         $webhook_secret = get_option('tbp_webhook_secret', '');
         ?>
@@ -4271,6 +4277,7 @@ class TelegramBlogPublisherEnhanced {
                             </button>
                         </div>
                         <small>Use this URL in your n8n webhook node</small>
+                        <small><em>✅ Dynamically generated for: <?php echo esc_html(home_url()); ?></em></small>
                     </div>
                     
                     <div class="tbp-config-card">
