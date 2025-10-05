@@ -116,6 +116,15 @@ class TelegramBlogPublisherEnhanced {
         
         add_submenu_page(
             'telegram-blog-publisher',
+            'How to Use',
+            '📚 How to Use',
+            'manage_options',
+            'telegram-blog-publisher-guide',
+            [$this, 'renderGuide']
+        );
+        
+        add_submenu_page(
+            'telegram-blog-publisher',
             'KloudBean Hosting',
             '☁️ KloudBean Hosting',
             'manage_options',
@@ -319,6 +328,9 @@ class TelegramBlogPublisherEnhanced {
     }
     
     private function enhanceContent($content, $topic, $include_images, $seo_optimized) {
+        // Clean the content first
+        $content = $this->cleanContent($content);
+        
         // Parse JSON response
         $data = json_decode($content, true);
         
@@ -328,6 +340,9 @@ class TelegramBlogPublisherEnhanced {
         }
         
         $enhanced_content = $data['content'] ?? $content;
+        
+        // Clean the enhanced content as well
+        $enhanced_content = $this->cleanContent($enhanced_content);
         
         // Add media if enabled
         if ($include_images) {
@@ -355,8 +370,8 @@ class TelegramBlogPublisherEnhanced {
         // Add featured image at the top
         $content = $featured_image_placeholder . "\n\n" . $content;
         
-        return $content;
-    }
+                return $content;
+            }
     
     private function insertImagePlaceholders($content, $topic) {
         // Find good spots for images (after H2 headings)
@@ -422,11 +437,31 @@ class TelegramBlogPublisherEnhanced {
     }
     
     private function formatPlainContent($content, $topic) {
+        // Clean up the content first
+        $content = $this->cleanContent($content);
+        
         // If AI returns plain text, format it properly
         $formatted = '<h1>' . $topic . '</h1>' . "\n\n";
         $formatted .= '<div class="blog-content">' . wpautop($content) . '</div>';
         
         return $formatted;
+    }
+    
+    private function cleanContent($content) {
+        // Convert literal \n\n to actual newlines
+        $content = str_replace('\\n\\n', "\n\n", $content);
+        $content = str_replace('\\n', "\n", $content);
+        
+        // Remove any remaining literal \n characters
+        $content = str_replace('\n', "\n", $content);
+        
+        // Clean up multiple newlines
+        $content = preg_replace('/\n{3,}/', "\n\n", $content);
+        
+        // Trim whitespace
+        $content = trim($content);
+        
+        return $content;
     }
     
     private function generateFallbackContent($topic, $word_count, $tone) {
@@ -486,7 +521,7 @@ class TelegramBlogPublisherEnhanced {
                     ['role' => 'user', 'content' => $prompt]
                 ],
                 'max_tokens' => 2000,
-                'temperature' => 0.7
+                    'temperature' => 0.7
             ]),
             'timeout' => 60
         ]);
@@ -936,12 +971,12 @@ class TelegramBlogPublisherEnhanced {
         }
         
         $data = [
-            'model' => 'deepseek-chat',
-            'messages' => [
-                ['role' => 'user', 'content' => $prompt]
-            ],
+                'model' => 'deepseek-chat',
+                'messages' => [
+                    ['role' => 'user', 'content' => $prompt]
+                ],
             'max_tokens' => 4000,
-            'temperature' => 0.7
+                'temperature' => 0.7
         ];
         
         $response = wp_remote_post('https://api.deepseek.com/v1/chat/completions', [
@@ -1945,44 +1980,44 @@ class TelegramBlogPublisherEnhanced {
                 var apiKey = input.val();
                 var button = $(this);
                 
-                if (!apiKey) {
-                    alert('Please enter an API key first');
-                    return;
-                }
-                
+            if (!apiKey) {
+                alert('Please enter an API key first');
+                return;
+            }
+            
                 button.prop('disabled', true).text('Testing...');
-                
+            
                 $.ajax({
-                    url: tbp_ajax.ajax_url,
-                    type: 'POST',
-                    data: {
-                        action: 'tbp_test_api',
+                url: tbp_ajax.ajax_url,
+                type: 'POST',
+                data: {
+                    action: 'tbp_test_api',
                         service: api,
                         api_key: apiKey,
                         nonce: tbp_ajax.nonce
-                    },
-                    success: function(response) {
-                        if (response.success) {
+                },
+                success: function(response) {
+                    if (response.success) {
                             button.text('✓ Working').css('background', '#40B75F');
                             setTimeout(function() {
                                 button.text('Test').css('background', '#40B75F');
                             }, 2000);
-                        } else {
+                    } else {
                             button.text('✗ Error').css('background', '#ff6b6b');
                             alert('Error: ' + response.data);
                             setTimeout(function() {
                                 button.text('Test').css('background', '#40B75F');
                             }, 2000);
-                        }
-                    },
-                    error: function() {
+                    }
+                },
+                error: function() {
                         button.text('✗ Error').css('background', '#ff6b6b');
-                        alert('Network error occurred');
+                    alert('Network error occurred');
                         setTimeout(function() {
                             button.text('Test').css('background', '#40B75F');
                         }, 2000);
-                    },
-                    complete: function() {
+                },
+                complete: function() {
                         button.prop('disabled', false);
                     }
                 });
@@ -2081,9 +2116,9 @@ class TelegramBlogPublisherEnhanced {
                             $result.removeClass('error').addClass('success').html('<strong>Success!</strong> ' + response.data.message).show();
                     } else {
                             $result.removeClass('success').addClass('error').html('<strong>Error:</strong> ' + response.data).show();
-                    }
-                },
-                error: function() {
+                        }
+                    },
+                    error: function() {
                         $result.removeClass('success').addClass('error').html('<strong>Error:</strong> Failed to test webhook.').show();
                 },
                 complete: function() {
@@ -2233,6 +2268,392 @@ class TelegramBlogPublisherEnhanced {
             font-family: monospace;
             font-size: 12px;
             white-space: pre-wrap;
+        }
+        </style>
+        <?php
+    }
+    
+    public function renderGuide() {
+        ?>
+        <div class="wrap tbp-guide-page">
+            <div class="tbp-guide-header">
+                <h1>📚 How to Use Telegram Blog Publisher</h1>
+                <p class="tbp-guide-subtitle">Complete step-by-step guide to set up and use the plugin</p>
+            </div>
+            
+            <div class="tbp-guide-content">
+                <!-- Quick Start -->
+                <div class="tbp-guide-section">
+                    <h2>🚀 Quick Start (5 Minutes)</h2>
+                    <div class="tbp-steps">
+                        <div class="tbp-step">
+                            <div class="tbp-step-number">1</div>
+                            <div class="tbp-step-content">
+                                <h3>Configure API Key</h3>
+                                <p>Go to <strong>Settings</strong> and add your AI API key (Gemini, OpenAI, or Claude)</p>
+                                <a href="<?php echo admin_url('admin.php?page=telegram-blog-publisher-settings'); ?>" class="tbp-btn tbp-btn-primary">Go to Settings</a>
+                            </div>
+                        </div>
+                        
+                        <div class="tbp-step">
+                            <div class="tbp-step-number">2</div>
+                            <div class="tbp-step-content">
+                                <h3>Test Your Setup</h3>
+                                <p>Use the <strong>Generate Content</strong> feature to create your first blog post</p>
+                                <a href="<?php echo admin_url('admin.php?page=telegram-blog-publisher'); ?>" class="tbp-btn tbp-btn-primary">Generate Content</a>
+                            </div>
+                        </div>
+                        
+                        <div class="tbp-step">
+                            <div class="tbp-step-number">3</div>
+                            <div class="tbp-step-content">
+                                <h3>Set Up Automation (Optional)</h3>
+                                <p>Configure n8n or Telegram bot for automatic blog creation</p>
+                                <a href="<?php echo admin_url('admin.php?page=telegram-blog-publisher-testing'); ?>" class="tbp-btn tbp-btn-secondary">Webhook Testing</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Manual Content Generation -->
+                <div class="tbp-guide-section">
+                    <h2>✍️ Manual Content Generation</h2>
+                    <div class="tbp-guide-card">
+                        <h3>Step 1: Access the Generator</h3>
+                        <p>Go to <strong>Telegram Blog → Dashboard</strong> and scroll to the "Generate Content" section.</p>
+                        
+                        <h3>Step 2: Enter Your Topic</h3>
+                        <p>Type your blog topic in the "Topic" field. For example: "How to use WordPress"</p>
+                        
+                        <h3>Step 3: Customize Settings (Optional)</h3>
+                        <ul>
+                            <li><strong>Word Count:</strong> Choose from 300-2000 words</li>
+                            <li><strong>Tone:</strong> Select professional, casual, or technical</li>
+                            <li><strong>Quality:</strong> Basic, Standard, Premium, or Enterprise</li>
+                        </ul>
+                        
+                        <h3>Step 4: Generate Content</h3>
+                        <p>Click "Generate Blog Post" and wait for the AI to create your content.</p>
+                        
+                        <h3>Step 5: Review and Publish</h3>
+                        <p>Review the generated content, make any edits, and publish your post.</p>
+                    </div>
+                </div>
+                
+                <!-- API Configuration -->
+                <div class="tbp-guide-section">
+                    <h2>🔑 API Configuration</h2>
+                    <div class="tbp-guide-card">
+                        <h3>Google Gemini (Free)</h3>
+                        <ol>
+                            <li>Visit <a href="https://aistudio.google.com/" target="_blank">Google AI Studio</a></li>
+                            <li>Click "Get API Key"</li>
+                            <li>Create a new API key</li>
+                            <li>Copy the key (starts with AIza...)</li>
+                            <li>Paste it in the Gemini field in Settings</li>
+                            <li>Click "Test" to verify</li>
+                        </ol>
+                        
+                        <h3>OpenAI (Paid)</h3>
+                        <ol>
+                            <li>Visit <a href="https://platform.openai.com/" target="_blank">OpenAI Platform</a></li>
+                            <li>Go to "API Keys"</li>
+                            <li>Create a new secret key</li>
+                            <li>Copy the key (starts with sk-...)</li>
+                            <li>Paste it in the OpenAI field in Settings</li>
+                            <li>Click "Test" to verify</li>
+                        </ol>
+                        
+                        <h3>Claude (Paid)</h3>
+                        <ol>
+                            <li>Visit <a href="https://console.anthropic.com/" target="_blank">Anthropic Console</a></li>
+                            <li>Navigate to "API Keys"</li>
+                            <li>Create a new key</li>
+                            <li>Copy the key (starts with sk-ant-...)</li>
+                            <li>Paste it in the Claude field in Settings</li>
+                            <li>Click "Test" to verify</li>
+                        </ol>
+                    </div>
+                </div>
+                
+                <!-- n8n Integration -->
+                <div class="tbp-guide-section">
+                    <h2>🔄 n8n Integration</h2>
+                    <div class="tbp-guide-card">
+                        <h3>Step 1: Get Your Webhook URL</h3>
+                        <p>Go to <strong>Webhook Testing</strong> and copy your webhook URL:</p>
+                        <code><?php echo esc_html(get_rest_url() . 'telegram-blog-publisher/v1/webhook'); ?></code>
+                        
+                        <h3>Step 2: Create n8n Workflow</h3>
+                        <ol>
+                            <li>Open your n8n instance</li>
+                            <li>Create a new workflow</li>
+                            <li>Add these nodes: <code>Telegram Trigger → HTTP Request → Respond to Webhook</code></li>
+                        </ol>
+                        
+                        <h3>Step 3: Configure Telegram Trigger</h3>
+                        <ul>
+                            <li>Bot Token: Your Telegram bot token</li>
+                            <li>Updates: Message</li>
+                        </ul>
+                        
+                        <h3>Step 4: Configure HTTP Request</h3>
+                        <ul>
+                            <li>Method: POST</li>
+                            <li>URL: Your webhook URL from Step 1</li>
+                            <li>Headers: Content-Type: application/json, X-Webhook-Secret: your_secret</li>
+                            <li>Body: {"topic": "{{ $json.message.text }}", "secret": "your_secret"}</li>
+                        </ul>
+                        
+                        <h3>Step 5: Test the Workflow</h3>
+                        <p>Activate the workflow and send a message to your Telegram bot.</p>
+                    </div>
+                </div>
+                
+                <!-- Telegram Bot Setup -->
+                <div class="tbp-guide-section">
+                    <h2>🤖 Telegram Bot Setup</h2>
+                    <div class="tbp-guide-card">
+                        <h3>Step 1: Create Bot</h3>
+                        <ol>
+                            <li>Open Telegram app</li>
+                            <li>Search for @BotFather</li>
+                            <li>Send /newbot</li>
+                            <li>Choose a name: "My Blog Bot"</li>
+                            <li>Choose a username: "myblog_bot"</li>
+                            <li>Save the Bot Token</li>
+                        </ol>
+                        
+                        <h3>Step 2: Get Chat ID</h3>
+                        <ol>
+                            <li>Send a message to your new bot</li>
+                            <li>Visit: https://api.telegram.org/bot<YOUR_BOT_TOKEN>/getUpdates</li>
+                            <li>Find your Chat ID in the response</li>
+                        </ol>
+                        
+                        <h3>Step 3: Configure n8n</h3>
+                        <p>Use the Bot Token and Chat ID in your n8n Telegram Trigger node.</p>
+                    </div>
+                </div>
+                
+                <!-- Troubleshooting -->
+                <div class="tbp-guide-section">
+                    <h2>🛠️ Troubleshooting</h2>
+                    <div class="tbp-guide-card">
+                        <h3>Common Issues</h3>
+                        
+                        <h4>❌ "API key not working"</h4>
+                        <ul>
+                            <li>Check if the API key is correct</li>
+                            <li>Verify the API key has proper permissions</li>
+                            <li>Check if you have sufficient credits/quota</li>
+                            <li>Try a different AI service</li>
+                        </ul>
+                        
+                        <h4>❌ "Blog post not created"</h4>
+                        <ul>
+                            <li>Check WordPress error logs</li>
+                            <li>Verify the webhook URL is correct</li>
+                            <li>Check if the webhook secret matches</li>
+                            <li>Test manual content generation first</li>
+                        </ul>
+                        
+                        <h4>❌ "n8n workflow not triggering"</h4>
+                        <ul>
+                            <li>Check if the Telegram bot token is correct</li>
+                            <li>Verify the webhook URL in n8n</li>
+                            <li>Check if the workflow is activated</li>
+                            <li>Test the webhook manually</li>
+                        </ul>
+                        
+                        <h3>Getting Help</h3>
+                        <ul>
+                            <li>Check the <strong>System Status</strong> page for errors</li>
+                            <li>View <strong>Logs</strong> for detailed error messages</li>
+                            <li>Test your setup using <strong>Webhook Testing</strong></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Advanced Features -->
+                <div class="tbp-guide-section">
+                    <h2>⚡ Advanced Features</h2>
+                    <div class="tbp-guide-card">
+                        <h3>Content Quality Settings</h3>
+                        <ul>
+                            <li><strong>Basic:</strong> 300-500 words, simple structure</li>
+                            <li><strong>Standard:</strong> 500-800 words, good detail</li>
+                            <li><strong>Premium:</strong> 800-1200 words, comprehensive</li>
+                            <li><strong>Enterprise:</strong> 1200+ words, in-depth analysis</li>
+                        </ul>
+                        
+                        <h3>SEO Optimization</h3>
+                        <ul>
+                            <li>Auto-generated meta descriptions</li>
+                            <li>SEO-friendly titles</li>
+                            <li>Structured data markup</li>
+                            <li>Image placeholders with alt text</li>
+                        </ul>
+                        
+                        <h3>Media Integration</h3>
+                        <ul>
+                            <li>Automatic image placeholders</li>
+                            <li>Featured image generation</li>
+                            <li>Responsive image sizing</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <style>
+        .tbp-guide-page {
+            max-width: 1200px;
+            margin: 20px auto;
+        }
+        
+        .tbp-guide-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px;
+        }
+        
+        .tbp-guide-header h1 {
+            font-size: 2.5rem;
+            margin: 0 0 10px 0;
+        }
+        
+        .tbp-guide-subtitle {
+            font-size: 1.2rem;
+            margin: 0;
+            opacity: 0.9;
+        }
+        
+        .tbp-guide-section {
+            margin-bottom: 50px;
+        }
+        
+        .tbp-guide-section h2 {
+            color: #333;
+            border-bottom: 3px solid #40B75F;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .tbp-guide-card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .tbp-guide-card h3 {
+            color: #40B75F;
+            margin-top: 0;
+        }
+        
+        .tbp-guide-card h4 {
+            color: #666;
+            margin-top: 25px;
+        }
+        
+        .tbp-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 30px 0;
+        }
+        
+        .tbp-step {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            text-align: center;
+            position: relative;
+        }
+        
+        .tbp-step-number {
+            width: 50px;
+            height: 50px;
+            background: #40B75F;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 0 auto 20px auto;
+        }
+        
+        .tbp-step h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .tbp-step p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        .tbp-btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #40B75F;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .tbp-btn:hover {
+            background: #36994d;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .tbp-btn-primary {
+            background: #40B75F;
+        }
+        
+        .tbp-btn-secondary {
+            background: #6c757d;
+        }
+        
+        .tbp-guide-card code {
+            background: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #e83e8c;
+        }
+        
+        .tbp-guide-card ul, .tbp-guide-card ol {
+            padding-left: 20px;
+        }
+        
+        .tbp-guide-card li {
+            margin-bottom: 8px;
+        }
+        
+        @media (max-width: 768px) {
+            .tbp-steps {
+                grid-template-columns: 1fr;
+            }
+            
+            .tbp-guide-header h1 {
+                font-size: 2rem;
+            }
+            
+            .tbp-guide-card {
+                padding: 20px;
+            }
         }
         </style>
         <?php
